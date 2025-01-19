@@ -4,9 +4,11 @@ class AppTheme {
   static ThemeData get light {
     return ThemeData(
       fontFamily: 'Montserrat',
-      primaryColor: Colors.amber.shade800,
-      dividerColor: Colors.black,
+      primaryColor: const Color.fromARGB(255, 255, 0, 85),
+      highlightColor: Colors.white,
+      dividerColor: Colors.white,
       scaffoldBackgroundColor: Colors.grey.shade200,
+      // const Color.fromARGB(255, 170, 0, 255)
       // textTheme: TextTheme(
       //   displayLarge: TextStyle(fontFamily: platformFont),
       //   displayMedium: TextStyle(fontFamily: platformFont),

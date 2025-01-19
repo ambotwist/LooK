@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lookapp/main/pages/account/account_page.dart';
 import 'package:lookapp/main/pages/discover/discover_page.dart';
 import 'package:lookapp/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
@@ -22,7 +23,7 @@ class _HomeWrapperState extends State<HomeWrapper> {
       const TestPage(),
       const TestPage(),
       const TestPage(),
-      const TestPage(),
+      const AccountPage(),
     ];
   }
 
