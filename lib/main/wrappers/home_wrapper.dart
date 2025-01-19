@@ -34,8 +34,9 @@ class _HomeWrapperState extends State<HomeWrapper> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         toolbarHeight: 42,
-        title: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        leadingWidth: 100,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
@@ -46,6 +47,19 @@ class _HomeWrapperState extends State<HomeWrapper> {
                 fontWeight: FontWeight.w700,
               ),
             ),
+          ),
+        ),
+        title: Text(
+          switch (_selectedIndex) {
+            0 => 'Discover',
+            1 => 'Search',
+            2 => 'Your Store',
+            3 => 'Wishlist',
+            4 => 'Settings',
+            _ => '',
+          },
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
           ),
         ),
         actions: [

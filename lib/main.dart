@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:lookapp/main/pages/login/login_page.dart';
 import 'package:lookapp/themes/app_theme.dart';
 import 'package:lookapp/main/wrappers/auth_wrapper.dart';
 

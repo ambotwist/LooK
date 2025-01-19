@@ -8,19 +8,17 @@ class AccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: RegularButton(
-          text: 'Sign Out',
-          onPressed: () async {
-            await supabase.auth.signOut();
-            if (context.mounted) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              );
-            }
-          },
-        ),
+    return Center(
+      child: RegularButton(
+        text: 'Sign Out',
+        onPressed: () async {
+          await supabase.auth.signOut();
+          if (context.mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            );
+          }
+        },
       ),
     );
   }
