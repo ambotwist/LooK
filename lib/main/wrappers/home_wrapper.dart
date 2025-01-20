@@ -53,9 +53,9 @@ class _HomeWrapperState extends State<HomeWrapper> {
           switch (_selectedIndex) {
             0 => 'Discover',
             1 => 'Search',
-            2 => 'Your Store',
+            2 => 'Store',
             3 => 'Wishlist',
-            4 => 'Settings',
+            4 => 'Account',
             _ => '',
           },
           style: const TextStyle(
