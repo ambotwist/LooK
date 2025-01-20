@@ -20,10 +20,15 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   Future<void> _checkAuth() async {
-    await Future.delayed(Duration.zero);
-    final session = supabase.auth.currentSession;
-    if (mounted) {
-      setState(() => _isLoading = false);
+    try {
+      final session = supabase.auth.currentSession;
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

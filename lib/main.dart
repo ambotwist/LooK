@@ -9,6 +9,10 @@ void main() async {
     url: 'https://vwkurdhiepsexgevmakb.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3a3VyZGhpZXBzZXhnZXZtYWtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxMTA3NzYsImV4cCI6MjA1MjY4Njc3Nn0.5_sUC64pbN8UeD2rZXSS1mh4Z_yDNGrLfCzcAu1p04o',
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+      autoRefreshToken: true,
+    ),
   );
   runApp(const MainApp());
 }
