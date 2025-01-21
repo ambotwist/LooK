@@ -1,8 +1,4 @@
-import 'package:lookapp/enums/cateogory.dart';
-import 'package:lookapp/enums/condition_enum.dart';
-import 'package:lookapp/enums/gender_enum.dart';
-import 'package:lookapp/enums/season_enum.dart';
-import 'package:lookapp/enums/size_enum.dart';
+import 'package:lookapp/enums/item_enums.dart';
 
 class Item {
   final String id;
