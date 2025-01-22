@@ -19,14 +19,71 @@ class _DiscoverCardState extends State<DiscoverCard> {
   int currentImageIndex = 0;
 
   void handleTapLeft() {
-    setState(() => currentImageIndex =
-        (currentImageIndex - 1 + widget.item.images.length) %
-            widget.item.images.length);
+    setState(() {
+      currentImageIndex = (currentImageIndex - 1 + widget.item.images.length) %
+          widget.item.images.length;
+    });
   }
 
   void handleTapRight() {
-    setState(() => currentImageIndex =
-        (currentImageIndex + 1) % widget.item.images.length);
+    setState(() {
+      currentImageIndex = (currentImageIndex + 1) % widget.item.images.length;
+    });
+  }
+
+  Column getInfoColumn(int index) {
+    switch (index) {
+      case 0:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CardIconTextRow(
+                icon: Icons.supervisor_account_rounded,
+                text: widget.item.gender.displayName),
+            CardIconTextRow(
+                icon: Icons.straighten_rounded,
+                text: widget.item.size.displayName),
+          ],
+        );
+      case 1:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CardIconTextRow(
+                icon: Icons.iron_rounded, text: widget.item.styles.join(', ')),
+            CardIconTextRow(
+                icon: Icons.balance_rounded,
+                text: widget.item.materials.join(', ')),
+          ],
+        );
+      case 2:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '"${widget.item.description}"',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        );
+      default:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CardIconTextRow(
+                icon: Icons.supervisor_account_rounded,
+                text: widget.item.gender.displayName),
+            CardIconTextRow(
+                icon: Icons.straighten_rounded,
+                text: widget.item.size.displayName),
+          ],
+        );
+    }
   }
 
   @override
@@ -109,53 +166,64 @@ class _DiscoverCardState extends State<DiscoverCard> {
           child: Padding(
             padding:
                 const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${widget.item.brand} ${widget.item.specificCategory.displayName}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w500,
-                          height: 1.2,
-                        ),
-                      ),
-                      CardIconTextRow(
-                          icon: Icons.store_rounded,
-                          text: widget.item.storeName),
-                      const SizedBox(
-                        height: 16.0,
-                      ),
-                      CardIconTextRow(
-                          icon: Icons.supervisor_account_rounded,
-                          text: widget.item.gender.displayName),
-                      const SizedBox(
-                        width: 16.0,
-                      ),
-                      CardIconTextRow(
-                          icon: Icons.straighten_rounded,
-                          text: widget.item.size.displayName),
-                    ],
-                  ),
-                ),
-                Column(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '\$${widget.item.price.toInt()}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w700,
-                        height: 1.2,
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${widget.item.brand} ${widget.item.specificCategory.displayName}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w500,
+                              height: 1.2,
+                            ),
+                          ),
+                          CardIconTextRow(
+                              icon: Icons.store_rounded,
+                              text: widget.item.storeName),
+                          const SizedBox(
+                            height: 16.0,
+                          ),
+                        ],
                       ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '\$${widget.item.price.toInt()}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                            height: 1.2,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 0.0,
+                        ),
+                        CardIconTextRow(
+                          icon: Icons.stars_rounded,
+                          text: widget.item.condition.displayName,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        )
+                      ],
                     ),
                   ],
                 ),
+                getInfoColumn(currentImageIndex),
               ],
             ),
           ),
