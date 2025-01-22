@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/main/pages/discover/dicover_card.dart';
-import 'package:lookapp/models/items.dart';
-import 'package:lookapp/enums/item_enums.dart';
+import 'package:lookapp/providers/item_provider.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
   const DiscoverPage({super.key});
@@ -26,25 +25,30 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage> {
 
   @override
   Widget build(BuildContext context) {
-    Item testItem = Item(
-        id: 'id',
-        name: 'Shoukya',
-        brand: 'Hermes',
-        storeId: 'Fripereli & Co.',
-        size: Size.m,
-        highCategory: HighLevelCategory.tops,
-        specificCategory: SpecificCategory.blouses,
-        styles: [],
-        condition: Condition.asNew,
-        price: 40,
-        images: []);
+    final items = ref.watch(itemsProvider);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 32.0),
       child: Stack(
         children: [
-          // Current Card
-          DiscoverCard(item: testItem)
+          items.when(
+            data: (itemsList) {
+              if (itemsList.isEmpty) {
+                return const Center(child: Text('No items found'));
+              }
+              return DiscoverCard(item: itemsList[currentIndex]);
+            },
+            error: (error, stackTrace) {
+              // print('Error loading items: $error');
+              // print('Stack trace: $stackTrace');
+              return Center(
+                child: Text('Error: $error'),
+              );
+            },
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
         ],
       ),
     );

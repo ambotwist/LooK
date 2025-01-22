@@ -4,7 +4,7 @@ class AppTheme {
   static ThemeData get light {
     return ThemeData(
       fontFamily: 'Montserrat',
-      primaryColor: const Color.fromARGB(255, 255, 0, 85),
+      primaryColor: const Color.fromARGB(255, 238, 54, 115),
       highlightColor: Colors.white,
       dividerColor: Colors.white,
       scaffoldBackgroundColor: Colors.grey.shade200,

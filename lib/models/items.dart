@@ -2,7 +2,7 @@ import 'package:lookapp/enums/item_enums.dart';
 
 class Item {
   final String id;
-  final String name;
+  final String storeName;
   final String brand;
   final String storeId;
   final Gender gender;
@@ -25,7 +25,7 @@ class Item {
 
   Item({
     required this.id,
-    required this.name,
+    required this.storeName,
     required this.brand,
     required this.storeId,
     this.gender = Gender.unisex,
@@ -51,45 +51,67 @@ class Item {
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
       id: json['id'] as String,
-      name: json['name'] as String,
-      brand: json['brand'] as String,
-      storeId: json['store_id'] as String,
+      storeName: json['store_name'] as String? ?? '',
+      brand: json['brand'] as String? ?? '',
+      storeId: json['store_id'] as String? ?? '',
       gender: Gender.values.firstWhere(
-        (e) => e.name == json['gender'] as String,
+        (e) =>
+            e.name.toLowerCase() ==
+            (json['gender'] as String? ?? 'unisex').toLowerCase(),
+        orElse: () => Gender.unisex,
       ),
       size: Size.values.firstWhere(
-        (e) => e.name == json['size'] as String,
+        (e) =>
+            e.name.toLowerCase() ==
+            (json['size'] as String? ?? 'm').toLowerCase(),
+        orElse: () => Size.m,
       ),
       highCategory: HighLevelCategory.values.firstWhere(
-        (e) => e.name == json['high_category'] as String,
+        (e) =>
+            e.name.toLowerCase() ==
+            (json['high_level_category'] as String? ?? 'tops').toLowerCase(),
+        orElse: () => HighLevelCategory.tops,
       ),
       specificCategory: SpecificCategory.values.firstWhere(
-        (e) => e.name == json['specific_category'] as String,
+        (e) =>
+            e.name.toLowerCase() ==
+            (json['specific_category'] as String? ?? 'tShirts').toLowerCase(),
+        orElse: () => SpecificCategory.tShirts,
       ),
-      color: json['color'] as String,
-      styles: List<String>.from(json['styles'] as List),
+      color: json['color']?[0] as String? ?? 'unspecified',
+      styles: List<String>.from(json['styles'] ?? []),
       season: Season.values.firstWhere(
-        (e) => e.name == json['season'] as String,
+        (e) =>
+            e.name.toLowerCase() ==
+            (json['season'] as String? ?? 'any').toLowerCase(),
+        orElse: () => Season.any,
       ),
-      materials: List<String>.from(json['materials'] as List),
+      materials: List<String>.from(json['materials'] ?? []),
       condition: Condition.values.firstWhere(
-        (e) => e.name == json['condition'] as String,
+        (e) {
+          final dbValue =
+              (json['condition'] as String? ?? 'good').toLowerCase();
+          return e == Condition.asNew
+              ? dbValue == 'new'
+              : e.name.toLowerCase() == dbValue;
+        },
+        orElse: () => Condition.good,
       ),
-      price: (json['price'] as num).toDouble(),
-      quantity: json['quantity'] as int,
-      description: json['description'] as String,
-      images: List<String>.from(json['images'] as List),
-      tags: List<String>.from(json['tags'] as List),
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      quantity: json['quantity'] as int? ?? 1,
+      description: json['description'] as String? ?? '',
+      images: List<String>.from(json['images'] ?? []),
+      tags: List<String>.from(json['tags'] ?? []),
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
-      isActive: json['is_active'] as bool,
+      isActive: json['is_active'] as bool? ?? true,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
+      'store_name': storeName,
       'brand': brand,
       'store_id': storeId,
       'gender': gender,

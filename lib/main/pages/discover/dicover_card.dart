@@ -18,12 +18,85 @@ class DiscoverCard extends StatefulWidget {
 class _DiscoverCardState extends State<DiscoverCard> {
   int currentImageIndex = 0;
 
+  void handleTapLeft() {
+    setState(() => currentImageIndex =
+        (currentImageIndex - 1 + widget.item.images.length) %
+            widget.item.images.length);
+  }
+
+  void handleTapRight() {
+    setState(() => currentImageIndex =
+        (currentImageIndex + 1) % widget.item.images.length);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         // Image section
+        Expanded(
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Item images
+                Image(
+                  image: NetworkImage(widget.item.images[currentImageIndex]),
+                  fit: BoxFit.cover,
+                ),
+                // Tap area
+                Positioned.fill(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: handleTapLeft,
+                          child: Container(color: Colors.transparent),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: handleTapRight,
+                          child: Container(color: Colors.transparent),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Image indicators
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 24.0),
+                    child: Row(
+                      children: List.generate(
+                        widget.item.images.length,
+                        (index) => Expanded(
+                          child: Container(
+                            height: 4,
+                            margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                            decoration: BoxDecoration(
+                              color: index == currentImageIndex
+                                  ? Colors.white
+                                  : Colors.black.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(1.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         // Info Section
         Container(
           height: 160,
@@ -53,14 +126,20 @@ class _DiscoverCardState extends State<DiscoverCard> {
                         ),
                       ),
                       CardIconTextRow(
-                          icon: Icons.store_rounded, text: widget.item.storeId),
+                          icon: Icons.store_rounded,
+                          text: widget.item.storeName),
                       const SizedBox(
-                        height: 32.0,
+                        height: 16.0,
                       ),
                       CardIconTextRow(
-                          icon: Icons.shape_line_rounded,
-                          text:
-                              '${widget.item.gender.name}/${widget.item.size.name}')
+                          icon: Icons.supervisor_account_rounded,
+                          text: widget.item.gender.displayName),
+                      const SizedBox(
+                        width: 16.0,
+                      ),
+                      CardIconTextRow(
+                          icon: Icons.straighten_rounded,
+                          text: widget.item.size.displayName),
                     ],
                   ),
                 ),
@@ -70,8 +149,9 @@ class _DiscoverCardState extends State<DiscoverCard> {
                       '\$${widget.item.price.toInt()}',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 32,
+                        fontSize: 30,
                         fontWeight: FontWeight.w700,
+                        height: 1.2,
                       ),
                     ),
                   ],
@@ -90,10 +170,16 @@ class CardIconTextRow extends StatelessWidget {
     super.key,
     required this.icon,
     required this.text,
+    this.style = const TextStyle(
+      color: Colors.white,
+      fontSize: 18,
+      fontWeight: FontWeight.w500,
+    ),
   });
 
   final IconData icon;
   final String text;
+  final TextStyle style;
 
   @override
   Widget build(BuildContext context) {
@@ -108,11 +194,7 @@ class CardIconTextRow extends StatelessWidget {
         ),
         Text(
           text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
+          style: style,
         ),
       ],
     );

@@ -16,13 +16,12 @@ enum Season {
 }
 
 enum Gender {
-  men,
-  women,
+  male,
+  female,
   unisex,
 }
 
 enum Condition {
-  bad,
   fair,
   good,
   excellent,
@@ -106,6 +105,42 @@ enum SpecificCategory {
   suits,
   dresses,
   tuxedos,
+}
+
+extension GenderName on Gender {
+  String get displayName {
+    switch (toString().split('.').last) {
+      case 'male':
+        return 'M';
+      case 'female':
+        return 'W';
+      case _:
+        return '-';
+    }
+  }
+}
+
+extension SizeName on Size {
+  String get displayName {
+    return toString().split('.').last.toUpperCase();
+  }
+}
+
+extension ConditionName on Condition {
+  String get displayName {
+    switch (toString().split('.').last) {
+      case 'fair':
+        return 'Fair';
+      case 'good':
+        return 'Good';
+      case 'excellent':
+        return 'Excellent';
+      case 'asNew':
+        return 'New';
+      case _:
+        return '-';
+    }
+  }
 }
 
 extension HighCategoryName on HighLevelCategory {
