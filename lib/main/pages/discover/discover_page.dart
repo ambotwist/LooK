@@ -188,6 +188,44 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                         DiscoverCard(
                                           item: items[currentIndex],
                                         ),
+                                        // White overlay with animation
+                                        AnimatedBuilder(
+                                          animation: slideController,
+                                          builder: (context, child) {
+                                            final overlayOffset =
+                                                slideOutTween != null
+                                                    ? Offset.lerp(
+                                                        dragOffset,
+                                                        slideOutTween,
+                                                        slideOutTween ==
+                                                                Offset.zero
+                                                            ? Curves.easeOutBack
+                                                                .transform(
+                                                                    slideController
+                                                                        .value)
+                                                            : Curves
+                                                                .easeOutQuart
+                                                                .transform(
+                                                                    slideController
+                                                                        .value),
+                                                      )!
+                                                    : dragOffset;
+
+                                            return Positioned.fill(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      Colors.white.withOpacity(
+                                                    (overlayOffset.dx.abs() /
+                                                            (size.width / 2))
+                                                        .clamp(0.0, 0.5),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        // Like overlay
                                         Positioned(
                                           top: 40,
                                           left: 30,
