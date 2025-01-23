@@ -5,10 +5,12 @@ import 'package:lookapp/models/items.dart';
 
 class DiscoverCard extends StatefulWidget {
   final Item item;
+  final int currentImageIndex;
 
   const DiscoverCard({
     super.key,
     required this.item,
+    this.currentImageIndex = 0,
   });
 
   @override
@@ -16,18 +18,20 @@ class DiscoverCard extends StatefulWidget {
 }
 
 class _DiscoverCardState extends State<DiscoverCard> {
-  int currentImageIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void handleTapLeft() {
     setState(() {
-      currentImageIndex = (currentImageIndex - 1 + widget.item.images.length) %
-          widget.item.images.length;
+      // Replace currentImageIndex with widget.currentImageIndex
     });
   }
 
   void handleTapRight() {
     setState(() {
-      currentImageIndex = (currentImageIndex + 1) % widget.item.images.length;
+      // Replace currentImageIndex with widget.currentImageIndex
     });
   }
 
@@ -101,7 +105,8 @@ class _DiscoverCardState extends State<DiscoverCard> {
               children: [
                 // Item images
                 Image(
-                  image: NetworkImage(widget.item.images[currentImageIndex]),
+                  image: NetworkImage(
+                      widget.item.images[widget.currentImageIndex]),
                   fit: BoxFit.cover,
                 ),
                 // Tap area
@@ -139,7 +144,7 @@ class _DiscoverCardState extends State<DiscoverCard> {
                             height: 4,
                             margin: const EdgeInsets.symmetric(horizontal: 4.0),
                             decoration: BoxDecoration(
-                              color: index == currentImageIndex
+                              color: index == widget.currentImageIndex
                                   ? Colors.white
                                   : Colors.black.withOpacity(0.4),
                               borderRadius: BorderRadius.circular(1.5),
@@ -156,7 +161,7 @@ class _DiscoverCardState extends State<DiscoverCard> {
         ),
         // Info Section
         Container(
-          height: 160,
+          height: 180,
           decoration: const BoxDecoration(
             color: Color.fromARGB(255, 255, 0, 85),
             borderRadius: BorderRadius.only(
@@ -223,7 +228,7 @@ class _DiscoverCardState extends State<DiscoverCard> {
                     ),
                   ],
                 ),
-                getInfoColumn(currentImageIndex),
+                getInfoColumn(widget.currentImageIndex),
               ],
             ),
           ),

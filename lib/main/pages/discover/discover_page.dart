@@ -21,6 +21,7 @@ class DiscoverPage extends ConsumerStatefulWidget {
 class _DiscoverPageState extends ConsumerState<DiscoverPage>
     with SingleTickerProviderStateMixin {
   int currentIndex = 0;
+  int currentImageIndex = 0;
   Offset dragOffset = Offset.zero;
   late AnimationController slideController;
   Offset? slideOutTween;
@@ -172,6 +173,30 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                               });
                             },
                             onPanEnd: (details) => _onPanEnd(details, size),
+                            onTapUp: (details) {
+                              final cardWidth = size.width;
+                              final tapX = details.localPosition.dx;
+                              if (tapX < cardWidth / 2) {
+                                // Left tap
+                                if (items[currentIndex].images.length > 1) {
+                                  setState(() {
+                                    currentImageIndex = (currentImageIndex -
+                                            1 +
+                                            items[currentIndex].images.length) %
+                                        items[currentIndex].images.length;
+                                  });
+                                }
+                              } else {
+                                // Right tap
+                                if (items[currentIndex].images.length > 1) {
+                                  setState(() {
+                                    currentImageIndex =
+                                        (currentImageIndex + 1) %
+                                            items[currentIndex].images.length;
+                                  });
+                                }
+                              }
+                            },
                             child: AnimatedBuilder(
                               animation: slideController,
                               builder: (context, child) {
@@ -196,6 +221,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                       children: [
                                         DiscoverCard(
                                           item: items[currentIndex],
+                                          currentImageIndex: currentImageIndex,
                                         ),
                                         // White overlay with animation
                                         AnimatedBuilder(

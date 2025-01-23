@@ -31,10 +31,13 @@ class ActionBar extends StatelessWidget {
     bool scaleOnDragLeft = false,
     bool scaleOnDragRight = false,
   }) {
+    final bool isVerticalDominant = dragOffset.dy.abs() > dragOffset.dx.abs();
+
     return AnimatedScale(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
-      scale: !showWhenDragging && isDragging
+      scale: (!showWhenDragging && isDragging) ||
+              (isMainAction && isVerticalDominant)
           ? 0.0
           : (scaleOnDragLeft && dragOffset.dx < 0) ||
                   (scaleOnDragRight && dragOffset.dx > 0)
