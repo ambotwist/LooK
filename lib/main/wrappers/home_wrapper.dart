@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/main/pages/account/account_page.dart';
 import 'package:lookapp/main/pages/discover/discover_page.dart';
+import 'package:lookapp/providers/discover_provider.dart';
+import 'package:lookapp/providers/interactions_provider.dart';
+import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
+import 'dart:math';
 
-class HomeWrapper extends StatefulWidget {
+class HomeWrapper extends ConsumerStatefulWidget {
   const HomeWrapper({super.key});
 
   @override
-  State<HomeWrapper> createState() => _HomeWrapperState();
+  ConsumerState<HomeWrapper> createState() => _HomeWrapperState();
 }
 
-class _HomeWrapperState extends State<HomeWrapper> {
+class _HomeWrapperState extends ConsumerState<HomeWrapper>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
   final double navbarHeight = 90.0;
   late final List<Widget> _pages;
   final OverlayPortalController overlayPortalController =
       OverlayPortalController();
+  late final AnimationController _shakeController;
 
   @override
   void initState() {
@@ -31,6 +38,75 @@ class _HomeWrapperState extends State<HomeWrapper> {
       const AccountPage(),
     ];
     overlayPortalController.show();
+
+    _shakeController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
+
+  void _handleRewind() async {
+    final discoverNotifier = ref.read(discoverProvider.notifier);
+    final discoverState = ref.read(discoverProvider);
+    final items = ref.read(itemsProvider).asData?.value;
+
+    print(
+        'Rewind triggered - Previous indices: ${discoverState.previousIndices}');
+
+    if (discoverState.previousIndices.isEmpty || items == null) {
+      print('No previous cards to rewind to');
+      _shakeController.forward().then((_) => _shakeController.reset());
+      return;
+    }
+
+    try {
+      // Get the previous item that we're rewinding to
+      final previousIndex = discoverState.previousIndices.last;
+      final previousItem = items[previousIndex];
+      print('Rewinding to item: ${previousItem.id} at index: $previousIndex');
+
+      // Rewind the card immediately for better UX
+      discoverNotifier.rewindCard();
+      print('Card rewound in UI');
+
+      // Show the action bar if it was hidden
+      overlayPortalController.show();
+
+      // Delete the interaction to reset the card's state
+      print('Attempting to delete interaction');
+      final success =
+          await ref.read(interactionsProvider.notifier).updateInteraction(
+                previousItem.id,
+                null, // Pass null to delete the interaction
+              );
+      print('Database update result: $success');
+
+      if (!success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to reset interaction'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e, stackTrace) {
+      print('Error during rewind: $e');
+      print('Stack trace: $stackTrace');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -72,12 +148,22 @@ class _HomeWrapperState extends State<HomeWrapper> {
           if (_selectedIndex == 0) ...[
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.fast_rewind_rounded,
-                  size: 32,
+              child: AnimatedBuilder(
+                animation: _shakeController,
+                builder: (context, child) {
+                  final shakeValue = sin(_shakeController.value * pi * 8);
+                  return Transform.rotate(
+                    angle: shakeValue * 0.1,
+                    child: child,
+                  );
+                },
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.fast_rewind_rounded,
+                    size: 32,
+                  ),
+                  onPressed: _handleRewind,
                 ),
-                onPressed: () {},
               ),
             )
           ],

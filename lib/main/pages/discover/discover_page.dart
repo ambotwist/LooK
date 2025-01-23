@@ -4,6 +4,7 @@ import 'package:lookapp/main/pages/discover/dicover_card.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/main/pages/discover/action_bar.dart';
+import 'package:lookapp/providers/discover_provider.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
   final OverlayPortalController overlayPortalController;
@@ -20,8 +21,6 @@ class DiscoverPage extends ConsumerStatefulWidget {
 
 class _DiscoverPageState extends ConsumerState<DiscoverPage>
     with SingleTickerProviderStateMixin {
-  int currentIndex = 0;
-  int currentImageIndex = 0;
   Offset dragOffset = Offset.zero;
   late AnimationController slideController;
   Offset? slideOutTween;
@@ -35,27 +34,8 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     )..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           if (slideOutTween != null && slideOutTween != Offset.zero) {
-            final currentItem = ref.read(itemsProvider).value![currentIndex];
-
-            // Determine the interaction status based on dominant direction
-            final status;
-            if (slideOutTween!.dx.abs() > slideOutTween!.dy.abs()) {
-              status = slideOutTween!.dx > 0
-                  ? InteractionStatus.like
-                  : InteractionStatus.dislike;
-            } else {
-              status = slideOutTween!.dy > 0
-                  ? InteractionStatus.badCondition
-                  : InteractionStatus.tooExpensive;
-            }
-
-            ref.read(interactionsProvider.notifier).updateInteraction(
-                  currentItem.id,
-                  status,
-                );
-
+            ref.read(discoverProvider.notifier).nextCard();
             setState(() {
-              currentIndex++;
               dragOffset = Offset.zero;
               slideOutTween = null;
             });
@@ -80,7 +60,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     final dx = dragOffset.dx;
     final dy = dragOffset.dy;
     if (dx.abs() > size.width * 0.4 || dy.abs() > size.height * 0.4) {
-      final currentItem = ref.read(itemsProvider).value![currentIndex];
+      final currentItem = ref
+          .read(itemsProvider)
+          .value![ref.read(discoverProvider).currentIndex];
 
       // Determine the interaction status based on dominant direction
       final InteractionStatus status;
@@ -92,6 +74,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
             : InteractionStatus.tooExpensive;
       }
 
+      // Update interaction here for swipe gestures
       final success =
           await ref.read(interactionsProvider.notifier).updateInteraction(
                 currentItem.id,
@@ -137,6 +120,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   @override
   Widget build(BuildContext context) {
     final items = ref.watch(itemsProvider);
+    final discoverState = ref.watch(discoverProvider);
     final size = MediaQuery.of(context).size;
     const bottomPadding = 36.0;
 
@@ -156,7 +140,8 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                     child: CircularProgressIndicator(),
                   ),
               data: (items) {
-                if (items.isEmpty || currentIndex >= items.length) {
+                if (items.isEmpty ||
+                    discoverState.currentIndex >= items.length) {
                   return const Center(
                     child: Text(
                       'No more items to discover',
@@ -171,9 +156,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                       child: Stack(
                         children: [
                           // Next card (if available)
-                          if (currentIndex + 1 < items.length)
+                          if (discoverState.currentIndex + 1 < items.length)
                             DiscoverCard(
-                              item: items[currentIndex + 1],
+                              item: items[discoverState.currentIndex + 1],
                             ),
 
                           // Current card (with gestures)
@@ -190,22 +175,38 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                               final tapX = details.localPosition.dx;
                               if (tapX < cardWidth / 2) {
                                 // Left tap
-                                if (items[currentIndex].images.length > 1) {
-                                  setState(() {
-                                    currentImageIndex = (currentImageIndex -
-                                            1 +
-                                            items[currentIndex].images.length) %
-                                        items[currentIndex].images.length;
-                                  });
+                                if (items[discoverState.currentIndex]
+                                        .images
+                                        .length >
+                                    1) {
+                                  ref
+                                      .read(discoverProvider.notifier)
+                                      .updateImageIndex(
+                                        (discoverState.currentImageIndex -
+                                                1 +
+                                                items[discoverState
+                                                        .currentIndex]
+                                                    .images
+                                                    .length) %
+                                            items[discoverState.currentIndex]
+                                                .images
+                                                .length,
+                                      );
                                 }
                               } else {
                                 // Right tap
-                                if (items[currentIndex].images.length > 1) {
-                                  setState(() {
-                                    currentImageIndex =
-                                        (currentImageIndex + 1) %
-                                            items[currentIndex].images.length;
-                                  });
+                                if (items[discoverState.currentIndex]
+                                        .images
+                                        .length >
+                                    1) {
+                                  ref
+                                      .read(discoverProvider.notifier)
+                                      .updateImageIndex(
+                                        (discoverState.currentImageIndex + 1) %
+                                            items[discoverState.currentIndex]
+                                                .images
+                                                .length,
+                                      );
                                 }
                               }
                             },
@@ -232,8 +233,10 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                     child: Stack(
                                       children: [
                                         DiscoverCard(
-                                          item: items[currentIndex],
-                                          currentImageIndex: currentImageIndex,
+                                          item:
+                                              items[discoverState.currentIndex],
+                                          currentImageIndex:
+                                              discoverState.currentImageIndex,
                                         ),
                                         // White overlay with animation
                                         AnimatedBuilder(
@@ -445,7 +448,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                   onDislike: () async {
                                     final currentItem = ref
                                         .read(itemsProvider)
-                                        .value![currentIndex];
+                                        .value![discoverState.currentIndex];
                                     final success = await ref
                                         .read(interactionsProvider.notifier)
                                         .updateInteraction(
@@ -464,7 +467,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                   onLike: () async {
                                     final currentItem = ref
                                         .read(itemsProvider)
-                                        .value![currentIndex];
+                                        .value![discoverState.currentIndex];
                                     final success = await ref
                                         .read(interactionsProvider.notifier)
                                         .updateInteraction(
