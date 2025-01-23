@@ -23,7 +23,7 @@ class NavbarIconButton extends StatelessWidget {
     return IconButton(
       icon: Icon(
         icon,
-        color: isSelected ? selectedColor : Colors.black,
+        color: isSelected ? selectedColor : Colors.grey.shade800,
         size: size,
       ),
       style: IconButton.styleFrom(
