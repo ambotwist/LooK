@@ -442,11 +442,43 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                   screenWidth: size.width,
                                   bigButtonHeight: bigButtonHeight,
                                   smallButtonHeight: smallButtonHeight,
-                                  onDislike: () {
-                                    // Handle dislike
+                                  onDislike: () async {
+                                    final currentItem = ref
+                                        .read(itemsProvider)
+                                        .value![currentIndex];
+                                    final success = await ref
+                                        .read(interactionsProvider.notifier)
+                                        .updateInteraction(
+                                          currentItem.id,
+                                          InteractionStatus.dislike,
+                                        );
+
+                                    if (success) {
+                                      setState(() {
+                                        slideOutTween =
+                                            Offset(-size.width * 1.5, 0);
+                                        slideController.forward();
+                                      });
+                                    }
                                   },
-                                  onLike: () {
-                                    // Handle like
+                                  onLike: () async {
+                                    final currentItem = ref
+                                        .read(itemsProvider)
+                                        .value![currentIndex];
+                                    final success = await ref
+                                        .read(interactionsProvider.notifier)
+                                        .updateInteraction(
+                                          currentItem.id,
+                                          InteractionStatus.like,
+                                        );
+
+                                    if (success) {
+                                      setState(() {
+                                        slideOutTween =
+                                            Offset(size.width * 1.5, 0);
+                                        slideController.forward();
+                                      });
+                                    }
                                   },
                                 ),
                               );
