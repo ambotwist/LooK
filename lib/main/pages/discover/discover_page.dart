@@ -125,7 +125,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   Widget build(BuildContext context) {
     final items = ref.watch(itemsProvider);
     final size = MediaQuery.of(context).size;
-    const bottomPadding = 42.0;
+    const bottomPadding = 36.0;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: bottomPadding),
@@ -225,8 +225,8 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                                 decoration: BoxDecoration(
                                                   color:
                                                       Colors.white.withOpacity(
-                                                    (overlayOffset.dx.abs() /
-                                                            (size.width / 2))
+                                                    (overlayOffset.distance /
+                                                            size.width)
                                                         .clamp(0.0, 0.5),
                                                   ),
                                                 ),
