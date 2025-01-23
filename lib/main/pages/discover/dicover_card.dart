@@ -6,11 +6,13 @@ import 'package:lookapp/models/items.dart';
 class DiscoverCard extends StatefulWidget {
   final Item item;
   final int currentImageIndex;
+  final bool isCurrentCard;
 
   const DiscoverCard({
     super.key,
     required this.item,
     this.currentImageIndex = 0,
+    this.isCurrentCard = false,
   });
 
   @override
@@ -18,9 +20,41 @@ class DiscoverCard extends StatefulWidget {
 }
 
 class _DiscoverCardState extends State<DiscoverCard> {
+  final List<ImageProvider> _preloadedImages = [];
+  bool _didPreloadImages = false;
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didPreloadImages) {
+      _preloadImages();
+      _didPreloadImages = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(DiscoverCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.item != widget.item ||
+        oldWidget.isCurrentCard != widget.isCurrentCard) {
+      _preloadImages();
+      _didPreloadImages = true;
+    }
+  }
+
+  void _preloadImages() {
+    _preloadedImages.clear();
+
+    // For non-current cards, only preload the first image
+    final imagesToLoad =
+        widget.isCurrentCard ? widget.item.images : [widget.item.images.first];
+
+    for (final imageUrl in imagesToLoad) {
+      final imageProvider = NetworkImage(imageUrl);
+      _preloadedImages.add(imageProvider);
+      // Trigger image preloading
+      precacheImage(imageProvider, context);
+    }
   }
 
   void handleTapLeft() {
@@ -112,8 +146,11 @@ class _DiscoverCardState extends State<DiscoverCard> {
                 children: [
                   // Item images
                   Image(
-                    image: NetworkImage(
-                        widget.item.images[widget.currentImageIndex]),
+                    image: _preloadedImages.isNotEmpty
+                        ? _preloadedImages[
+                            widget.currentImageIndex % _preloadedImages.length]
+                        : NetworkImage(
+                            widget.item.images[widget.currentImageIndex]),
                     fit: BoxFit.cover,
                   ),
                   // Tap area

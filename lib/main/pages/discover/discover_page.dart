@@ -201,6 +201,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                           if (discoverState.currentIndex + 1 < items.length)
                             DiscoverCard(
                               item: items[discoverState.currentIndex + 1],
+                              isCurrentCard: false,
                             ),
 
                           // Current card (with gestures)
@@ -274,6 +275,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                               items[discoverState.currentIndex],
                                           currentImageIndex:
                                               discoverState.currentImageIndex,
+                                          isCurrentCard: true,
                                         ),
                                         // White overlay with animation
                                         AnimatedBuilder(
