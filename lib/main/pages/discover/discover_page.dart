@@ -24,6 +24,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   Offset dragOffset = Offset.zero;
   late AnimationController slideController;
   Offset? slideOutTween;
+  bool isProcessingInteraction = false;
 
   @override
   void initState() {
@@ -38,11 +39,13 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
             setState(() {
               dragOffset = Offset.zero;
               slideOutTween = null;
+              isProcessingInteraction = false;
             });
           } else {
             setState(() {
               dragOffset = Offset.zero;
               slideOutTween = null;
+              isProcessingInteraction = false;
             });
           }
           slideController.reset();
@@ -56,13 +59,30 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     super.dispose();
   }
 
+  void _onPanUpdate(DragUpdateDetails details) {
+    if (slideController.isAnimating || isProcessingInteraction) return;
+    setState(() {
+      dragOffset += details.delta;
+    });
+  }
+
   void _onPanEnd(DragEndDetails details, Size size) async {
+    if (isProcessingInteraction) return;
+
     final dx = dragOffset.dx;
     final dy = dragOffset.dy;
     if (dx.abs() > size.width * 0.4 || dy.abs() > size.height * 0.4) {
-      final currentItem = ref
-          .read(itemsProvider)
-          .value![ref.read(discoverProvider).currentIndex];
+      final items = ref.read(itemsProvider).asData?.value;
+      final currentIndex = ref.read(discoverProvider).currentIndex;
+
+      if (items == null || currentIndex >= items.length) {
+        setState(() {
+          slideOutTween = Offset.zero;
+        });
+        return;
+      }
+
+      final currentItem = items[currentIndex];
 
       // Determine the interaction status based on dominant direction
       final InteractionStatus status;
@@ -74,40 +94,64 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
             : InteractionStatus.tooExpensive;
       }
 
-      // Update interaction here for swipe gestures
-      final success =
-          await ref.read(interactionsProvider.notifier).updateInteraction(
-                currentItem.id,
-                status,
-              );
+      setState(() {
+        isProcessingInteraction = true;
+      });
 
-      if (!success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to register ${status.name} interaction',
-              style: const TextStyle(color: Colors.white),
+      try {
+        // Update interaction here for swipe gestures
+        final success =
+            await ref.read(interactionsProvider.notifier).updateInteraction(
+                  currentItem.id,
+                  status,
+                );
+
+        if (!success && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Failed to register ${status.name} interaction',
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
             ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-
-        setState(() {
-          slideOutTween = Offset.zero;
-        });
-      } else {
-        setState(() {
-          slideOutTween = Offset(
-            dx.abs() > dy.abs()
-                ? (dx > 0 ? size.width * 1.5 : -size.width * 1.5)
-                : 0,
-            dy.abs() > dx.abs()
-                ? (dy > 0 ? size.height * 1.5 : -size.height * 1.5)
-                : 0,
           );
-        });
+
+          if (mounted) {
+            setState(() {
+              slideOutTween = Offset.zero;
+              isProcessingInteraction = false;
+            });
+          }
+        } else if (mounted) {
+          setState(() {
+            slideOutTween = Offset(
+              dx.abs() > dy.abs()
+                  ? (dx > 0 ? size.width * 1.5 : -size.width * 1.5)
+                  : 0,
+              dy.abs() > dx.abs()
+                  ? (dy > 0 ? size.height * 1.5 : -size.height * 1.5)
+                  : 0,
+            );
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          setState(() {
+            slideOutTween = Offset.zero;
+            isProcessingInteraction = false;
+          });
+        }
       }
     } else {
       setState(() {
@@ -130,8 +174,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
         children: [
           items.when(
               error: (error, stackTrace) {
-                // print('Error loading items: $error');
-                // print('Stack trace: $stackTrace');
                 return Center(
                   child: Text('Error: $error'),
                 );
@@ -163,12 +205,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
 
                           // Current card (with gestures)
                           GestureDetector(
-                            onPanUpdate: (details) {
-                              if (slideController.isAnimating) return;
-                              setState(() {
-                                dragOffset += details.delta;
-                              });
-                            },
+                            onPanUpdate: _onPanUpdate,
                             onPanEnd: (details) => _onPanEnd(details, size),
                             onTapUp: (details) {
                               final cardWidth = size.width;
@@ -426,67 +463,70 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                               },
                             ),
                           ),
-                          OverlayPortal(
-                            controller: widget.overlayPortalController,
-                            overlayChildBuilder: (BuildContext context) {
-                              final bool isDragging = dragOffset != Offset.zero;
-                              const double bigButtonHeight = 42;
-                              const double smallButtonHeight = 32;
+                          if (items.isNotEmpty &&
+                              discoverState.currentIndex < items.length)
+                            OverlayPortal(
+                              controller: widget.overlayPortalController,
+                              overlayChildBuilder: (BuildContext context) {
+                                final bool isDragging =
+                                    dragOffset != Offset.zero;
+                                const double bigButtonHeight = 42;
+                                const double smallButtonHeight = 32;
 
-                              return Positioned(
-                                left: 0,
-                                right: 0,
-                                bottom: widget.navbarHeight +
-                                    bottomPadding -
-                                    bigButtonHeight / 2,
-                                child: ActionBar(
-                                  isDragging: isDragging,
-                                  dragOffset: dragOffset,
-                                  screenWidth: size.width,
-                                  bigButtonHeight: bigButtonHeight,
-                                  smallButtonHeight: smallButtonHeight,
-                                  onDislike: () async {
-                                    final currentItem = ref
-                                        .read(itemsProvider)
-                                        .value![discoverState.currentIndex];
-                                    final success = await ref
-                                        .read(interactionsProvider.notifier)
-                                        .updateInteraction(
-                                          currentItem.id,
-                                          InteractionStatus.dislike,
-                                        );
+                                return Positioned(
+                                  left: 0,
+                                  right: 0,
+                                  bottom: widget.navbarHeight +
+                                      bottomPadding -
+                                      bigButtonHeight / 2,
+                                  child: ActionBar(
+                                    isDragging: isDragging,
+                                    dragOffset: dragOffset,
+                                    screenWidth: size.width,
+                                    bigButtonHeight: bigButtonHeight,
+                                    smallButtonHeight: smallButtonHeight,
+                                    onDislike: () async {
+                                      final currentItem = ref
+                                          .read(itemsProvider)
+                                          .value![discoverState.currentIndex];
+                                      final success = await ref
+                                          .read(interactionsProvider.notifier)
+                                          .updateInteraction(
+                                            currentItem.id,
+                                            InteractionStatus.dislike,
+                                          );
 
-                                    if (success) {
-                                      setState(() {
-                                        slideOutTween =
-                                            Offset(-size.width * 1.5, 0);
-                                        slideController.forward();
-                                      });
-                                    }
-                                  },
-                                  onLike: () async {
-                                    final currentItem = ref
-                                        .read(itemsProvider)
-                                        .value![discoverState.currentIndex];
-                                    final success = await ref
-                                        .read(interactionsProvider.notifier)
-                                        .updateInteraction(
-                                          currentItem.id,
-                                          InteractionStatus.like,
-                                        );
+                                      if (success) {
+                                        setState(() {
+                                          slideOutTween =
+                                              Offset(-size.width * 1.5, 0);
+                                          slideController.forward();
+                                        });
+                                      }
+                                    },
+                                    onLike: () async {
+                                      final currentItem = ref
+                                          .read(itemsProvider)
+                                          .value![discoverState.currentIndex];
+                                      final success = await ref
+                                          .read(interactionsProvider.notifier)
+                                          .updateInteraction(
+                                            currentItem.id,
+                                            InteractionStatus.like,
+                                          );
 
-                                    if (success) {
-                                      setState(() {
-                                        slideOutTween =
-                                            Offset(size.width * 1.5, 0);
-                                        slideController.forward();
-                                      });
-                                    }
-                                  },
-                                ),
-                              );
-                            },
-                          ),
+                                      if (success) {
+                                        setState(() {
+                                          slideOutTween =
+                                              Offset(size.width * 1.5, 0);
+                                          slideController.forward();
+                                        });
+                                      }
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
                         ],
                       ),
                     ),
