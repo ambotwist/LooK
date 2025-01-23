@@ -27,6 +27,7 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
+      print('Error updating interaction: $e');
       state = AsyncValue.error(e, st);
       return false;
     }

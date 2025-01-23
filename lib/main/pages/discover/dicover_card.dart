@@ -185,7 +185,7 @@ class _DiscoverCardState extends State<DiscoverCard> {
                             '${widget.item.brand} ${widget.item.specificCategory.displayName}',
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 30,
+                              fontSize: 26,
                               fontWeight: FontWeight.w500,
                               height: 1.2,
                             ),
@@ -207,7 +207,7 @@ class _DiscoverCardState extends State<DiscoverCard> {
                           '\$${widget.item.price.toInt()}',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 30,
+                            fontSize: 32 ,
                             fontWeight: FontWeight.w700,
                             height: 1.2,
                           ),

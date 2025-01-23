@@ -37,9 +37,17 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
           if (slideOutTween != null && slideOutTween != Offset.zero) {
             final currentItem = ref.read(itemsProvider).value![currentIndex];
 
-            final status = slideOutTween!.dx > 0
-                ? InteractionStatus.like
-                : InteractionStatus.dislike;
+            // Determine the interaction status based on dominant direction
+            final status;
+            if (slideOutTween!.dx.abs() > slideOutTween!.dy.abs()) {
+              status = slideOutTween!.dx > 0
+                  ? InteractionStatus.like
+                  : InteractionStatus.dislike;
+            } else {
+              status = slideOutTween!.dy > 0
+                  ? InteractionStatus.badCondition
+                  : InteractionStatus.tooExpensive;
+            }
 
             ref.read(interactionsProvider.notifier).updateInteraction(
                   currentItem.id,
@@ -109,8 +117,12 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
       } else {
         setState(() {
           slideOutTween = Offset(
-            dx > 0 ? size.width * 1.5 : -size.width * 1.5,
-            dy > 0 ? size.height * 1.5 : -size.height * 1.5,
+            dx.abs() > dy.abs()
+                ? (dx > 0 ? size.width * 1.5 : -size.width * 1.5)
+                : 0,
+            dy.abs() > dx.abs()
+                ? (dy > 0 ? size.height * 1.5 : -size.height * 1.5)
+                : 0,
           );
         });
       }
