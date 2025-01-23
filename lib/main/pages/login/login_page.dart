@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
               Text(
                 'LooK',
                 style: TextStyle(
-                  color: Theme.of(context).highlightColor,
+                  color: Theme.of(context).colorScheme.secondary,
                   fontSize: 84,
                   fontWeight: FontWeight.w800,
                 ),
