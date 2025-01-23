@@ -5,6 +5,7 @@ import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/main/pages/discover/action_bar.dart';
 import 'package:lookapp/providers/discover_provider.dart';
+import 'package:lookapp/providers/overlay_provider.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
   final OverlayPortalController overlayPortalController;
@@ -41,12 +42,16 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
               slideOutTween = null;
               isProcessingInteraction = false;
             });
+            // Show the overlay after animation completes
+            ref.read(overlayProvider).show();
           } else {
             setState(() {
               dragOffset = Offset.zero;
               slideOutTween = null;
               isProcessingInteraction = false;
             });
+            // Show the overlay after animation completes
+            ref.read(overlayProvider).show();
           }
           slideController.reset();
         }
@@ -64,6 +69,8 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     setState(() {
       dragOffset += details.delta;
     });
+    // Show overlay during pan
+    ref.read(overlayProvider).show();
   }
 
   void _onPanEnd(DragEndDetails details, Size size) async {

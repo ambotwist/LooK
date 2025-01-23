@@ -202,7 +202,11 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
       bottomNavigationBar: Container(
         color: Colors.white,
         height: navbarHeight,
-        padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+          left: 16,
+          right: 16,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -214,33 +218,46 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
                 setState(() => _selectedIndex = 0);
                 ref.read(overlayProvider).show();
               },
+              overlayController: overlayController,
             ),
             NavbarIconButton(
               icon: Icons.search_rounded,
               isSelected: _selectedIndex == 1,
               selectedColor: theme.primaryColor,
-              onPressed: () => setState(() => _selectedIndex = 1),
+              onPressed: () {
+                setState(() => _selectedIndex = 1);
+                ref.read(overlayProvider).hide();
+              },
               overlayController: overlayController,
             ),
             NavbarIconButton(
               icon: Icons.store_rounded,
               isSelected: _selectedIndex == 2,
               selectedColor: theme.primaryColor,
-              onPressed: () => setState(() => _selectedIndex = 2),
+              onPressed: () {
+                setState(() => _selectedIndex = 2);
+                ref.read(overlayProvider).hide();
+              },
               overlayController: overlayController,
             ),
             NavbarIconButton(
               icon: Icons.favorite_rounded,
               isSelected: _selectedIndex == 3,
               selectedColor: theme.primaryColor,
-              onPressed: () => setState(() => _selectedIndex = 3),
+              onPressed: () {
+                setState(() => _selectedIndex = 3);
+                ref.read(overlayProvider).hide();
+              },
               overlayController: overlayController,
             ),
             NavbarIconButton(
               icon: Icons.account_circle_rounded,
               isSelected: _selectedIndex == 4,
               selectedColor: theme.primaryColor,
-              onPressed: () => setState(() => _selectedIndex = 4),
+              onPressed: () {
+                setState(() => _selectedIndex = 4);
+                ref.read(overlayProvider).hide();
+              },
               overlayController: overlayController,
             ),
           ],

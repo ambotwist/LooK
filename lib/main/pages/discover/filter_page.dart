@@ -44,6 +44,12 @@ class _FilterPageState extends ConsumerState<FilterPage> {
           icon: const Icon(Icons.close),
           onPressed: () {
             filterNotifier.restoreState();
+            // Show the action bar overlay
+            ref.read(overlayProvider).show();
+            // Add a small delay to ensure the overlay is shown after navigation
+            Future.delayed(const Duration(milliseconds: 100), () {
+              ref.read(overlayProvider).show();
+            });
             Navigator.pop(context);
           },
         ),
@@ -343,6 +349,10 @@ class _FilterPageState extends ConsumerState<FilterPage> {
               );
               // Show the action bar overlay
               ref.read(overlayProvider).show();
+              // Add a small delay to ensure the overlay is shown after navigation
+              Future.delayed(const Duration(milliseconds: 100), () {
+                ref.read(overlayProvider).show();
+              });
               Navigator.pop(context);
             },
             child: const Text(
