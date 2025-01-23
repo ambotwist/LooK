@@ -98,65 +98,73 @@ class _DiscoverCardState extends State<DiscoverCard> {
       children: [
         // Image section
         Expanded(
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                // Item images
-                Image(
-                  image: NetworkImage(
-                      widget.item.images[widget.currentImageIndex]),
-                  fit: BoxFit.cover,
-                ),
-                // Tap area
-                Positioned.fill(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: handleTapLeft,
-                          child: Container(color: Colors.transparent),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: handleTapRight,
-                          child: Container(color: Colors.transparent),
-                        ),
-                      ),
-                    ],
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+            ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Item images
+                  Image(
+                    image: NetworkImage(
+                        widget.item.images[widget.currentImageIndex]),
+                    fit: BoxFit.cover,
                   ),
-                ),
-                // Image indicators
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 24.0),
+                  // Tap area
+                  Positioned.fill(
                     child: Row(
-                      children: List.generate(
-                        widget.item.images.length,
-                        (index) => Expanded(
-                          child: Container(
-                            height: 4,
-                            margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                            decoration: BoxDecoration(
-                              color: index == widget.currentImageIndex
-                                  ? Colors.white
-                                  : Colors.black.withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(1.5),
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: handleTapLeft,
+                            child: Container(color: Colors.transparent),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: handleTapRight,
+                            child: Container(color: Colors.transparent),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Image indicators
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 24.0),
+                      child: Row(
+                        children: List.generate(
+                          widget.item.images.length,
+                          (index) => Expanded(
+                            child: Container(
+                              height: 4,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              decoration: BoxDecoration(
+                                color: index == widget.currentImageIndex
+                                    ? Colors.white
+                                    : Colors.black.withOpacity(0.4),
+                                borderRadius: BorderRadius.circular(1.5),
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
