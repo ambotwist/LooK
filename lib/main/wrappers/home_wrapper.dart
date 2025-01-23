@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/main/pages/account/account_page.dart';
 import 'package:lookapp/main/pages/discover/discover_page.dart';
+import 'package:lookapp/main/pages/discover/filter_page.dart';
 import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
@@ -171,7 +172,14 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
                 Icons.filter_list_rounded,
                 size: 30,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FilterPage(),
+                  ),
+                );
+              },
             ),
           ],
           Padding(
