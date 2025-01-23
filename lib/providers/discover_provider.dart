@@ -26,6 +26,18 @@ class DiscoverNotifier extends StateNotifier<DiscoverState> {
     state = state.copyWith(currentImageIndex: index);
   }
 
+  void updateState({
+    int? currentIndex,
+    int? currentImageIndex,
+    List<int>? previousIndices,
+  }) {
+    state = state.copyWith(
+      currentIndex: currentIndex,
+      currentImageIndex: currentImageIndex,
+      previousIndices: previousIndices,
+    );
+  }
+
   void resetState() {
     state = DiscoverState();
   }

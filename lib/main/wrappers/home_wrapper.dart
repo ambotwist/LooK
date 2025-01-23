@@ -6,6 +6,7 @@ import 'package:lookapp/main/pages/discover/filter_page.dart';
 import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
+import 'package:lookapp/providers/overlay_provider.dart';
 import 'package:lookapp/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
 import 'dart:math';
@@ -22,8 +23,6 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
   int _selectedIndex = 0;
   final double navbarHeight = 90.0;
   late final List<Widget> _pages;
-  final OverlayPortalController overlayPortalController =
-      OverlayPortalController();
   late final AnimationController _shakeController;
 
   @override
@@ -31,14 +30,14 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
     super.initState();
     _pages = [
       DiscoverPage(
-          overlayPortalController: overlayPortalController,
+          overlayPortalController: ref.read(overlayProvider),
           navbarHeight: navbarHeight),
       const TestPage(),
       const TestPage(),
       const TestPage(),
       const AccountPage(),
     ];
-    overlayPortalController.show();
+    ref.read(overlayProvider).show();
 
     _shakeController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -77,7 +76,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
       print('Card rewound in UI');
 
       // Show the action bar if it was hidden
-      overlayPortalController.show();
+      ref.read(overlayProvider).show();
 
       // Delete the interaction to reset the card's state
       print('Attempting to delete interaction');
@@ -113,6 +112,8 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final overlayController = ref.watch(overlayProvider);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -211,7 +212,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
               selectedColor: theme.primaryColor,
               onPressed: () {
                 setState(() => _selectedIndex = 0);
-                overlayPortalController.show();
+                ref.read(overlayProvider).show();
               },
             ),
             NavbarIconButton(
@@ -219,28 +220,28 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
               isSelected: _selectedIndex == 1,
               selectedColor: theme.primaryColor,
               onPressed: () => setState(() => _selectedIndex = 1),
-              overlayController: overlayPortalController,
+              overlayController: overlayController,
             ),
             NavbarIconButton(
               icon: Icons.store_rounded,
               isSelected: _selectedIndex == 2,
               selectedColor: theme.primaryColor,
               onPressed: () => setState(() => _selectedIndex = 2),
-              overlayController: overlayPortalController,
+              overlayController: overlayController,
             ),
             NavbarIconButton(
               icon: Icons.favorite_rounded,
               isSelected: _selectedIndex == 3,
               selectedColor: theme.primaryColor,
               onPressed: () => setState(() => _selectedIndex = 3),
-              overlayController: overlayPortalController,
+              overlayController: overlayController,
             ),
             NavbarIconButton(
               icon: Icons.account_circle_rounded,
               isSelected: _selectedIndex == 4,
               selectedColor: theme.primaryColor,
               onPressed: () => setState(() => _selectedIndex = 4),
-              overlayController: overlayPortalController,
+              overlayController: overlayController,
             ),
           ],
         ),

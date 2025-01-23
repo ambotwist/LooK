@@ -4,6 +4,8 @@ import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/providers/filter_provider.dart';
 import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
+import 'package:lookapp/providers/overlay_provider.dart';
+import 'package:lookapp/main/wrappers/home_wrapper.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -292,9 +294,15 @@ class FilterPage extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             onPressed: () {
-              // Refresh items and reset discover state
+              // Refresh items and reset discover index
               ref.invalidate(itemsProvider);
-              ref.read(discoverProvider.notifier).resetState();
+              ref.read(discoverProvider.notifier).updateState(
+                currentIndex: 0,
+                currentImageIndex: 0,
+                previousIndices: [],
+              );
+              // Show the action bar overlay
+              ref.read(overlayProvider).show();
               Navigator.pop(context);
             },
             child: const Text(
