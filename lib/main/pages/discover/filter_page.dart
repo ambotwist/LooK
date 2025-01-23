@@ -43,25 +43,6 @@ class FilterPage extends ConsumerWidget {
       ),
       body: ListView(
         children: [
-          // Gender Section
-          _buildSection(
-            title: 'Gender',
-            child: Wrap(
-              spacing: 8,
-              children: Gender.values.map((gender) {
-                return FilterChip(
-                  label: Text(gender.displayName),
-                  selected: filterState.gender == gender,
-                  onSelected: (selected) {
-                    filterNotifier.updateFilters(
-                      gender: selected ? gender : Gender.unisex,
-                    );
-                  },
-                );
-              }).toList(),
-            ),
-          ),
-
           // Season Section
           _buildSection(
             title: 'Season',

@@ -2,11 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/models/items.dart';
 import 'package:lookapp/main.dart';
 import 'package:lookapp/providers/filter_provider.dart';
+import 'package:lookapp/providers/user_preferences_provider.dart';
 import 'package:lookapp/enums/item_enums.dart';
 
 final itemsProvider = FutureProvider<List<Item>>((ref) async {
   try {
     final filterState = ref.watch(filterProvider);
+    final userPrefs = ref.watch(userPreferencesProvider);
 
     // First, get all interactions for the current user
     final userId = supabase.auth.currentUser!.id;
@@ -25,15 +27,14 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
 
     final items = (response as List)
         .map((item) => Item.fromJson(Map<String, dynamic>.from(item)))
-        .where((item) =>
-            !interactedItemIds.contains(item.id)) // Exclude interacted items
+        .where((item) => !interactedItemIds.contains(item.id))
         .toList();
 
     // Apply filters
     return items.where((item) {
-      // Gender filter
-      if (filterState.gender != Gender.unisex &&
-          item.gender != filterState.gender) {
+      // Gender filter from user preferences
+      if (userPrefs.gender != Gender.unisex &&
+          item.gender != userPrefs.gender) {
         return false;
       }
 
