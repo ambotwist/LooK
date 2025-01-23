@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/enums/item_enums.dart';
+import 'package:lookapp/providers/filter_provider.dart';
+import 'package:lookapp/providers/discover_provider.dart';
+import 'package:lookapp/providers/item_provider.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -8,27 +11,14 @@ extension StringExtension on String {
   }
 }
 
-class FilterPage extends ConsumerStatefulWidget {
+class FilterPage extends ConsumerWidget {
   const FilterPage({super.key});
 
   @override
-  ConsumerState<FilterPage> createState() => _FilterPageState();
-}
-
-class _FilterPageState extends ConsumerState<FilterPage> {
-  // Filter state
-  Gender selectedGender = Gender.unisex; // Default to '-'
-  Season selectedSeason = Season.any; // Default to 'Any'
-  Size? selectedSize;
-  List<HighLevelCategory> selectedHighCategories = [];
-  List<SpecificCategory> selectedSpecificCategories = [];
-  List<String> selectedColors = [];
-  RangeValues priceRange = const RangeValues(0, 1000);
-  List<String> selectedStyles = [];
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final filterNotifier = ref.read(filterProvider.notifier);
+    final filterState = ref.watch(filterProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,16 +30,7 @@ class _FilterPageState extends ConsumerState<FilterPage> {
         actions: [
           TextButton(
             onPressed: () {
-              setState(() {
-                selectedGender = Gender.unisex; // Reset to default '-'
-                selectedSeason = Season.any; // Reset to default 'Any'
-                selectedSize = null;
-                selectedHighCategories = [];
-                selectedSpecificCategories = [];
-                selectedColors = [];
-                priceRange = const RangeValues(0, 1000);
-                selectedStyles = [];
-              });
+              filterNotifier.resetFilters();
             },
             style: TextButton.styleFrom(
               foregroundColor: theme.primaryColor,
@@ -68,11 +49,11 @@ class _FilterPageState extends ConsumerState<FilterPage> {
               children: Gender.values.map((gender) {
                 return FilterChip(
                   label: Text(gender.displayName),
-                  selected: selectedGender == gender,
+                  selected: filterState.gender == gender,
                   onSelected: (selected) {
-                    setState(() {
-                      selectedGender = selected ? gender : Gender.unisex;
-                    });
+                    filterNotifier.updateFilters(
+                      gender: selected ? gender : Gender.unisex,
+                    );
                   },
                 );
               }).toList(),
@@ -87,11 +68,11 @@ class _FilterPageState extends ConsumerState<FilterPage> {
               children: Season.values.map((season) {
                 return FilterChip(
                   label: Text(season.name.capitalize()),
-                  selected: selectedSeason == season,
+                  selected: filterState.season == season,
                   onSelected: (selected) {
-                    setState(() {
-                      selectedSeason = selected ? season : Season.any;
-                    });
+                    filterNotifier.updateFilters(
+                      season: selected ? season : Season.any,
+                    );
                   },
                 );
               }).toList(),
@@ -106,11 +87,11 @@ class _FilterPageState extends ConsumerState<FilterPage> {
               children: Size.values.map((size) {
                 return FilterChip(
                   label: Text(size.displayName),
-                  selected: selectedSize == size,
+                  selected: filterState.size == size,
                   onSelected: (selected) {
-                    setState(() {
-                      selectedSize = selected ? size : null;
-                    });
+                    filterNotifier.updateFilters(
+                      size: selected ? size : null,
+                    );
                   },
                 );
               }).toList(),
@@ -138,23 +119,31 @@ class _FilterPageState extends ConsumerState<FilterPage> {
                   children: HighLevelCategory.values.map((category) {
                     return FilterChip(
                       label: Text(category.displayName),
-                      selected: selectedHighCategories.contains(category),
+                      selected: filterState.highCategories.contains(category),
                       onSelected: (selected) {
-                        setState(() {
-                          if (selected) {
-                            selectedHighCategories.add(category);
-                          } else {
-                            selectedHighCategories.remove(category);
-                            // Remove associated specific categories
-                            selectedSpecificCategories.removeWhere((specific) =>
-                                _getCategoryMapping(specific) == category);
-                          }
-                        });
+                        final updatedCategories = List<HighLevelCategory>.from(
+                            filterState.highCategories);
+                        if (selected) {
+                          updatedCategories.add(category);
+                        } else {
+                          updatedCategories.remove(category);
+                          // Remove associated specific categories
+                          final updatedSpecific = filterState.specificCategories
+                              .where((specific) =>
+                                  _getCategoryMapping(specific) != category)
+                              .toList();
+                          filterNotifier.updateFilters(
+                            specificCategories: updatedSpecific,
+                          );
+                        }
+                        filterNotifier.updateFilters(
+                          highCategories: updatedCategories,
+                        );
                       },
                     );
                   }).toList(),
                 ),
-                if (selectedHighCategories.isNotEmpty) ...[
+                if (filterState.highCategories.isNotEmpty) ...[
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.0),
                     child: Divider(),
@@ -172,20 +161,24 @@ class _FilterPageState extends ConsumerState<FilterPage> {
                   Wrap(
                     spacing: 8,
                     children: SpecificCategory.values
-                        .where((category) => selectedHighCategories
+                        .where((category) => filterState.highCategories
                             .contains(_getCategoryMapping(category)))
                         .map((category) {
                       return FilterChip(
                         label: Text(category.displayName),
-                        selected: selectedSpecificCategories.contains(category),
+                        selected:
+                            filterState.specificCategories.contains(category),
                         onSelected: (selected) {
-                          setState(() {
-                            if (selected) {
-                              selectedSpecificCategories.add(category);
-                            } else {
-                              selectedSpecificCategories.remove(category);
-                            }
-                          });
+                          final updatedCategories = List<SpecificCategory>.from(
+                              filterState.specificCategories);
+                          if (selected) {
+                            updatedCategories.add(category);
+                          } else {
+                            updatedCategories.remove(category);
+                          }
+                          filterNotifier.updateFilters(
+                            specificCategories: updatedCategories,
+                          );
                         },
                       );
                     }).toList(),
@@ -216,15 +209,15 @@ class _FilterPageState extends ConsumerState<FilterPage> {
               ].map((color) {
                 return FilterChip(
                   label: Text(color),
-                  selected: selectedColors.contains(color),
+                  selected: filterState.colors.contains(color),
                   onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        selectedColors.add(color);
-                      } else {
-                        selectedColors.remove(color);
-                      }
-                    });
+                    final updatedColors = List<String>.from(filterState.colors);
+                    if (selected) {
+                      updatedColors.add(color);
+                    } else {
+                      updatedColors.remove(color);
+                    }
+                    filterNotifier.updateFilters(colors: updatedColors);
                   },
                 );
               }).toList(),
@@ -234,22 +227,20 @@ class _FilterPageState extends ConsumerState<FilterPage> {
           // Price Range Section
           _buildSection(
             title:
-                'Price Range (\$${priceRange.start.round()} - \$${priceRange.end.round()})',
+                'Price Range (\$${filterState.priceRange.start.round()} - \$${filterState.priceRange.end.round()})',
             child: RangeSlider(
-              values: priceRange,
+              values: filterState.priceRange,
               min: 0,
               max: 1000,
               divisions: 20,
               activeColor: theme.primaryColor,
               inactiveColor: theme.primaryColor.withOpacity(0.2),
               labels: RangeLabels(
-                '\$${priceRange.start.round()}',
-                '\$${priceRange.end.round()}',
+                '\$${filterState.priceRange.start.round()}',
+                '\$${filterState.priceRange.end.round()}',
               ),
               onChanged: (values) {
-                setState(() {
-                  priceRange = values;
-                });
+                filterNotifier.updateFilters(priceRange: values);
               },
             ),
           ),
@@ -275,15 +266,15 @@ class _FilterPageState extends ConsumerState<FilterPage> {
               ].map((style) {
                 return FilterChip(
                   label: Text(style),
-                  selected: selectedStyles.contains(style),
+                  selected: filterState.styles.contains(style),
                   onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        selectedStyles.add(style);
-                      } else {
-                        selectedStyles.remove(style);
-                      }
-                    });
+                    final updatedStyles = List<String>.from(filterState.styles);
+                    if (selected) {
+                      updatedStyles.add(style);
+                    } else {
+                      updatedStyles.remove(style);
+                    }
+                    filterNotifier.updateFilters(styles: updatedStyles);
                   },
                 );
               }).toList(),
@@ -301,7 +292,9 @@ class _FilterPageState extends ConsumerState<FilterPage> {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             onPressed: () {
-              // TODO: Apply filters
+              // Refresh items and reset discover state
+              ref.invalidate(itemsProvider);
+              ref.read(discoverProvider.notifier).resetState();
               Navigator.pop(context);
             },
             child: const Text(
@@ -310,6 +303,26 @@ class _FilterPageState extends ConsumerState<FilterPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSection({required String title, required Widget child}) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          child,
+        ],
       ),
     );
   }
@@ -371,25 +384,5 @@ class _FilterPageState extends ConsumerState<FilterPage> {
       case SpecificCategory.tuxedos:
         return HighLevelCategory.formalWear;
     }
-  }
-
-  Widget _buildSection({required String title, required Widget child}) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 12),
-          child,
-        ],
-      ),
-    );
   }
 }
