@@ -22,7 +22,9 @@ class _HomeWrapperState extends State<HomeWrapper> {
   void initState() {
     super.initState();
     _pages = [
-      DiscoverPage(overlayPortalController: overlayPortalController, navbarHeight: navbarHeight),
+      DiscoverPage(
+          overlayPortalController: overlayPortalController,
+          navbarHeight: navbarHeight),
       const TestPage(),
       const TestPage(),
       const TestPage(),
@@ -67,8 +69,20 @@ class _HomeWrapperState extends State<HomeWrapper> {
           ),
         ),
         actions: [
+          if (_selectedIndex == 0) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.fast_rewind_rounded,
+                  size: 32,
+                ),
+                onPressed: () {},
+              ),
+            )
+          ],
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(
               icon: const Icon(
                 Icons.shopping_basket_rounded,

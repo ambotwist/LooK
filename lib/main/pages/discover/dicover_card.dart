@@ -92,6 +92,7 @@ class _DiscoverCardState extends State<DiscoverCard> {
 
   @override
   Widget build(BuildContext context) {
+    const infoSectionHeight = 180.0;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -161,7 +162,7 @@ class _DiscoverCardState extends State<DiscoverCard> {
         ),
         // Info Section
         Container(
-          height: 180,
+          height: infoSectionHeight,
           decoration: const BoxDecoration(
             color: Color.fromARGB(255, 255, 0, 85),
             borderRadius: BorderRadius.only(
@@ -177,26 +178,32 @@ class _DiscoverCardState extends State<DiscoverCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${widget.item.brand} ${widget.item.specificCategory.displayName}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontWeight: FontWeight.w500,
-                              height: 1.2,
+                      child: SizedBox(
+                        height: infoSectionHeight / 2.33,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                '${widget.item.brand} ${widget.item.specificCategory.displayName}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.2,
+                                ),
+                              ),
                             ),
-                          ),
-                          CardIconTextRow(
-                              icon: Icons.store_rounded,
-                              text: widget.item.storeName),
-                          const SizedBox(
-                            height: 16.0,
-                          ),
-                        ],
+                            CardIconTextRow(
+                                icon: Icons.store_rounded,
+                                text: widget.item.storeName),
+                            const SizedBox(
+                              height: 16.0,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     Column(
@@ -207,7 +214,7 @@ class _DiscoverCardState extends State<DiscoverCard> {
                           '\$${widget.item.price.toInt()}',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 32 ,
+                            fontSize: 32,
                             fontWeight: FontWeight.w700,
                             height: 1.2,
                           ),
