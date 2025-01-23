@@ -133,7 +133,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
         ),
         title: Text(
           switch (_selectedIndex) {
-            0 => 'Discover',
+            0 => '',
             1 => 'Search',
             2 => 'Store',
             3 => 'Wishlist',
@@ -165,7 +165,14 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
                   onPressed: _handleRewind,
                 ),
               ),
-            )
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.filter_list_rounded,
+                size: 30,
+              ),
+              onPressed: () {},
+            ),
           ],
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
