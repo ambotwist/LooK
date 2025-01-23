@@ -3,9 +3,8 @@ import 'package:lookapp/enums/item_enums.dart';
 import 'package:flutter/material.dart';
 
 class FilterState {
-  final Gender gender;
   final Season season;
-  final Size? size;
+  final List<Size> sizes;
   final List<HighLevelCategory> highCategories;
   final List<SpecificCategory> specificCategories;
   final List<String> colors;
@@ -13,9 +12,8 @@ class FilterState {
   final List<String> styles;
 
   FilterState({
-    this.gender = Gender.unisex,
     this.season = Season.any,
-    this.size,
+    this.sizes = const [],
     this.highCategories = const [],
     this.specificCategories = const [],
     this.colors = const [],
@@ -24,9 +22,8 @@ class FilterState {
   });
 
   FilterState copyWith({
-    Gender? gender,
     Season? season,
-    Size? size,
+    List<Size>? sizes,
     List<HighLevelCategory>? highCategories,
     List<SpecificCategory>? specificCategories,
     List<String>? colors,
@@ -34,9 +31,8 @@ class FilterState {
     List<String>? styles,
   }) {
     return FilterState(
-      gender: gender ?? this.gender,
       season: season ?? this.season,
-      size: size ?? this.size,
+      sizes: sizes ?? this.sizes,
       highCategories: highCategories ?? this.highCategories,
       specificCategories: specificCategories ?? this.specificCategories,
       colors: colors ?? this.colors,
@@ -48,11 +44,11 @@ class FilterState {
 
 class FilterNotifier extends StateNotifier<FilterState> {
   FilterNotifier() : super(FilterState());
+  FilterState? _backupState;
 
   void updateFilters({
-    Gender? gender,
     Season? season,
-    Size? size,
+    List<Size>? sizes,
     List<HighLevelCategory>? highCategories,
     List<SpecificCategory>? specificCategories,
     List<String>? colors,
@@ -60,15 +56,33 @@ class FilterNotifier extends StateNotifier<FilterState> {
     List<String>? styles,
   }) {
     state = state.copyWith(
-      gender: gender,
       season: season,
-      size: size,
+      sizes: sizes,
       highCategories: highCategories,
       specificCategories: specificCategories,
       colors: colors,
       priceRange: priceRange,
       styles: styles,
     );
+  }
+
+  void backupState() {
+    _backupState = FilterState(
+      season: state.season,
+      sizes: List<Size>.from(state.sizes),
+      highCategories: List<HighLevelCategory>.from(state.highCategories),
+      specificCategories: List<SpecificCategory>.from(state.specificCategories),
+      colors: List<String>.from(state.colors),
+      priceRange: RangeValues(state.priceRange.start, state.priceRange.end),
+      styles: List<String>.from(state.styles),
+    );
+  }
+
+  void restoreState() {
+    if (_backupState != null) {
+      state = _backupState!;
+      _backupState = null;
+    }
   }
 
   void resetFilters() {

@@ -46,7 +46,8 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
       }
 
       // Size filter
-      if (filterState.size != null && item.size != filterState.size) {
+      if (filterState.sizes.isNotEmpty &&
+          !filterState.sizes.contains(item.size)) {
         return false;
       }
 
