@@ -69,11 +69,19 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
 
   void _onPanEnd(DragEndDetails details, Size size) async {
     final dx = dragOffset.dx;
-    if (dx.abs() > size.width * 0.4) {
+    final dy = dragOffset.dy;
+    if (dx.abs() > size.width * 0.4 || dy.abs() > size.height * 0.4) {
       final currentItem = ref.read(itemsProvider).value![currentIndex];
 
-      final status =
-          dx > 0 ? InteractionStatus.like : InteractionStatus.dislike;
+      // Determine the interaction status based on dominant direction
+      final InteractionStatus status;
+      if (dx.abs() > dy.abs()) {
+        status = dx > 0 ? InteractionStatus.like : InteractionStatus.dislike;
+      } else {
+        status = dy > 0
+            ? InteractionStatus.badCondition
+            : InteractionStatus.tooExpensive;
+      }
 
       final success =
           await ref.read(interactionsProvider.notifier).updateInteraction(
@@ -85,7 +93,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Failed to ${status == InteractionStatus.like ? 'like' : 'dislike'} item',
+              'Failed to register ${status.name} interaction',
               style: const TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.red,
@@ -101,7 +109,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
         setState(() {
           slideOutTween = Offset(
             dx > 0 ? size.width * 1.5 : -size.width * 1.5,
-            0,
+            dy > 0 ? size.height * 1.5 : -size.height * 1.5,
           );
         });
       }
@@ -182,7 +190,8 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                 return Transform.translate(
                                   offset: offset,
                                   child: Transform.rotate(
-                                    angle: offset.dx / size.width * 0.4,
+                                    angle: offset.dx / size.width * 0.4 +
+                                        offset.dy / size.height * 0.2,
                                     child: Stack(
                                       children: [
                                         DiscoverCard(
@@ -230,7 +239,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                           top: 40,
                                           left: 30,
                                           child: Opacity(
-                                            opacity: (dragOffset.dx > 0)
+                                            opacity: (dragOffset.dx > 0 &&
+                                                    dragOffset.dx.abs() >
+                                                        dragOffset.dy.abs())
                                                 ? (dragOffset.dx /
                                                         (size.width / 2))
                                                     .clamp(0.0, 1.0)
@@ -255,11 +266,14 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                             ),
                                           ),
                                         ),
+                                        // Nope overlay
                                         Positioned(
                                           top: 40,
                                           right: 30,
                                           child: Opacity(
-                                            opacity: (dragOffset.dx < 0)
+                                            opacity: (dragOffset.dx < 0 &&
+                                                    dragOffset.dx.abs() >
+                                                        dragOffset.dy.abs())
                                                 ? (-dragOffset.dx /
                                                         (size.width / 2))
                                                     .clamp(0.0, 1.0)
@@ -279,6 +293,86 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                                   color: Colors.red,
                                                   fontSize: 42,
                                                   fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        // Too Expensive overlay (bottom)
+                                        Positioned(
+                                          bottom: 30,
+                                          left: 0,
+                                          right: 0,
+                                          child: Center(
+                                            child: Opacity(
+                                              opacity: (dragOffset.dy < 0 &&
+                                                      dragOffset.dy.abs() >
+                                                          dragOffset.dx.abs())
+                                                  ? (-dragOffset.dy /
+                                                          (size.height / 4))
+                                                      .clamp(0.0, 1.0)
+                                                  : 0.0,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.3),
+                                                  border: Border.all(
+                                                    color: Colors.orange,
+                                                    width: 4,
+                                                  ),
+                                                ),
+                                                child: const Text(
+                                                  'TOO EXPENSIVE',
+                                                  style: TextStyle(
+                                                    color: Colors.orange,
+                                                    fontSize: 32,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        // Bad Condition overlay (top)
+                                        Positioned(
+                                          top: 30,
+                                          left: 0,
+                                          right: 0,
+                                          child: Center(
+                                            child: Opacity(
+                                              opacity: (dragOffset.dy > 0 &&
+                                                      dragOffset.dy.abs() >
+                                                          dragOffset.dx.abs())
+                                                  ? (dragOffset.dy /
+                                                          (size.height / 4))
+                                                      .clamp(0.0, 1.0)
+                                                  : 0.0,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.3),
+                                                  border: Border.all(
+                                                    color: Colors.purple,
+                                                    width: 4,
+                                                  ),
+                                                ),
+                                                child: const Text(
+                                                  'BAD CONDITION',
+                                                  style: TextStyle(
+                                                    color: Colors.purple,
+                                                    fontSize: 32,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
                                               ),
                                             ),
