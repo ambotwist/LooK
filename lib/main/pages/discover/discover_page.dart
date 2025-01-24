@@ -9,13 +9,12 @@ import 'package:lookapp/providers/overlay_provider.dart';
 import 'package:lookapp/models/items.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
-  final OverlayPortalController overlayPortalController;
   final double navbarHeight;
 
-  const DiscoverPage(
-      {super.key,
-      required this.overlayPortalController,
-      required this.navbarHeight});
+  const DiscoverPage({
+    super.key,
+    required this.navbarHeight,
+  });
 
   @override
   ConsumerState<DiscoverPage> createState() => _DiscoverPageState();
@@ -28,21 +27,21 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   Offset? slideOutTween;
   bool isProcessingInteraction = false;
   bool _isDragging = false;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-
     slideController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     )..addStatusListener(_handleAnimationStatus);
+  }
 
-    // Schedule overlay show after build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      ref.read(overlayProvider).show();
-    });
+  @override
+  void dispose() {
+    slideController.dispose();
+    super.dispose();
   }
 
   void _handleAnimationStatus(AnimationStatus status) {
@@ -62,12 +61,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
 
       slideController.reset();
     }
-  }
-
-  @override
-  void dispose() {
-    slideController.dispose();
-    super.dispose();
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
@@ -284,10 +277,8 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                         ),
 
                         // Action bar overlay
-                        if (items.isNotEmpty &&
-                            discoverState.currentIndex < items.length)
-                          _buildActionBar(
-                              size, bottomPadding, discoverState, items),
+                        _buildActionBar(
+                            size, bottomPadding, discoverState, items),
                       ],
                     ),
                   ),
@@ -324,37 +315,34 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
 
   Widget _buildActionBar(Size size, double bottomPadding, dynamic discoverState,
       List<dynamic> items) {
-    return OverlayPortal(
-      controller: widget.overlayPortalController,
-      overlayChildBuilder: (context) {
-        const double bigButtonHeight = 42;
-        const double smallButtonHeight = 32;
+    const double bigButtonHeight = 42;
+    const double smallButtonHeight = 32;
 
-        return Positioned(
-          left: 0,
-          right: 0,
-          bottom: widget.navbarHeight + bottomPadding - bigButtonHeight / 2,
-          child: ActionBar(
-            isDragging: _isDragging,
-            dragOffset: dragOffset,
-            screenWidth: size.width,
-            bigButtonHeight: bigButtonHeight,
-            smallButtonHeight: smallButtonHeight,
-            onDislike: () => _handleAction(
-              discoverState,
-              items,
-              InteractionStatus.dislike,
-              Offset(-size.width * 1.5, 0),
-            ),
-            onLike: () => _handleAction(
-              discoverState,
-              items,
-              InteractionStatus.like,
-              Offset(size.width * 1.5, 0),
-            ),
-          ),
-        );
-      },
+    if (_selectedIndex != 0) return const SizedBox.shrink();
+
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: widget.navbarHeight + bottomPadding - bigButtonHeight / 2,
+      child: ActionBar(
+        isDragging: _isDragging,
+        dragOffset: dragOffset,
+        screenWidth: size.width,
+        bigButtonHeight: bigButtonHeight,
+        smallButtonHeight: smallButtonHeight,
+        onDislike: () => _handleAction(
+          discoverState,
+          items,
+          InteractionStatus.dislike,
+          Offset(-size.width * 1.5, 0),
+        ),
+        onLike: () => _handleAction(
+          discoverState,
+          items,
+          InteractionStatus.like,
+          Offset(size.width * 1.5, 0),
+        ),
+      ),
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/main/pages/account/account_page.dart';
 import 'package:lookapp/main/pages/discover/discover_page.dart';
 import 'package:lookapp/main/pages/discover/filter_page.dart';
+import 'package:lookapp/main/pages/wishlist/wishlist_page.dart';
 import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
@@ -29,15 +30,12 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
   void initState() {
     super.initState();
     _pages = [
-      DiscoverPage(
-          overlayPortalController: ref.read(overlayProvider),
-          navbarHeight: navbarHeight),
+      DiscoverPage(navbarHeight: navbarHeight),
       const TestPage(),
       const TestPage(),
-      const TestPage(),
+      const WishlistPage(),
       const AccountPage(),
     ];
-    ref.read(overlayProvider).show();
 
     _shakeController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -49,6 +47,10 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
   void dispose() {
     _shakeController.dispose();
     super.dispose();
+  }
+
+  void _handlePageChange(int index) {
+    setState(() => _selectedIndex = index);
   }
 
   void _handleRewind() async {
@@ -160,7 +162,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
                   );
                 },
                 child: IconButton(
-                  icon:  Icon(
+                  icon: const Icon(
                     Icons.fast_rewind_rounded,
                     size: 32,
                   ),
@@ -214,56 +216,31 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
               icon: Icons.home_rounded,
               isSelected: _selectedIndex == 0,
               selectedColor: theme.primaryColor,
-              onPressed: () {
-                setState(() => _selectedIndex = 0);
-                // Show overlay with a small delay to ensure it's shown after page transition
-                Future.delayed(const Duration(milliseconds: 100), () {
-                  if (mounted) {
-                    ref.read(overlayProvider).show();
-                  }
-                });
-              },
-              overlayController: overlayController,
+              onPressed: () => _handlePageChange(0),
             ),
             NavbarIconButton(
               icon: Icons.search_rounded,
               isSelected: _selectedIndex == 1,
               selectedColor: theme.primaryColor,
-              onPressed: () {
-                setState(() => _selectedIndex = 1);
-                ref.read(overlayProvider).hide();
-              },
-              overlayController: overlayController,
+              onPressed: () => _handlePageChange(1),
             ),
             NavbarIconButton(
               icon: Icons.store_rounded,
               isSelected: _selectedIndex == 2,
               selectedColor: theme.primaryColor,
-              onPressed: () {
-                setState(() => _selectedIndex = 2);
-                ref.read(overlayProvider).hide();
-              },
-              overlayController: overlayController,
+              onPressed: () => _handlePageChange(2),
             ),
             NavbarIconButton(
               icon: Icons.favorite_rounded,
               isSelected: _selectedIndex == 3,
               selectedColor: theme.primaryColor,
-              onPressed: () {
-                setState(() => _selectedIndex = 3);
-                ref.read(overlayProvider).hide();
-              },
-              overlayController: overlayController,
+              onPressed: () => _handlePageChange(3),
             ),
             NavbarIconButton(
               icon: Icons.account_circle_rounded,
               isSelected: _selectedIndex == 4,
               selectedColor: theme.primaryColor,
-              onPressed: () {
-                setState(() => _selectedIndex = 4);
-                ref.read(overlayProvider).hide();
-              },
-              overlayController: overlayController,
+              onPressed: () => _handlePageChange(4),
             ),
           ],
         ),

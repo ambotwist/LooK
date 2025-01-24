@@ -1,10 +1,46 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:lookapp/models/items.dart';
+
+// Keep track of when to refresh the wishlist
+final _wishlistRefreshProvider = StateProvider<int>((ref) => 0);
 
 final wishlistProvider =
     StateNotifierProvider<WishlistNotifier, AsyncValue<Set<String>>>((ref) {
   return WishlistNotifier();
 });
+
+// Provider for fetching and caching wishlist items
+final wishlistItemsProvider = FutureProvider<List<Item>>((ref) async {
+  try {
+    // Watch both the wishlist IDs and the refresh trigger
+    final wishlistState = ref.watch(wishlistProvider);
+    ref.watch(_wishlistRefreshProvider);
+
+    final supabase = Supabase.instance.client;
+
+    // Get the current wishlist IDs
+    final wishlistIds = wishlistState.value ?? {};
+    if (wishlistIds.isEmpty) return [];
+
+    // Fetch all items that are in the wishlist
+    final itemsResponse = await supabase
+        .from('items')
+        .select()
+        .inFilter('id', wishlistIds.toList());
+
+    return (itemsResponse as List)
+        .map((item) => Item.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
+  } catch (e) {
+    throw 'Failed to fetch wishlist items: $e';
+  }
+});
+
+// Method to force refresh the wishlist items
+void refreshWishlistItems(WidgetRef ref) {
+  ref.read(_wishlistRefreshProvider.notifier).state++;
+}
 
 class WishlistNotifier extends StateNotifier<AsyncValue<Set<String>>> {
   WishlistNotifier() : super(const AsyncValue.data({})) {

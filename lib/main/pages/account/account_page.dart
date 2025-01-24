@@ -14,7 +14,6 @@ class AccountPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userPrefs = ref.watch(userPreferencesProvider);
-    final theme = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
