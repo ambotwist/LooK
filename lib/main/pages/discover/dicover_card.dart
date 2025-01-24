@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/models/items.dart';
+import 'package:lookapp/providers/wishlist_provider.dart';
 
-class DiscoverCard extends StatefulWidget {
+class DiscoverCard extends ConsumerStatefulWidget {
   final Item item;
   final int currentImageIndex;
   final bool isCurrentCard;
@@ -15,10 +17,10 @@ class DiscoverCard extends StatefulWidget {
   });
 
   @override
-  State<DiscoverCard> createState() => _DiscoverCardState();
+  ConsumerState<DiscoverCard> createState() => _DiscoverCardState();
 }
 
-class _DiscoverCardState extends State<DiscoverCard> {
+class _DiscoverCardState extends ConsumerState<DiscoverCard> {
   final List<ImageProvider> _preloadedImages = [];
   bool _didPreloadImages = false;
 
@@ -57,6 +59,9 @@ class _DiscoverCardState extends State<DiscoverCard> {
   }
 
   Row getInfoColumn(int index) {
+    final wishlistState = ref.watch(wishlistProvider);
+    final isInWishlist = wishlistState.value?.contains(widget.item.id) ?? false;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,6 +117,7 @@ class _DiscoverCardState extends State<DiscoverCard> {
               ],
             ),
         },
+        // Favorite button
         SizedBox(
           height: 52,
           width: 52,
@@ -119,10 +125,23 @@ class _DiscoverCardState extends State<DiscoverCard> {
             padding: EdgeInsets.zero,
             iconSize: 52,
             icon: Icon(
-              Icons.star_outline_rounded,
+              isInWishlist ? Icons.star_rounded : Icons.star_outline_rounded,
               color: Colors.white.withOpacity(0.9),
             ),
-            onPressed: () {},
+            onPressed: () async {
+              final success = await ref
+                  .read(wishlistProvider.notifier)
+                  .toggleWishlist(widget.item.id);
+
+              if (!success && mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Failed to update wishlist'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
           ),
         ),
       ],
