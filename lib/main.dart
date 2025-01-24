@@ -5,7 +5,10 @@ import 'package:lookapp/main/wrappers/auth_wrapper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
+  // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Supabase with original configuration
   await Supabase.initialize(
     url: 'https://vwkurdhiepsexgevmakb.supabase.co',
     anonKey:
@@ -15,6 +18,7 @@ void main() async {
       autoRefreshToken: true,
     ),
   );
+
   runApp(const ProviderScope(child: MainApp()));
 }
 

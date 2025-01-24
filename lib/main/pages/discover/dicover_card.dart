@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/models/items.dart';
-// import 'package:lookapp/models/item.dart';
 
 class DiscoverCard extends StatefulWidget {
   final Item item;
@@ -152,6 +151,23 @@ class _DiscoverCardState extends State<DiscoverCard> {
                         : NetworkImage(
                             widget.item.images[widget.currentImageIndex]),
                     fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: Colors.white,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.white,
+                        child: const Center(
+                          child: Icon(Icons.error),
+                        ),
+                      );
+                    },
                   ),
                   // Tap area
                   Positioned.fill(
