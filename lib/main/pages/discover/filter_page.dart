@@ -5,7 +5,6 @@ import 'package:lookapp/providers/filter_provider.dart';
 import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
-import 'package:lookapp/main/wrappers/home_wrapper.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -38,7 +37,10 @@ class _FilterPageState extends ConsumerState<FilterPage> {
     final filterNotifier = ref.read(filterProvider.notifier);
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         title: const Text('Filters'),
         leading: IconButton(
           icon: const Icon(Icons.close),
