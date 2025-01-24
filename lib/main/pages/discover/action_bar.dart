@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ActionBar extends StatelessWidget {
+class ActionBar extends StatefulWidget {
   final bool isDragging;
   final Offset dragOffset;
   final double screenWidth;
@@ -14,13 +14,42 @@ class ActionBar extends StatelessWidget {
     super.key,
     required this.isDragging,
     required this.dragOffset,
+    required this.screenWidth,
     required this.bigButtonHeight,
     required this.smallButtonHeight,
-    required this.screenWidth,
     this.onDislike,
     this.onLike,
     this.onAddToCart,
   });
+
+  @override
+  State<ActionBar> createState() => _ActionBarState();
+}
+
+class _ActionBarState extends State<ActionBar>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _scaleAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOutBack,
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   Widget _buildActionButton({
     required IconData icon,
@@ -31,49 +60,55 @@ class ActionBar extends StatelessWidget {
     bool scaleOnDragLeft = false,
     bool scaleOnDragRight = false,
   }) {
-    final bool isVerticalDominant = dragOffset.dy.abs() > dragOffset.dx.abs();
+    final bool isVerticalDominant =
+        widget.dragOffset.dy.abs() > widget.dragOffset.dx.abs();
 
-    return AnimatedScale(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-      scale: (!showWhenDragging && isDragging) ||
-              (isMainAction && isVerticalDominant)
-          ? 0.0
-          : (scaleOnDragLeft && dragOffset.dx < 0) ||
-                  (scaleOnDragRight && dragOffset.dx > 0)
-              ? 1.3
-              : 1.0,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(100),
-        ),
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: AnimatedScale(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        scale: (!showWhenDragging && widget.isDragging) ||
+                (isMainAction && isVerticalDominant)
+            ? 0.0
+            : (scaleOnDragLeft && widget.dragOffset.dx < 0) ||
+                    (scaleOnDragRight && widget.dragOffset.dx > 0)
+                ? 1.3
+                : 1.0,
         child: Container(
           decoration: BoxDecoration(
-            color: isMainAction
-                ? _getBackgroundColor(
-                    scaleOnDragLeft: scaleOnDragLeft,
-                    scaleOnDragRight: scaleOnDragRight,
-                    color: color,
-                  )
-                : Colors.white,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(100),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4)
-            ],
           ),
-          child: IconButton(
-            onPressed: onTap,
-            icon: Icon(
-              icon,
-              size: isMainAction ? bigButtonHeight : smallButtonHeight,
+          child: Container(
+            decoration: BoxDecoration(
               color: isMainAction
-                  ? _getIconColor(
+                  ? _getBackgroundColor(
                       scaleOnDragLeft: scaleOnDragLeft,
                       scaleOnDragRight: scaleOnDragRight,
                       color: color,
                     )
-                  : color,
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(100),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4)
+              ],
+            ),
+            child: IconButton(
+              onPressed: onTap,
+              icon: Icon(
+                icon,
+                size: isMainAction
+                    ? widget.bigButtonHeight
+                    : widget.smallButtonHeight,
+                color: isMainAction
+                    ? _getIconColor(
+                        scaleOnDragLeft: scaleOnDragLeft,
+                        scaleOnDragRight: scaleOnDragRight,
+                        color: color,
+                      )
+                    : color,
+              ),
             ),
           ),
         ),
@@ -86,10 +121,10 @@ class ActionBar extends StatelessWidget {
     required bool scaleOnDragRight,
     required Color color,
   }) {
-    if ((scaleOnDragLeft && dragOffset.dx < 0) ||
-        (scaleOnDragRight && dragOffset.dx > 0)) {
+    if ((scaleOnDragLeft && widget.dragOffset.dx < 0) ||
+        (scaleOnDragRight && widget.dragOffset.dx > 0)) {
       return color.withOpacity(
-        (dragOffset.dx.abs() / (screenWidth / 2)).clamp(0.0, 1.0),
+        (widget.dragOffset.dx.abs() / (widget.screenWidth / 2)).clamp(0.0, 1.0),
       );
     }
     return Colors.white;
@@ -100,8 +135,8 @@ class ActionBar extends StatelessWidget {
     required bool scaleOnDragRight,
     required Color color,
   }) {
-    if ((scaleOnDragLeft && dragOffset.dx < 0) ||
-        (scaleOnDragRight && dragOffset.dx > 0)) {
+    if ((scaleOnDragLeft && widget.dragOffset.dx < 0) ||
+        (scaleOnDragRight && widget.dragOffset.dx > 0)) {
       return Colors.white;
     }
     return color;
@@ -122,28 +157,31 @@ class ActionBar extends StatelessWidget {
     addButtonWithSpacing(_buildActionButton(
         icon: Icons.close_sharp,
         color: Colors.redAccent,
-        onTap: onDislike,
+        onTap: widget.onDislike,
         isMainAction: true,
         scaleOnDragLeft: true));
 
     addButtonWithSpacing(_buildActionButton(
         icon: Icons.add_shopping_cart_rounded,
         color: const Color(0xFFCF00F4),
-        onTap: onAddToCart,
+        onTap: widget.onAddToCart,
         showWhenDragging: false));
 
     addButtonWithSpacing(_buildActionButton(
       icon: Icons.favorite_sharp,
       color: const Color.fromARGB(255, 0, 200, 120),
-      onTap: onLike,
+      onTap: widget.onLike,
       isMainAction: true,
       scaleOnDragRight: true,
     ));
 
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: buttons,
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: buttons,
+        ),
       ),
     );
   }
