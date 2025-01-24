@@ -28,30 +28,65 @@ class _WishlistPageState extends ConsumerState<WishlistPage>
   }
 
   void _showItemDetails(BuildContext context, Item item) {
+    int currentImageIndex = 0;
+
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.all(24),
-        child: Stack(
-          children: [
-            DiscoverCard(
-              item: item,
-              isCurrentCard: true,
-            ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.close,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                onPressed: () => Navigator.of(context).pop(),
+      barrierDismissible: true,
+      builder: (context) => GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => Navigator.of(context).pop(),
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(24),
+          child: StatefulBuilder(
+            builder: (context, setState) => GestureDetector(
+              behavior: HitTestBehavior.deferToChild,
+              onTap: () {}, // Prevent dialog from closing when tapping the card
+              child: Stack(
+                children: [
+                  GestureDetector(
+                    onTapUp: (details) {
+                      final width = MediaQuery.of(context).size.width;
+                      final tapPosition = details.globalPosition.dx;
+                      final tapThreshold = width / 2;
+
+                      setState(() {
+                        if (tapPosition < tapThreshold) {
+                          // Left tap
+                          if (currentImageIndex > 0) {
+                            currentImageIndex--;
+                          }
+                        } else {
+                          // Right tap
+                          if (currentImageIndex < item.images.length - 1) {
+                            currentImageIndex++;
+                          }
+                        }
+                      });
+                    },
+                    child: DiscoverCard(
+                      item: item,
+                      isCurrentCard: true,
+                      currentImageIndex: currentImageIndex,
+                    ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
