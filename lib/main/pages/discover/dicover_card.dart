@@ -56,18 +56,6 @@ class _DiscoverCardState extends State<DiscoverCard> {
     }
   }
 
-  void handleTapLeft() {
-    setState(() {
-      // Replace currentImageIndex with widget.currentImageIndex
-    });
-  }
-
-  void handleTapRight() {
-    setState(() {
-      // Replace currentImageIndex with widget.currentImageIndex
-    });
-  }
-
   Column getInfoColumn(int index) {
     switch (index) {
       case 0:
@@ -168,25 +156,6 @@ class _DiscoverCardState extends State<DiscoverCard> {
                         ),
                       );
                     },
-                  ),
-                  // Tap area
-                  Positioned.fill(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: handleTapLeft,
-                            child: Container(color: Colors.transparent),
-                          ),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: handleTapRight,
-                            child: Container(color: Colors.transparent),
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                   // Image indicators
                   Positioned(

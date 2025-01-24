@@ -6,6 +6,7 @@ import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/main/pages/discover/action_bar.dart';
 import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
+import 'package:lookapp/models/items.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
   final OverlayPortalController overlayPortalController;
@@ -300,26 +301,24 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   }
 
   void _handleTapUp(
-      TapUpDetails details, List<dynamic> items, dynamic discoverState) {
+      TapUpDetails details, List<Item> items, DiscoverState discoverState) {
     final cardWidth = MediaQuery.of(context).size.width;
     final tapX = details.localPosition.dx;
+    final currentItem = items[discoverState.currentIndex];
 
-    if (items[discoverState.currentIndex].images.length <= 1) return;
+    if (currentItem.images.length <= 1) return;
 
     if (tapX < cardWidth / 2) {
-      // Left tap
-      ref.read(discoverProvider.notifier).updateImageIndex(
-            (discoverState.currentImageIndex -
-                    1 +
-                    items[discoverState.currentIndex].images.length) %
-                items[discoverState.currentIndex].images.length,
-          );
+      // Left tap - previous image
+      final newIndex =
+          (discoverState.currentImageIndex - 1 + currentItem.images.length) %
+              currentItem.images.length;
+      ref.read(discoverProvider.notifier).updateImageIndex(newIndex);
     } else {
-      // Right tap
-      ref.read(discoverProvider.notifier).updateImageIndex(
-            (discoverState.currentImageIndex + 1) %
-                items[discoverState.currentIndex].images.length,
-          );
+      // Right tap - next image
+      final newIndex =
+          (discoverState.currentImageIndex + 1) % currentItem.images.length;
+      ref.read(discoverProvider.notifier).updateImageIndex(newIndex);
     }
   }
 
