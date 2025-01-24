@@ -110,7 +110,21 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
 
     final dx = dragOffset.dx;
     final dy = dragOffset.dy;
-    if (dx.abs() > size.width * 0.4 || dy.abs() > size.height * 0.4) {
+    final velocity = details.velocity;
+
+    // Calculate velocity contribution (pixels that would be traveled in 1 second)
+    final projectedDx =
+        dx + velocity.pixelsPerSecond.dx * 0.2; // Use 200ms of velocity
+    final projectedDy = dy + velocity.pixelsPerSecond.dy * 0.2;
+
+    // Check if either actual position or velocity-adjusted position exceeds threshold
+    final positionThreshold = 0.4;
+    final velocityThreshold = 1000.0; // pixels per second
+
+    if (dx.abs() > size.width * positionThreshold ||
+        dy.abs() > size.height * positionThreshold ||
+        velocity.pixelsPerSecond.dx.abs() > velocityThreshold ||
+        velocity.pixelsPerSecond.dy.abs() > velocityThreshold) {
       final items = ref.read(itemsProvider).asData?.value;
       final currentIndex = ref.read(discoverProvider).currentIndex;
 
@@ -124,11 +138,14 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
       final currentItem = items[currentIndex];
 
       // Determine the interaction status based on dominant direction
+      // Use projected values for more natural feel with velocity
       final InteractionStatus status;
-      if (dx.abs() > dy.abs()) {
-        status = dx > 0 ? InteractionStatus.like : InteractionStatus.dislike;
+      if (projectedDx.abs() > projectedDy.abs()) {
+        status = projectedDx > 0
+            ? InteractionStatus.like
+            : InteractionStatus.dislike;
       } else {
-        status = dy > 0
+        status = projectedDy > 0
             ? InteractionStatus.badCondition
             : InteractionStatus.tooExpensive;
       }
@@ -138,7 +155,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
       });
 
       try {
-        // Update interaction here for swipe gestures
         final success =
             await ref.read(interactionsProvider.notifier).updateInteraction(
                   currentItem.id,
@@ -165,14 +181,17 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
             });
           }
         } else if (mounted) {
+          // Calculate the exit velocity and add it to the tween
+          final velocityMultiplier =
+              0.3; // Adjust this to control velocity influence
           setState(() {
             slideOutTween = Offset(
-              dx.abs() > dy.abs()
-                  ? (dx > 0 ? size.width * 1.5 : -size.width * 1.5)
-                  : 0,
-              dy.abs() > dx.abs()
-                  ? (dy > 0 ? size.height * 1.5 : -size.height * 1.5)
-                  : 0,
+              projectedDx.abs() > projectedDy.abs()
+                  ? (projectedDx > 0 ? size.width * 1.5 : -size.width * 1.5)
+                  : velocity.pixelsPerSecond.dx * velocityMultiplier,
+              projectedDy.abs() > projectedDx.abs()
+                  ? (projectedDy > 0 ? size.height * 1.5 : -size.height * 1.5)
+                  : velocity.pixelsPerSecond.dy * velocityMultiplier,
             );
           });
         }
