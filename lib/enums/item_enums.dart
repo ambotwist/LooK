@@ -111,9 +111,9 @@ extension GenderName on Gender {
   String get displayName {
     switch (toString().split('.').last) {
       case 'male':
-        return 'M';
+        return 'Men';
       case 'female':
-        return 'W';
+        return 'Women';
       case _:
         return '-';
     }

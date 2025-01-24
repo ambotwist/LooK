@@ -5,7 +5,6 @@ import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/main/pages/discover/action_bar.dart';
 import 'package:lookapp/providers/discover_provider.dart';
-import 'package:lookapp/providers/overlay_provider.dart';
 import 'package:lookapp/models/items.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
@@ -27,7 +26,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   Offset? slideOutTween;
   bool isProcessingInteraction = false;
   bool _isDragging = false;
-  int _selectedIndex = 0;
+  final int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -199,11 +198,11 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     final size = MediaQuery.of(context).size;
     const bottomPadding = 36.0;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: bottomPadding),
-      child: Stack(
-        children: [
-          items.when(
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: bottomPadding),
+          child: items.when(
             error: (error, stackTrace) => Center(
               child: Text('Error: $error'),
             ),
@@ -275,10 +274,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                             },
                           ),
                         ),
-
-                        // Action bar overlay
-                        _buildActionBar(
-                            size, bottomPadding, discoverState, items),
                       ],
                     ),
                   ),
@@ -286,8 +281,36 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
               );
             },
           ),
-        ],
-      ),
+        ),
+        // Action bar overlay - positioned relative to the entire screen
+        if (items.hasValue &&
+            items.value!.isNotEmpty &&
+            discoverState.currentIndex < items.value!.length)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: bottomPadding - 21, // Half of bigButtonHeight
+            child: ActionBar(
+              isDragging: _isDragging,
+              dragOffset: dragOffset,
+              screenWidth: size.width,
+              bigButtonHeight: 42,
+              smallButtonHeight: 32,
+              onDislike: () => _handleAction(
+                discoverState,
+                items.value!,
+                InteractionStatus.dislike,
+                Offset(-size.width * 1.5, 0),
+              ),
+              onLike: () => _handleAction(
+                discoverState,
+                items.value!,
+                InteractionStatus.like,
+                Offset(size.width * 1.5, 0),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -311,39 +334,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
           (discoverState.currentImageIndex + 1) % currentItem.images.length;
       ref.read(discoverProvider.notifier).updateImageIndex(newIndex);
     }
-  }
-
-  Widget _buildActionBar(Size size, double bottomPadding, dynamic discoverState,
-      List<dynamic> items) {
-    const double bigButtonHeight = 42;
-    const double smallButtonHeight = 32;
-
-    if (_selectedIndex != 0) return const SizedBox.shrink();
-
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: widget.navbarHeight + bottomPadding - bigButtonHeight / 2,
-      child: ActionBar(
-        isDragging: _isDragging,
-        dragOffset: dragOffset,
-        screenWidth: size.width,
-        bigButtonHeight: bigButtonHeight,
-        smallButtonHeight: smallButtonHeight,
-        onDislike: () => _handleAction(
-          discoverState,
-          items,
-          InteractionStatus.dislike,
-          Offset(-size.width * 1.5, 0),
-        ),
-        onLike: () => _handleAction(
-          discoverState,
-          items,
-          InteractionStatus.like,
-          Offset(size.width * 1.5, 0),
-        ),
-      ),
-    );
   }
 
   Future<void> _handleAction(
