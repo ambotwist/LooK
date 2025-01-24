@@ -30,6 +30,13 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   @override
   void initState() {
     super.initState();
+    // Show overlay when page is created
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(overlayProvider).show();
+      }
+    });
+
     slideController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -42,26 +49,51 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
               slideOutTween = null;
               isProcessingInteraction = false;
             });
-            // Show the overlay after animation completes
-            ref.read(overlayProvider).show();
           } else {
             setState(() {
               dragOffset = Offset.zero;
               slideOutTween = null;
               isProcessingInteraction = false;
             });
-            // Show the overlay after animation completes
-            ref.read(overlayProvider).show();
           }
           slideController.reset();
+          // Show overlay after animation completes
+          if (mounted) {
+            ref.read(overlayProvider).show();
+          }
         }
       });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Show overlay when dependencies change (e.g., when page becomes visible)
+    if (mounted) {
+      ref.read(overlayProvider).show();
+    }
   }
 
   @override
   void dispose() {
     slideController.dispose();
     super.dispose();
+  }
+
+  @override
+  void deactivate() {
+    // Hide overlay when page is deactivated (e.g., when navigating away)
+    ref.read(overlayProvider).hide();
+    super.deactivate();
+  }
+
+  @override
+  void activate() {
+    // Show overlay when page is activated (e.g., when navigating back)
+    super.activate();
+    if (mounted) {
+      ref.read(overlayProvider).show();
+    }
   }
 
   void _onPanUpdate(DragUpdateDetails details) {

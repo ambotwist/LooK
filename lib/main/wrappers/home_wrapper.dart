@@ -216,7 +216,12 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
               selectedColor: theme.primaryColor,
               onPressed: () {
                 setState(() => _selectedIndex = 0);
-                ref.read(overlayProvider).show();
+                // Show overlay with a small delay to ensure it's shown after page transition
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  if (mounted) {
+                    ref.read(overlayProvider).show();
+                  }
+                });
               },
               overlayController: overlayController,
             ),
