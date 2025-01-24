@@ -30,12 +30,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   @override
   void initState() {
     super.initState();
-    // Show overlay when page is created
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ref.read(overlayProvider).show();
-      }
-    });
 
     slideController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -57,21 +51,25 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
             });
           }
           slideController.reset();
-          // Show overlay after animation completes
-          if (mounted) {
-            ref.read(overlayProvider).show();
-          }
         }
       });
+
+    // Schedule overlay show after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOverlay();
+    });
+  }
+
+  void _showOverlay() {
+    if (mounted && !isProcessingInteraction) {
+      ref.read(overlayProvider).show();
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Show overlay when dependencies change (e.g., when page becomes visible)
-    if (mounted) {
-      ref.read(overlayProvider).show();
-    }
+    _showOverlay();
   }
 
   @override
@@ -82,18 +80,14 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
 
   @override
   void deactivate() {
-    // Hide overlay when page is deactivated (e.g., when navigating away)
     ref.read(overlayProvider).hide();
     super.deactivate();
   }
 
   @override
   void activate() {
-    // Show overlay when page is activated (e.g., when navigating back)
     super.activate();
-    if (mounted) {
-      ref.read(overlayProvider).show();
-    }
+    _showOverlay();
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
@@ -101,8 +95,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     setState(() {
       dragOffset += details.delta;
     });
-    // Show overlay during pan
-    ref.read(overlayProvider).show();
   }
 
   void _onPanEnd(DragEndDetails details, Size size) async {
