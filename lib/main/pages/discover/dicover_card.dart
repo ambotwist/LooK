@@ -56,59 +56,77 @@ class _DiscoverCardState extends State<DiscoverCard> {
     }
   }
 
-  Column getInfoColumn(int index) {
-    switch (index) {
-      case 0:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CardIconTextRow(
-                icon: Icons.supervisor_account_rounded,
-                text: widget.item.gender.displayName),
-            CardIconTextRow(
-                icon: Icons.straighten_rounded,
-                text: widget.item.size.displayName),
-          ],
-        );
-      case 1:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CardIconTextRow(
-                icon: Icons.iron_rounded, text: widget.item.styles.join(', ')),
-            CardIconTextRow(
-                icon: Icons.balance_rounded,
-                text: widget.item.materials.join(', ')),
-          ],
-        );
-      case 2:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '"${widget.item.description}"',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                fontStyle: FontStyle.italic,
+  Row getInfoColumn(int index) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        switch (index) {
+          0 => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CardIconTextRow(
+                    icon: Icons.supervisor_account_rounded,
+                    text: widget.item.gender.displayName),
+                CardIconTextRow(
+                    icon: Icons.straighten_rounded,
+                    text: widget.item.size.displayName),
+              ],
+            ),
+          1 => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CardIconTextRow(
+                    icon: Icons.iron_rounded,
+                    text: widget.item.styles.join(', ')),
+                CardIconTextRow(
+                    icon: Icons.balance_rounded,
+                    text: widget.item.materials.join(', ')),
+              ],
+            ),
+          2 => Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '"${widget.item.description}"',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        );
-      default:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CardIconTextRow(
-                icon: Icons.supervisor_account_rounded,
-                text: widget.item.gender.displayName),
-            CardIconTextRow(
-                icon: Icons.straighten_rounded,
-                text: widget.item.size.displayName),
-          ],
-        );
-    }
+          _ => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CardIconTextRow(
+                    icon: Icons.supervisor_account_rounded,
+                    text: widget.item.gender.displayName),
+                CardIconTextRow(
+                    icon: Icons.straighten_rounded,
+                    text: widget.item.size.displayName),
+              ],
+            ),
+        },
+        SizedBox(
+          height: 52,
+          width: 52,
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            iconSize: 52,
+            icon: Icon(
+              Icons.star_outline_rounded,
+              color: Colors.white.withOpacity(0.9),
+            ),
+            onPressed: () {},
+          ),
+        ),
+      ],
+    );
   }
 
   @override
