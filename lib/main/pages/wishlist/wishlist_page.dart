@@ -159,7 +159,7 @@ class _WishlistPageState extends ConsumerState<WishlistPage>
         }
 
         return GridView.builder(
-          padding: const EdgeInsets.all(16),
+          // padding: const EdgeInsets.all(16),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             childAspectRatio: 0.75,
