@@ -356,14 +356,168 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   }
 
   Widget _buildOverlays(Offset offset, Size size) {
-    return Positioned.fill(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(
-            (offset.distance / size.width).clamp(0.0, 0.5),
+    final dx = offset.dx;
+    final dy = offset.dy;
+    final baseOpacity = (offset.distance / size.width).clamp(0.0, 0.5);
+
+    // Determine overlay color based on drag direction
+    Color overlayColor = Colors.white;
+    if (dx.abs() > dy.abs()) {
+      if (dx > 0) {
+        overlayColor = Colors.green;
+      } else {
+        overlayColor = Colors.red;
+      }
+    } else {
+      if (dy > 0) {
+        overlayColor = Colors.purple;
+      } else {
+        overlayColor = const Color.fromARGB(255, 225, 73, 17);
+      }
+    }
+
+    return Stack(
+      children: [
+        // White overlay base
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(baseOpacity * 0.5),
+              borderRadius: BorderRadius.circular(40),
+            ),
           ),
         ),
-      ),
+        // Colored overlay on top
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              color: overlayColor.withOpacity(baseOpacity * 0.3),
+            ),
+          ),
+        ),
+        // Like overlay
+        Positioned(
+          top: 40,
+          left: 30,
+          child: Opacity(
+            opacity: (dx > 0 && dx.abs() > dy.abs())
+                ? (dx / (size.width / 2)).clamp(0.0, 1.0)
+                : 0.0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.5),
+                border: Border.all(
+                  color: Colors.green,
+                  width: 4,
+                ),
+              ),
+              child: const Text(
+                'LIKE',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 42,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Nope overlay
+        Positioned(
+          top: 40,
+          right: 30,
+          child: Opacity(
+            opacity: (dx < 0 && dx.abs() > dy.abs())
+                ? (-dx / (size.width / 2)).clamp(0.0, 1.0)
+                : 0.0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.5),
+                border: Border.all(
+                  color: Colors.red,
+                  width: 4,
+                ),
+              ),
+              child: const Text(
+                'NOPE',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 42,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Too Expensive overlay (bottom)
+        Positioned(
+          bottom: 30,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Opacity(
+              opacity: (dy < 0 && dy.abs() > dx.abs())
+                  ? (-dy / (size.height / 4)).clamp(0.0, 1.0)
+                  : 0.0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 225, 73, 17),
+                    width: 4,
+                  ),
+                ),
+                child: const Text(
+                  'TOO EXPENSIVE',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 225, 73, 17),
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Bad Condition overlay (top)
+        Positioned(
+          top: 30,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Opacity(
+              opacity: (dy > 0 && dy.abs() > dx.abs())
+                  ? (dy / (size.height / 4)).clamp(0.0, 1.0)
+                  : 0.0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  border: Border.all(
+                    color: Colors.purple,
+                    width: 4,
+                  ),
+                ),
+                child: const Text(
+                  'BAD CONDITION',
+                  style: TextStyle(
+                    color: Colors.purple,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

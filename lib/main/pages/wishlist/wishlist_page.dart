@@ -38,7 +38,7 @@ class _WishlistPageState extends ConsumerState<WishlistPage>
         onTap: () => Navigator.of(context).pop(),
         child: Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(24),
+          insetPadding: const EdgeInsets.all(16),
           child: StatefulBuilder(
             builder: (context, setState) => GestureDetector(
               behavior: HitTestBehavior.deferToChild,
