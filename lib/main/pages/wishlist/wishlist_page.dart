@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/models/items.dart';
 import 'package:lookapp/providers/wishlist_provider.dart';
 import 'package:lookapp/main/pages/discover/dicover_card.dart';
+import 'package:lookapp/enums/item_enums.dart';
 
 class WishlistPage extends ConsumerStatefulWidget {
   const WishlistPage({super.key});
@@ -38,37 +39,40 @@ class _WishlistPageState extends ConsumerState<WishlistPage>
         onTap: () => Navigator.of(context).pop(),
         child: Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(16),
+          insetPadding: const EdgeInsets.all(0),
           child: StatefulBuilder(
             builder: (context, setState) => GestureDetector(
               behavior: HitTestBehavior.deferToChild,
               onTap: () {}, // Prevent dialog from closing when tapping the card
               child: Stack(
                 children: [
-                  GestureDetector(
-                    onTapUp: (details) {
-                      final width = MediaQuery.of(context).size.width;
-                      final tapPosition = details.globalPosition.dx;
-                      final tapThreshold = width / 2;
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 32.0),
+                    child: GestureDetector(
+                      onTapUp: (details) {
+                        final width = MediaQuery.of(context).size.width;
+                        final tapPosition = details.globalPosition.dx;
+                        final tapThreshold = width / 2;
 
-                      setState(() {
-                        if (tapPosition < tapThreshold) {
-                          // Left tap
-                          if (currentImageIndex > 0) {
-                            currentImageIndex--;
+                        setState(() {
+                          if (tapPosition < tapThreshold) {
+                            // Left tap
+                            if (currentImageIndex > 0) {
+                              currentImageIndex--;
+                            }
+                          } else {
+                            // Right tap
+                            if (currentImageIndex < item.images.length - 1) {
+                              currentImageIndex++;
+                            }
                           }
-                        } else {
-                          // Right tap
-                          if (currentImageIndex < item.images.length - 1) {
-                            currentImageIndex++;
-                          }
-                        }
-                      });
-                    },
-                    child: DiscoverCard(
-                      item: item,
-                      isCurrentCard: true,
-                      currentImageIndex: currentImageIndex,
+                        });
+                      },
+                      child: DiscoverCard(
+                        item: item,
+                        isCurrentCard: true,
+                        currentImageIndex: currentImageIndex,
+                      ),
                     ),
                   ),
                   Positioned(
@@ -81,6 +85,45 @@ class _WishlistPageState extends ConsumerState<WishlistPage>
                         size: 30,
                       ),
                       onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Theme.of(context).colorScheme.secondary,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.add_shopping_cart_rounded,
+                            size: 32,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          onPressed: () {
+                            // TODO: Implement add to cart functionality
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Added to cart'),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -178,12 +221,12 @@ class WishlistItemCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.brand,
+                    '${item.brand} ${item.specificCategory.displayName}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),

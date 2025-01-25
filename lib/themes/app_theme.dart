@@ -16,7 +16,6 @@ class AppTheme {
         primary: primaryColor,
         secondary: secondaryColor,
         surface: Colors.white,
-        background: Colors.grey.shade200,
         error: Colors.red.shade600,
       ),
 
