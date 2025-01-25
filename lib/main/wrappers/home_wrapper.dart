@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/main/pages/account/account_page.dart';
 import 'package:lookapp/main/pages/discover/discover_page.dart';
-import 'package:lookapp/main/pages/discover/filter_page.dart';
+import 'package:lookapp/main/pages/fliter/filter_page.dart';
 import 'package:lookapp/main/pages/wishlist/wishlist_page.dart';
 import 'package:lookapp/providers/discover_provider.dart';
+import 'package:lookapp/providers/filter_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
@@ -178,7 +179,26 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const FilterPage(),
+                    builder: (context) => FilterPage(
+                      onApplyFilters: (newFilters) {
+                        ref.read(filterProvider.notifier).updateFilters(
+                              season: newFilters.season,
+                              sizes: newFilters.sizes,
+                              highCategories: newFilters.highCategories,
+                              specificCategories: newFilters.specificCategories,
+                              colors: newFilters.colors,
+                              priceRange: newFilters.priceRange,
+                              styles: newFilters.styles,
+                            );
+                        ref.invalidate(itemsProvider);
+                        ref.read(discoverProvider.notifier).updateState(
+                          currentIndex: 0,
+                          currentImageIndex: 0,
+                          previousIndices: [],
+                        );
+                        ref.read(overlayProvider).show();
+                      },
+                    ),
                   ),
                 );
               },
