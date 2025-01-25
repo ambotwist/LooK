@@ -26,7 +26,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   Offset? slideOutTween;
   bool isProcessingInteraction = false;
   bool _isDragging = false;
-  final int _selectedIndex = 0;
 
   @override
   void initState() {

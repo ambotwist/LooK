@@ -114,7 +114,6 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final overlayController = ref.watch(overlayProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -204,8 +203,8 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
       bottomNavigationBar: Container(
         color: Colors.white,
         height: navbarHeight,
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).padding.bottom + 16,
+        padding: const EdgeInsets.only(
+          bottom: 20,
           left: 16,
           right: 16,
         ),
