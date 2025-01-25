@@ -204,6 +204,41 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
               },
             ),
           ],
+          // if (_selectedIndex == 3) ...[
+          //   IconButton(
+          //     icon: const Icon(
+          //       Icons.filter_list_rounded,
+          //       size: 30,
+          //     ),
+          //     onPressed: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => FilterPage(
+          //             onApplyFilters: (newFilters) {
+          //               ref.read(filterProvider.notifier).updateFilters(
+          //                     season: newFilters.season,
+          //                     sizes: newFilters.sizes,
+          //                     highCategories: newFilters.highCategories,
+          //                     specificCategories: newFilters.specificCategories,
+          //                     colors: newFilters.colors,
+          //                     priceRange: newFilters.priceRange,
+          //                     styles: newFilters.styles,
+          //                   );
+          //               ref.invalidate(itemsProvider);
+          //               ref.read(wishlistProvider.notifier).updateState(
+          //                 currentIndex: 0,
+          //                 currentImageIndex: 0,
+          //                 previousIndices: [],
+          //               );
+          //               ref.read(overlayProvider).show();
+          //             },
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ],
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(

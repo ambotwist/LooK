@@ -89,8 +89,8 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     final projectedDy = dy + velocity.pixelsPerSecond.dy * 0.2;
 
     // Check if either actual position or velocity-adjusted position exceeds threshold
-    final positionThreshold = 0.4;
-    final velocityThreshold = 1000.0; // pixels per second
+    const positionThreshold = 0.4;
+    const velocityThreshold = 1000.0; // pixels per second
 
     if (dx.abs() > size.width * positionThreshold ||
         dy.abs() > size.height * positionThreshold ||
@@ -153,7 +153,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
           }
         } else if (mounted) {
           // Calculate the exit velocity and add it to the tween
-          final velocityMultiplier =
+          const velocityMultiplier =
               0.3; // Adjust this to control velocity influence
           setState(() {
             slideOutTween = Offset(
