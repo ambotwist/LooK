@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/main/pages/account/account_page.dart';
 import 'package:lookapp/main/pages/discover/discover_page.dart';
-import 'package:lookapp/main/pages/fliter/filter_page.dart';
 import 'package:lookapp/main/pages/wishlist/wishlist_page.dart';
 import 'package:lookapp/providers/discover_provider.dart';
-import 'package:lookapp/providers/filter_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
@@ -13,6 +11,7 @@ import 'package:lookapp/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
 import 'package:lookapp/widgets/layout/search_bar.dart';
 import 'dart:math';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomeWrapper extends ConsumerStatefulWidget {
   const HomeWrapper({super.key});
@@ -161,14 +160,10 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
                 );
               },
               child: IconButton(
-                icon: const Icon(
-                  Icons.fast_rewind_rounded,
-                  size: 32,
-                ),
+                icon: const FaIcon(FontAwesomeIcons.rotateLeft),
                 onPressed: _handleRewind,
               ),
             ),
-            const SizedBox(width: 8),
             Expanded(
                 child: Container(
                     constraints: const BoxConstraints(maxWidth: 400),

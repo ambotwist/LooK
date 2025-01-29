@@ -1,6 +1,6 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/main/pages/discover/dicover_card.dart';
 import 'package:lookapp/main/pages/discover/action_bar.dart';
@@ -271,12 +271,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(width: 12),
                   IconButton(
-                    icon: const Icon(
-                      Icons.filter_list_rounded,
-                      size: 30,
-                    ),
+                    icon: const FaIcon(FontAwesomeIcons.sliders),
+                    color: Theme.of(context).colorScheme.tertiary,
                     onPressed: () {
                       Navigator.push(
                         context,
