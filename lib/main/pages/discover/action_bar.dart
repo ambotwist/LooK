@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 
 class ActionBar extends StatefulWidget {
   final bool isDragging;
@@ -155,20 +156,20 @@ class _ActionBarState extends State<ActionBar>
     }
 
     addButtonWithSpacing(_buildActionButton(
-        icon: Icons.close_sharp,
+        icon: Ionicons.close,
         color: Colors.redAccent,
         onTap: widget.onDislike,
         isMainAction: true,
         scaleOnDragLeft: true));
 
     addButtonWithSpacing(_buildActionButton(
-        icon: Icons.add_shopping_cart_rounded,
+        icon: Ionicons.bag_add,
         color: const Color(0xFFCF00F4),
         onTap: widget.onAddToCart,
         showWhenDragging: false));
 
     addButtonWithSpacing(_buildActionButton(
-      icon: Icons.favorite_sharp,
+      icon: Ionicons.heart,
       color: const Color.fromARGB(255, 0, 200, 120),
       onTap: widget.onLike,
       isMainAction: true,

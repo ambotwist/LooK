@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:ionicons/ionicons.dart';
 class FilterDropdown extends StatelessWidget {
   final String label;
   final List<PopupMenuItem<String>> items;
@@ -109,7 +108,8 @@ class FilterDropdown extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Icon(
-                const FaIcon(FontAwesomeIcons.chevronDown),
+                Ionicons.chevron_down_outline,
+                size: 14,
                 color: theme.colorScheme.tertiary,
               ),
             ],

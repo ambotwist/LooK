@@ -45,6 +45,7 @@ class CustomSearchBar extends StatelessWidget {
           hintText: hintText,
           hintStyle: TextStyle(
             color: Theme.of(context).colorScheme.tertiary.withOpacity(0.5),
+            fontSize: 15,
           ),
           border: OutlineInputBorder(
             borderSide: BorderSide(

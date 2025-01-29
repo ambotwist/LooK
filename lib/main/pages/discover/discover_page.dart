@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/main/pages/discover/dicover_card.dart';
 import 'package:lookapp/main/pages/discover/action_bar.dart';
@@ -273,7 +273,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: const FaIcon(FontAwesomeIcons.sliders),
+                    icon: const Icon(Ionicons.filter_outline),
                     color: Theme.of(context).colorScheme.tertiary,
                     onPressed: () {
                       Navigator.push(

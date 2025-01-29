@@ -11,7 +11,7 @@ import 'package:lookapp/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
 import 'package:lookapp/widgets/layout/search_bar.dart';
 import 'dart:math';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ionicons/ionicons.dart';
 
 class HomeWrapper extends ConsumerStatefulWidget {
   const HomeWrapper({super.key});
@@ -160,7 +160,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
                 );
               },
               child: IconButton(
-                icon: const FaIcon(FontAwesomeIcons.rotateLeft),
+                icon: const Icon(Ionicons.arrow_undo, size: 28),
                 onPressed: _handleRewind,
               ),
             ),
@@ -246,8 +246,8 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
             padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(
               icon: const Icon(
-                Icons.shopping_basket_rounded,
-                size: 30,
+                Ionicons.bag,
+                size: 28,
               ),
               onPressed: () {},
             ),
@@ -270,31 +270,41 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             NavbarIconButton(
-              icon: Icons.home_rounded,
+              icon: Ionicons.sparkles_outline,
+              selectedIcon: Ionicons.sparkles,
+              size: 30,
               isSelected: _selectedIndex == 0,
               selectedColor: theme.primaryColor,
               onPressed: () => _handlePageChange(0),
             ),
             NavbarIconButton(
-              icon: Icons.search_rounded,
+              icon: Ionicons.search_outline,
+              selectedIcon: Ionicons.search,
+              size: 32,
               isSelected: _selectedIndex == 1,
               selectedColor: theme.primaryColor,
               onPressed: () => _handlePageChange(1),
             ),
             NavbarIconButton(
-              icon: Icons.store_rounded,
+              icon: Ionicons.add_circle_outline,
+              selectedIcon: Ionicons.add_circle,
+              size: 36,
               isSelected: _selectedIndex == 2,
               selectedColor: theme.primaryColor,
               onPressed: () => _handlePageChange(2),
             ),
             NavbarIconButton(
-              icon: Icons.favorite_rounded,
+              icon: Ionicons.bookmark_outline,
+              selectedIcon: Ionicons.bookmark,
+              size: 32,
               isSelected: _selectedIndex == 3,
               selectedColor: theme.primaryColor,
               onPressed: () => _handlePageChange(3),
             ),
             NavbarIconButton(
-              icon: Icons.account_circle_rounded,
+              icon: Ionicons.person_outline,
+              selectedIcon: Ionicons.person,
+              size: 30,
               isSelected: _selectedIndex == 4,
               selectedColor: theme.primaryColor,
               onPressed: () => _handlePageChange(4),
