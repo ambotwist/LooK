@@ -15,9 +15,12 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
     final filterState = ref.watch(filterProvider);
     final userPrefs = ref.watch(userPreferencesProvider);
 
-    // Get the current user id with null check
+    // Better auth handling
     final userId =
         supabase.auth.currentUser?.id ?? (throw Exception('Not authenticated'));
+
+    // Query limit (optimisation)
+    const pageSize = 20;
 
     // Get all interactions for the current user
     final interactions = await supabase
@@ -48,7 +51,7 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
           filterState.seasons.map((season) => season.databaseValue).toList());
     }
 
-    // First apply high-level category filter
+    // Apply high level category filter
     if (filterState.highCategories.isNotEmpty) {
       query = query.inFilter('high_category', filterState.highCategories);
     }
@@ -56,6 +59,7 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
     // Build OR logic for sizing
     final List<String> orClauses = [];
 
+    // Add clauses for categories with size filters
     if (filterState.highCategories.contains('tops') &&
         filterState.topSizes.isNotEmpty) {
       final sizesForTops = filterState.topSizes.join(",");
@@ -76,7 +80,16 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
           .add("and(high_category.eq.shoes,shoe_size.in.($sizesForShoes))");
     }
 
-    // Use OR logic if we have any sizing filters
+    // Add clauses for categories without size filters
+    for (var category in filterState.highCategories) {
+      if ((category == 'tops' && filterState.topSizes.isEmpty) ||
+          (category == 'bottoms' && filterState.bottomSizes.isEmpty) ||
+          (category == 'shoes' && filterState.shoeSizes.isEmpty)) {
+        orClauses.add("high_category.eq.$category");
+      }
+    }
+
+    // Use OR logic if we have any clauses
     if (orClauses.isNotEmpty) {
       // Join the groups with commas so Supabase sees them as OR conditions
       final orFilterString = orClauses.join(",");
@@ -93,40 +106,32 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
     if (filterState.colors.isNotEmpty) {
       query = query.inFilter('color', filterState.colors);
     }
+    if (filterState.styles.isNotEmpty) {
+      query = query.overlaps('styles', filterState.styles);
+    }
 
     // Price range filter
     query = query
         .gte('price', filterState.priceRange.start)
         .lte('price', filterState.priceRange.end);
 
-    // Style filter using 'overlaps' for array comparison
-    if (filterState.styles.isNotEmpty) {
-      query = query.overlaps('styles', filterState.styles);
-    }
+    // Move limit() and order() to the very end, after all other filters
+    final response =
+        await query.order('created_at', ascending: false).limit(pageSize);
 
     print('Debug - about to execute items query with filters:');
     print('High Categories: ${filterState.highCategories}');
     print('Top Sizes: ${filterState.topSizes}');
     print('Bottom Sizes: ${filterState.bottomSizes}');
     print('Shoe Sizes: ${filterState.shoeSizes}');
-    print('OR filter string: $orClauses');
-
-    final response = await query;
-
-    // Debug prints
-    print('Raw Supabase response: $response');
 
     if (response.isEmpty) return [];
 
-    final filteredItems = (response as List)
+    return (response as List)
         .map((item) => Item.fromJson(Map<String, dynamic>.from(item)))
         .toList();
-
-    print('Filtered items: $filteredItems');
-
-    return filteredItems;
   } catch (e) {
-    print('Error fetching items: $e');
-    throw 'Failed to fetch items: $e';
+    // Generic error for security
+    throw Exception('Could not load items. Please try again.');
   }
 });
