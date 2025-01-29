@@ -17,6 +17,7 @@ class AppTheme {
       colorScheme: ColorScheme.light(
         surface: Colors.grey.shade300,
         primary: Colors.white,
+        onPrimary: Colors.black87,
         secondary: themeColor,
         tertiary: button,
         error: Colors.red.shade600,

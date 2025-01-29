@@ -11,6 +11,7 @@ import 'package:lookapp/providers/filter_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
+import 'package:lookapp/widgets/layout/filter_dropdown.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
   final double navbarHeight;
@@ -306,118 +307,117 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                     },
                   ),
                   // Brand Filter Dropdown
-                  Container(
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.tertiary,
+                  FilterDropdown(
+                    label: 'Brand',
+                    selectedValues: ref
+                        .watch(filterProvider)
+                        .highCategories
+                        .where((cat) => ['nike', 'adidas'].contains(cat))
+                        .toSet(),
+                    items: const [
+                      PopupMenuItem(
+                        value: 'nike',
+                        child: Text('Nike'),
                       ),
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    child: PopupMenuButton<String>(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                      PopupMenuItem(
+                        value: 'adidas',
+                        child: Text('Adidas'),
                       ),
-                      position: PopupMenuPosition.under,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: Row(
-                          children: [
-                            const Text(
-                              'Brand',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              Icons.arrow_drop_down,
-                              color: Theme.of(context).colorScheme.tertiary,
-                            ),
-                          ],
-                        ),
-                      ),
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'nike',
-                          child: Text('Nike'),
-                        ),
-                        const PopupMenuItem(
-                          value: 'adidas',
-                          child: Text('Adidas'),
-                        ),
-                        // Add more brands as needed
-                      ],
-                      onSelected: (value) {
+                    ],
+                    onSelected: (value) {
+                      if (value.isEmpty) {
+                        // Reset brand filters
+                        ref.read(filterProvider.notifier).updateFilters(
+                              highCategories: ref
+                                  .read(filterProvider)
+                                  .highCategories
+                                  .where((cat) =>
+                                      !['nike', 'adidas'].contains(cat))
+                                  .toList(),
+                            );
+                      } else {
                         ref
                             .read(filterProvider.notifier)
                             .toggleHighCategory(value);
-                        ref.invalidate(itemsProvider);
-                        ref.read(discoverProvider.notifier).updateState(
-                          currentIndex: 0,
-                          currentImageIndex: 0,
-                          previousIndices: [],
-                        );
-                        ref.read(overlayProvider).show();
-                      },
-                    ),
+                      }
+                      ref.invalidate(itemsProvider);
+                      ref.read(discoverProvider.notifier).updateState(
+                        currentIndex: 0,
+                        currentImageIndex: 0,
+                        previousIndices: [],
+                      );
+                      ref.read(overlayProvider).show();
+                    },
                   ),
                   const SizedBox(width: 8),
                   // Category Filter Dropdown
-                  Container(
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.tertiary,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: PopupMenuButton<String>(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      position: PopupMenuPosition.under,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: Row(
-                          children: [
-                            const Text(
-                              'Category',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              Icons.arrow_drop_down,
-                              color: Theme.of(context).colorScheme.tertiary,
-                            ),
-                          ],
-                        ),
-                      ),
-                      itemBuilder: (context) => Categories.highLevel
-                          .map((category) => PopupMenuItem(
-                                value: category,
-                                child: Text(categoryToDisplayName(category)),
-                              ))
-                          .toList(),
-                      onSelected: (value) {
+                  FilterDropdown(
+                    label: 'Category',
+                    selectedValues: ref
+                        .watch(filterProvider)
+                        .highCategories
+                        .where((cat) => !['nike', 'adidas'].contains(cat))
+                        .toSet(),
+                    items: Categories.highLevel
+                        .where((cat) => !['nike', 'adidas'].contains(cat))
+                        .map((category) => PopupMenuItem(
+                              value: category,
+                              child: Text(categoryToDisplayName(category)),
+                            ))
+                        .toList(),
+                    onSelected: (value) {
+                      if (value.isEmpty) {
+                        // Reset category filters
+                        ref.read(filterProvider.notifier).updateFilters(
+                              highCategories: ref
+                                  .read(filterProvider)
+                                  .highCategories
+                                  .where(
+                                      (cat) => ['nike', 'adidas'].contains(cat))
+                                  .toList(),
+                            );
+                      } else {
                         ref
                             .read(filterProvider.notifier)
                             .toggleHighCategory(value);
-                        ref.invalidate(itemsProvider);
-                        ref.read(discoverProvider.notifier).updateState(
-                          currentIndex: 0,
-                          currentImageIndex: 0,
-                          previousIndices: [],
+                      }
+                      ref.invalidate(itemsProvider);
+                      ref.read(discoverProvider.notifier).updateState(
+                        currentIndex: 0,
+                        currentImageIndex: 0,
+                        previousIndices: [],
+                      );
+                      ref.read(overlayProvider).show();
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  // Style Filter Dropdown
+                  FilterDropdown(
+                    label: 'Style',
+                    selectedValues: ref.watch(filterProvider).styles.toSet(),
+                    items: Categories.styles
+                        .map((style) => PopupMenuItem(
+                              value: style,
+                              child: Text(categoryToDisplayName(style)),
+                            ))
+                        .toList(),
+                    onSelected: (value) {
+                      if (value.isEmpty) {
+                        // Reset style filters
+                        ref.read(filterProvider.notifier).updateFilters(
+                          styles: [],
                         );
-                        ref.read(overlayProvider).show();
-                      },
-                    ),
+                      } else {
+                        ref.read(filterProvider.notifier).toggleStyle(value);
+                      }
+                      ref.invalidate(itemsProvider);
+                      ref.read(discoverProvider.notifier).updateState(
+                        currentIndex: 0,
+                        currentImageIndex: 0,
+                        previousIndices: [],
+                      );
+                      ref.read(overlayProvider).show();
+                    },
                   ),
                   const Spacer(),
                   const SizedBox(width: 8),
