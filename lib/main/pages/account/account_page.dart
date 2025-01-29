@@ -43,15 +43,15 @@ class AccountPage extends ConsumerWidget {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: Gender.values.map((gender) {
+                children: Sex.values.map((gender) {
                   return FilterChip(
                     label: Text(gender.displayName),
-                    selected: userPrefs.gender == gender,
+                    selected: userPrefs.sex == gender,
                     onSelected: (selected) {
                       if (selected) {
                         ref
                             .read(userPreferencesProvider.notifier)
-                            .updateGender(gender);
+                            .updateSex(gender);
                         // Reset discover state and refresh items
                         ref.read(discoverProvider.notifier).updateState(
                           currentIndex: 0,

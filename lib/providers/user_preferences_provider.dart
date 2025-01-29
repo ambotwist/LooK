@@ -2,17 +2,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/enums/item_enums.dart';
 
 class UserPreferencesState {
-  final Gender gender;
+  final Sex sex;
 
   UserPreferencesState({
-    this.gender = Gender.unisex,
+    this.sex = Sex.unisex,
   });
 
   UserPreferencesState copyWith({
-    Gender? gender,
+    Sex? sex,
   }) {
     return UserPreferencesState(
-      gender: gender ?? this.gender,
+      sex: sex ?? this.sex,
     );
   }
 }
@@ -20,8 +20,8 @@ class UserPreferencesState {
 class UserPreferencesNotifier extends StateNotifier<UserPreferencesState> {
   UserPreferencesNotifier() : super(UserPreferencesState());
 
-  void updateGender(Gender gender) {
-    state = state.copyWith(gender: gender);
+  void updateSex(Sex sex) {
+    state = state.copyWith(sex: sex);
   }
 }
 

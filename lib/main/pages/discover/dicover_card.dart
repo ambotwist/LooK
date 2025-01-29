@@ -72,10 +72,10 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
               children: [
                 CardIconTextRow(
                     icon: Icons.supervisor_account_rounded,
-                    text: widget.item.gender.displayName),
-                CardIconTextRow(
+                    text: widget.item.sex.displayName),
+                const CardIconTextRow(
                     icon: Icons.straighten_rounded,
-                    text: widget.item.size.displayName),
+                    text: 'size 32'),
               ],
             ),
           1 => Column(
@@ -110,10 +110,10 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
               children: [
                 CardIconTextRow(
                     icon: Icons.supervisor_account_rounded,
-                    text: widget.item.gender.displayName),
-                CardIconTextRow(
+                    text: widget.item.sex.displayName),
+                const CardIconTextRow(
                     icon: Icons.straighten_rounded,
-                    text: widget.item.size.displayName),
+                    text: 'size 32'),
               ],
             ),
         },
@@ -254,7 +254,7 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                             FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(
-                                '${widget.item.brand} ${widget.item.specificCategory.displayName}',
+                                '${widget.item.brand} ${categoryToDisplayName(widget.item.specificCategory)}',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 26,

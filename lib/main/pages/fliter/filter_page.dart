@@ -3,12 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/providers/filter_provider.dart';
 
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1)}";
-  }
-}
-
+/// Configuration class to control which filter sections are visible
 class FilterConfiguration {
   final bool showSizes;
   final bool showCategories;
@@ -28,14 +23,12 @@ class FilterConfiguration {
 }
 
 class FilterPage extends ConsumerStatefulWidget {
-  final FilterConfiguration configuration;
-  final void Function(FilterState) onApplyFilters;
+  final void Function(FilterState)? onApplyFilters;
   final VoidCallback? onCancel;
 
   const FilterPage({
     super.key,
-    this.configuration = const FilterConfiguration(),
-    required this.onApplyFilters,
+    this.onApplyFilters,
     this.onCancel,
   });
 
@@ -44,21 +37,18 @@ class FilterPage extends ConsumerStatefulWidget {
 }
 
 class _FilterPageState extends ConsumerState<FilterPage> {
-  late FilterState localFilterState;
-
   @override
   void initState() {
     super.initState();
-    // Initialize local state from provider
-    localFilterState = ref.read(filterProvider);
-    // Backup the provider state
+    // Backup the current state when opening the filter page
     ref.read(filterProvider.notifier).backupState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final filterState = ref.watch(filterProvider);
+    final notifier = ref.read(filterProvider.notifier);
     final theme = Theme.of(context);
-    final filterNotifier = ref.read(filterProvider.notifier);
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
@@ -69,7 +59,7 @@ class _FilterPageState extends ConsumerState<FilterPage> {
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            filterNotifier.restoreState();
+            notifier.restoreState();
             widget.onCancel?.call();
             Navigator.pop(context);
           },
@@ -77,9 +67,7 @@ class _FilterPageState extends ConsumerState<FilterPage> {
         actions: [
           TextButton(
             onPressed: () {
-              setState(() {
-                localFilterState = FilterState();
-              });
+              notifier.resetFilters();
             },
             style: TextButton.styleFrom(
               foregroundColor: theme.primaryColor,
@@ -90,261 +78,165 @@ class _FilterPageState extends ConsumerState<FilterPage> {
       ),
       body: ListView(
         children: [
-          // Size Section
-          if (widget.configuration.showSizes)
+          // High Level Categories
+          _buildSection(
+            title: 'Categories',
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: Categories.highLevel.map((category) {
+                return FilterChip(
+                  label: Text(categoryToDisplayName(category)),
+                  selected: filterState.highCategories.contains(category),
+                  onSelected: (selected) {
+                    notifier.toggleHighCategory(category);
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+
+          // Specific Categories (only show if high category is selected)
+          if (filterState.highCategories.isNotEmpty)
             _buildSection(
-              title: 'Size',
+              title: 'Specific Categories',
               child: Wrap(
                 spacing: 8,
-                children: Size.values.map((size) {
+                runSpacing: 8,
+                children: Categories.specific
+                    .where((specific) => filterState.highCategories.any(
+                        (high) =>
+                            notifier.specificBelongsToHigh(specific, high)))
+                    .map((category) {
                   return FilterChip(
-                    label: Text(size.displayName),
-                    selected: localFilterState.sizes.contains(size),
+                    label: Text(categoryToDisplayName(category)),
+                    selected: filterState.specificCategories.contains(category),
                     onSelected: (selected) {
-                      setState(() {
-                        final updatedSizes =
-                            List<Size>.from(localFilterState.sizes);
-                        if (selected) {
-                          updatedSizes.add(size);
-                        } else {
-                          updatedSizes.remove(size);
-                        }
-                        localFilterState =
-                            localFilterState.copyWith(sizes: updatedSizes);
-                      });
+                      notifier.toggleSpecificCategory(category);
                     },
                   );
                 }).toList(),
               ),
             ),
 
-          // Category Section
-          if (widget.configuration.showCategories)
+          // Top Sizes
+          if (notifier.shouldShowSizeFilter('tops'))
             _buildSection(
-              title: 'Category',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'High Level Categories',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // High Category
-                  Wrap(
+              title: 'Top Sizes',
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: ['xs', 's', 'm', 'l', 'xl', 'xxl'].map((size) {
+                  return FilterChip(
+                    label: Text(size.toUpperCase()),
+                    selected: filterState.topSizes.contains(size),
+                    onSelected: (selected) {
+                      notifier.toggleTopSize(size);
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+
+          // Shoe Sizes
+          if (notifier.shouldShowSizeFilter('shoes'))
+            _buildSection(
+              title: 'Shoe Sizes',
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children:
+                    List.generate(20, (i) => (30 + i).toString()).map((size) {
+                  return FilterChip(
+                    label: Text(size),
+                    selected: filterState.shoeSizes.contains(size),
+                    onSelected: (selected) {
+                      notifier.toggleShoeSize(size);
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+
+          // Bottom Sizes
+          if (notifier.shouldShowSizeFilter('bottoms'))
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSection(
+                  title: 'Waist Size',
+                  child: Wrap(
                     spacing: 8,
-                    children: HighLevelCategory.values.map((category) {
+                    runSpacing: 8,
+                    children: List.generate(13, (i) => (28 + i).toString())
+                        .map((waist) {
+                      final hasWaist = filterState.bottomSizes
+                          .any((size) => size.startsWith('W$waist'));
                       return FilterChip(
-                        label: Text(category.displayName),
-                        selected:
-                            localFilterState.highCategories.contains(category),
+                        label: Text('W$waist'),
+                        selected: hasWaist,
                         onSelected: (selected) {
-                          setState(() {
-                            final updatedCategories =
-                                List<HighLevelCategory>.from(
-                                    localFilterState.highCategories);
-                            if (selected) {
-                              updatedCategories.add(category);
-                            } else {
-                              updatedCategories.remove(category);
-                              // Remove associated specific categories
-                              final updatedSpecific = localFilterState
-                                  .specificCategories
-                                  .where((specific) =>
-                                      _getCategoryMapping(specific) != category)
-                                  .toList();
-                              localFilterState = localFilterState.copyWith(
-                                specificCategories: updatedSpecific,
-                              );
-                            }
-                            localFilterState = localFilterState.copyWith(
-                              highCategories: updatedCategories,
-                            );
-                          });
+                          if (selected) {
+                            notifier.addWaistSizeCombinations(waist);
+                          } else {
+                            // Remove all sizes with this waist
+                            filterState.bottomSizes
+                                .where((size) => size.startsWith('W$waist'))
+                                .forEach(
+                                    (size) => notifier.toggleBottomSize(size));
+                          }
                         },
                       );
                     }).toList(),
                   ),
-                  if (localFilterState.highCategories.isNotEmpty) ...[
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Divider(),
-                    ),
-                    const Text(
-                      'Specific Categories',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Specific Category
-                    Wrap(
-                      spacing: 8,
-                      children: SpecificCategory.values
-                          .where((category) => localFilterState.highCategories
-                              .contains(_getCategoryMapping(category)))
-                          .map((category) {
-                        return FilterChip(
-                          label: Text(category.displayName),
-                          selected: localFilterState.specificCategories
-                              .contains(category),
-                          onSelected: (selected) {
-                            setState(() {
-                              final updatedCategories =
-                                  List<SpecificCategory>.from(
-                                      localFilterState.specificCategories);
-                              if (selected) {
-                                updatedCategories.add(category);
-                              } else {
-                                updatedCategories.remove(category);
-                              }
-                              localFilterState = localFilterState.copyWith(
-                                specificCategories: updatedCategories,
-                              );
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-
-          // Colors Section
-          if (widget.configuration.showColors)
-            _buildSection(
-              title: 'Colors',
-              child: Wrap(
-                spacing: 8,
-                children: [
-                  'Black',
-                  'White',
-                  'Red',
-                  'Blue',
-                  'Green',
-                  'Yellow',
-                  'Purple',
-                  'Pink',
-                  'Orange',
-                  'Brown',
-                  'Grey',
-                  'Multi'
-                ].map((color) {
-                  return FilterChip(
-                    label: Text(color),
-                    selected: localFilterState.colors.contains(color),
-                    onSelected: (selected) {
-                      setState(() {
-                        final updatedColors =
-                            List<String>.from(localFilterState.colors);
-                        if (selected) {
-                          updatedColors.add(color);
-                        } else {
-                          updatedColors.remove(color);
-                        }
-                        localFilterState =
-                            localFilterState.copyWith(colors: updatedColors);
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-            ),
-
-          // Price Range Section
-          if (widget.configuration.showPriceRange)
-            _buildSection(
-              title:
-                  'Price Range (\$${localFilterState.priceRange.start.round()} - \$${localFilterState.priceRange.end.round()})',
-              child: RangeSlider(
-                values: localFilterState.priceRange,
-                min: 0,
-                max: 1000,
-                divisions: 20,
-                activeColor: theme.primaryColor,
-                inactiveColor: theme.primaryColor.withOpacity(0.2),
-                labels: RangeLabels(
-                  '\$${localFilterState.priceRange.start.round()}',
-                  '\$${localFilterState.priceRange.end.round()}',
                 ),
-                onChanged: (values) {
-                  setState(() {
-                    localFilterState =
-                        localFilterState.copyWith(priceRange: values);
-                  });
-                },
-              ),
+                _buildSection(
+                  title: 'Length',
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: List.generate(12, (i) => (28 + i).toString())
+                        .map((length) {
+                      final hasLength = filterState.bottomSizes
+                          .any((size) => size.endsWith('L$length'));
+                      return FilterChip(
+                        label: Text('L$length'),
+                        selected: hasLength,
+                        onSelected: (selected) {
+                          if (selected) {
+                            notifier.addLengthSizeCombinations(length);
+                          } else {
+                            // Remove all sizes with this length
+                            filterState.bottomSizes
+                                .where((size) => size.endsWith('L$length'))
+                                .forEach(
+                                    (size) => notifier.toggleBottomSize(size));
+                          }
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
             ),
 
-          // Styles Section
-          if (widget.configuration.showStyles)
-            _buildSection(
-              title: 'Styles',
-              child: Wrap(
-                spacing: 8,
-                children: [
-                  'Casual',
-                  'Formal',
-                  'Sporty',
-                  'Vintage',
-                  'Streetwear',
-                  'Bohemian',
-                  'Minimalist',
-                  'Preppy',
-                  'Punk',
-                  'Business',
-                  'Party',
-                  'Beach'
-                ].map((style) {
-                  return FilterChip(
-                    label: Text(style),
-                    selected: localFilterState.styles.contains(style),
-                    onSelected: (selected) {
-                      setState(() {
-                        final updatedStyles =
-                            List<String>.from(localFilterState.styles);
-                        if (selected) {
-                          updatedStyles.add(style);
-                        } else {
-                          updatedStyles.remove(style);
-                        }
-                        localFilterState =
-                            localFilterState.copyWith(styles: updatedStyles);
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
+          // Styles
+          _buildSection(
+            title: 'Styles',
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: Categories.styles.map((style) {
+                return FilterChip(
+                  label: Text(categoryToDisplayName(style)),
+                  selected: filterState.styles.contains(style),
+                  onSelected: (selected) {
+                    notifier.toggleStyle(style);
+                  },
+                );
+              }).toList(),
             ),
-
-          // Season Section
-          if (widget.configuration.showSeason)
-            _buildSection(
-              title: 'Season',
-              child: Wrap(
-                spacing: 8,
-                children: Season.values.map((season) {
-                  return FilterChip(
-                    label: Text(season.name.capitalize()),
-                    selected: localFilterState.season == season,
-                    onSelected: (selected) {
-                      setState(() {
-                        localFilterState = localFilterState.copyWith(
-                          season: selected ? season : Season.any,
-                        );
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-            ),
+          ),
         ],
       ),
       bottomNavigationBar: SafeArea(
@@ -357,7 +249,7 @@ class _FilterPageState extends ConsumerState<FilterPage> {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             onPressed: () {
-              widget.onApplyFilters(localFilterState);
+              widget.onApplyFilters?.call(filterState);
               Navigator.pop(context);
             },
             child: const Text(
@@ -388,64 +280,5 @@ class _FilterPageState extends ConsumerState<FilterPage> {
         ],
       ),
     );
-  }
-
-  HighLevelCategory _getCategoryMapping(SpecificCategory category) {
-    switch (category) {
-      case SpecificCategory.tShirts:
-      case SpecificCategory.shirts:
-      case SpecificCategory.tankTops:
-      case SpecificCategory.sweaters:
-      case SpecificCategory.hoodies:
-      case SpecificCategory.blouses:
-      case SpecificCategory.poloShirts:
-        return HighLevelCategory.tops;
-      case SpecificCategory.pants:
-      case SpecificCategory.jeans:
-      case SpecificCategory.shorts:
-      case SpecificCategory.skirts:
-      case SpecificCategory.leggings:
-        return HighLevelCategory.bottoms;
-      case SpecificCategory.sneakers:
-      case SpecificCategory.boots:
-      case SpecificCategory.sandals:
-      case SpecificCategory.flats:
-      case SpecificCategory.heels:
-      case SpecificCategory.loafers:
-        return HighLevelCategory.shoes;
-      case SpecificCategory.jackets:
-      case SpecificCategory.coats:
-      case SpecificCategory.blazers:
-      case SpecificCategory.vests:
-        return HighLevelCategory.outerwear;
-      case SpecificCategory.scarves:
-      case SpecificCategory.belts:
-      case SpecificCategory.gloves:
-      case SpecificCategory.ties:
-      case SpecificCategory.sunglasses:
-      case SpecificCategory.watches:
-      case SpecificCategory.jewelry:
-        return HighLevelCategory.accessories;
-      case SpecificCategory.gymTops:
-      case SpecificCategory.gymBottoms:
-      case SpecificCategory.sportsBras:
-      case SpecificCategory.athleticShoes:
-        return HighLevelCategory.activewear;
-      case SpecificCategory.underwear:
-      case SpecificCategory.bras:
-      case SpecificCategory.pajamas:
-      case SpecificCategory.lingerie:
-      case SpecificCategory.socks:
-        return HighLevelCategory.underwearAndSleepwear;
-      case SpecificCategory.swimTrunks:
-      case SpecificCategory.bikinis:
-      case SpecificCategory.onePieceSwimsuits:
-      case SpecificCategory.rashGuards:
-        return HighLevelCategory.swimwear;
-      case SpecificCategory.suits:
-      case SpecificCategory.dresses:
-      case SpecificCategory.tuxedos:
-        return HighLevelCategory.formalWear;
-    }
   }
 }

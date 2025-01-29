@@ -5,13 +5,15 @@ class Item {
   final String storeName;
   final String brand;
   final String storeId;
-  final Gender gender;
-  final Size size;
-  final HighLevelCategory highCategory;
-  final SpecificCategory specificCategory;
+  final Sex sex;
+  final String? topSize;
+  final String? shoeSize;
+  final String? bottomSize;
+  final String highCategory;
+  final String specificCategory;
   final String color;
   final List<String> styles;
-  final Season season;
+  final List<Season>? seasons;
   final List<String> materials;
   final Condition condition;
   final double price;
@@ -28,13 +30,15 @@ class Item {
     required this.storeName,
     required this.brand,
     required this.storeId,
-    this.gender = Gender.unisex,
-    required this.size,
+    this.sex = Sex.unisex,
+    this.topSize,
+    this.shoeSize,
+    this.bottomSize,
     required this.highCategory,
     required this.specificCategory,
     this.color = 'unspecified',
     required this.styles,
-    this.season = Season.any,
+    this.seasons,
     this.materials = const [],
     required this.condition,
     required this.price,
@@ -45,56 +49,53 @@ class Item {
     DateTime? createdAt,
     DateTime? updatedAt,
     this.isActive = true,
-  })  : createdAt = createdAt ?? DateTime.now(),
+  })  : assert(Categories.highLevel.contains(highCategory),
+            'Invalid high category'),
+        assert(Categories.specific.contains(specificCategory),
+            'Invalid specific category'),
+        assert(topSize == null || isValidTopSize(topSize), 'Invalid top size'),
+        assert(
+            shoeSize == null || isValidShoeSize(shoeSize), 'Invalid shoe size'),
+        assert(bottomSize == null || isValidBottomSize(bottomSize),
+            'Invalid bottom size'),
+        createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
   factory Item.fromJson(Map<String, dynamic> json) {
+    // Parse seasons from the database enum array
+    final List<Season>? seasons = json['seasons'] != null
+        ? (json['seasons'] as List)
+            .map((season) => Season.values.firstWhere(
+                  (e) => e.databaseValue == season.toString().toLowerCase(),
+                  orElse: () => Season.summer,
+                ))
+            .toList()
+        : null;
+
     return Item(
       id: json['id'] as String,
       storeName: json['store_name'] as String? ?? '',
       brand: json['brand'] as String? ?? '',
       storeId: json['store_id'] as String? ?? '',
-      gender: Gender.values.firstWhere(
+      sex: Sex.values.firstWhere(
         (e) =>
-            e.name.toLowerCase() ==
-            (json['gender'] as String? ?? 'unisex').toLowerCase(),
-        orElse: () => Gender.unisex,
+            e.databaseValue ==
+            (json['sex'] as String? ?? 'unisex').toLowerCase(),
+        orElse: () => Sex.unisex,
       ),
-      size: Size.values.firstWhere(
-        (e) =>
-            e.name.toLowerCase() ==
-            (json['size'] as String? ?? 'm').toLowerCase(),
-        orElse: () => Size.m,
-      ),
-      highCategory: HighLevelCategory.values.firstWhere(
-        (e) =>
-            e.name.toLowerCase() ==
-            (json['high_level_category'] as String? ?? 'tops').toLowerCase(),
-        orElse: () => HighLevelCategory.tops,
-      ),
-      specificCategory: SpecificCategory.values.firstWhere(
-        (e) =>
-            e.name.toLowerCase() ==
-            (json['specific_category'] as String? ?? 'tShirts').toLowerCase(),
-        orElse: () => SpecificCategory.tShirts,
-      ),
+      topSize: json['top_size'] as String?,
+      shoeSize: json['shoe_size'] as String?,
+      bottomSize: json['bottom_size'] as String?,
+      highCategory: json['high_category'] as String? ?? 'tops',
+      specificCategory: json['specific_category'] as String? ?? 't-shirts',
       color: json['color']?[0] as String? ?? 'unspecified',
       styles: List<String>.from(json['styles'] ?? []),
-      season: Season.values.firstWhere(
-        (e) =>
-            e.name.toLowerCase() ==
-            (json['season'] as String? ?? 'any').toLowerCase(),
-        orElse: () => Season.any,
-      ),
+      seasons: seasons,
       materials: List<String>.from(json['materials'] ?? []),
       condition: Condition.values.firstWhere(
-        (e) {
-          final dbValue =
-              (json['condition'] as String? ?? 'good').toLowerCase();
-          return e == Condition.asNew
-              ? dbValue == 'new'
-              : e.name.toLowerCase() == dbValue;
-        },
+        (e) =>
+            e.databaseValue ==
+            (json['condition'] as String? ?? 'good').toLowerCase(),
         orElse: () => Condition.good,
       ),
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
@@ -109,20 +110,32 @@ class Item {
   }
 
   Map<String, dynamic> toJson() {
+    // Convert seasons to database format
+    final List<String>? seasonNames =
+        seasons?.map((s) => s.databaseValue).toList();
+
+    // Add the appropriate size field based on category
+    final Map<String, dynamic> sizeField = switch (highCategory) {
+      'tops' when topSize != null => {'top_size': topSize},
+      'shoes' when shoeSize != null => {'shoe_size': shoeSize},
+      'bottoms' when bottomSize != null => {'bottom_size': bottomSize},
+      _ => {},
+    };
+
     return {
       'id': id,
       'store_name': storeName,
       'brand': brand,
       'store_id': storeId,
-      'gender': gender,
-      'size': size,
-      'high_category': highCategory.name,
-      'specific_category': specificCategory.name,
+      'sex': sex.databaseValue,
+      ...sizeField,
+      'high_category': highCategory,
+      'specific_category': specificCategory,
       'color': color,
       'styles': styles,
-      'season': season,
+      'seasons': seasonNames,
       'materials': materials,
-      'condition': condition,
+      'condition': condition.databaseValue,
       'price': price,
       'quantity': quantity,
       'description': description,

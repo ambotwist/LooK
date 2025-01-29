@@ -1,10 +1,7 @@
-enum Size {
-  xs,
-  s,
-  m,
-  l,
-  xl,
-  xxl,
+enum Sex {
+  male,
+  female,
+  unisex,
 }
 
 enum Season {
@@ -12,205 +9,160 @@ enum Season {
   summer,
   fall,
   winter,
-  any,
-}
-
-enum Gender {
-  male,
-  female,
-  unisex,
 }
 
 enum Condition {
   fair,
   good,
   excellent,
-  asNew,
+  as_new,
 }
 
-enum HighLevelCategory {
-  tops,
-  bottoms,
-  shoes,
-  outerwear,
-  accessories,
-  activewear,
-  underwearAndSleepwear,
-  swimwear,
-  formalWear,
-  bags,
-  jewelry,
+// These are not enums in the database but we'll keep them as constants for type safety
+class Categories {
+  static const List<String> highLevel = [
+    'tops',
+    'bottoms',
+    'shoes',
+    'outerwear',
+    'sportswear',
+    'bags',
+    'accessories',
+    'formal_wear'
+  ];
+
+  static const List<String> specific = [
+    't-shirts',
+    'shirts',
+    'tank_tops',
+    'sweaters',
+    'hoodies',
+    'blouses',
+    'polo_shirts',
+    'pants',
+    'jeans',
+    'shorts',
+    'skirts',
+    'leggings',
+    'sneakers',
+    'boots',
+    'sandals',
+    'flats',
+    'heels',
+    'loafers',
+    'jackets',
+    'coats',
+    'blazers',
+    'vests',
+    'scarves',
+    'belts',
+    'gloves',
+    'sunglasses',
+    'watches',
+    'jewelry',
+    'gym_tops',
+    'gym_bottoms',
+    'athletic_shoes',
+    'bikinis',
+    'one-piece_swimsuits',
+    'suits',
+    'dresses',
+    'tuxedos'
+  ];
+
+  static const List<String> colors = [
+    'black',
+    'white',
+    'red',
+    'blue',
+    'green',
+    'yellow',
+    'purple',
+    'pink',
+    'orange',
+    'brown',
+    'grey',
+    'multi'
+  ];
+
+  static const List<String> styles = [
+    'casual',
+    'formal',
+    'sporty',
+    'vintage',
+    'streetwear',
+    'bohemian',
+    'minimalist',
+    'preppy',
+    'punk',
+    'business',
+    'chic'
+  ];
 }
 
-enum SpecificCategory {
-  // Tops
-  tShirts,
-  shirts,
-  tankTops,
-  sweaters,
-  hoodies,
-  blouses,
-  poloShirts,
-
-  // Bottoms
-  pants,
-  jeans,
-  shorts,
-  skirts,
-  leggings,
-
-  // Shoes
-  sneakers,
-  boots,
-  sandals,
-  flats,
-  heels,
-  loafers,
-
-  // Outerwear
-  jackets,
-  coats,
-  blazers,
-  vests,
-
-  // Accessories
-  scarves,
-  belts,
-  gloves,
-  ties,
-  sunglasses,
-  watches,
-  jewelry,
-
-  // Activewear
-  gymTops,
-  gymBottoms,
-  sportsBras,
-  athleticShoes,
-
-  // Underwear & Sleepwear
-  underwear,
-  bras,
-  pajamas,
-  lingerie,
-  socks,
-
-  // Swimwear
-  swimTrunks,
-  bikinis,
-  onePieceSwimsuits,
-  rashGuards,
-
-  // Formal Wear
-  suits,
-  dresses,
-  tuxedos,
-}
-
-extension GenderName on Gender {
+extension SexName on Sex {
   String get displayName {
-    switch (toString().split('.').last) {
-      case 'male':
+    switch (this) {
+      case Sex.male:
         return 'Men';
-      case 'female':
+      case Sex.female:
         return 'Women';
-      case _:
-        return '-';
+      case Sex.unisex:
+        return 'Unisex';
     }
   }
+
+  String get databaseValue => name.toLowerCase();
 }
 
-extension SizeName on Size {
+extension SeasonName on Season {
   String get displayName {
-    return toString().split('.').last.toUpperCase();
+    return name[0].toUpperCase() + name.substring(1);
   }
+
+  String get databaseValue => name.toLowerCase();
 }
 
 extension ConditionName on Condition {
   String get displayName {
-    switch (toString().split('.').last) {
-      case 'fair':
+    switch (this) {
+      case Condition.fair:
         return 'Fair';
-      case 'good':
+      case Condition.good:
         return 'Good';
-      case 'excellent':
+      case Condition.excellent:
         return 'Excellent';
-      case 'asNew':
-        return 'New';
-      case _:
-        return '-';
+      case Condition.as_new:
+        return 'As New';
     }
   }
+
+  String get databaseValue => name.toLowerCase();
 }
 
-extension HighCategoryName on HighLevelCategory {
-  String get displayName {
-    String rawName = toString().split('.').last;
-
-    // Define exceptions for irregular plurals
-    const irregularPlurals = {
-      'jeans': 'Jean',
-      'shorts': 'Short',
-      'accessories': 'Accessory',
-    };
-
-    // Check for irregular plurals
-    if (irregularPlurals.containsKey(rawName)) {
-      return irregularPlurals[rawName]!;
-    }
-
-    // Singularize by removing trailing 's' (basic approach)
-    if (rawName.endsWith('s')) {
-      rawName = rawName.substring(0, rawName.length - 1);
-    }
-
-    // Insert spaces before capital letters, then capitalize the result
-    final words = rawName.replaceAllMapped(
-      RegExp(
-          r'([a-z])([A-Z])'), // Matches a lowercase letter followed by an uppercase letter
-      (match) => '${match.group(1)} ${match.group(2)}',
-    );
-
-    // Capitalize the first letter of each word
-    return words
-        .split(' ')
-        .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase())
-        .join(' ');
-  }
+// Helper functions for categories
+String categoryToDisplayName(String databaseValue) {
+  return databaseValue
+      .split('_')
+      .map((word) => word[0].toUpperCase() + word.substring(1))
+      .join(' ')
+      .replaceAll('-', ' ');
 }
 
-extension SpecificCategoryName on SpecificCategory {
-  String get displayName {
-    String rawName = toString().split('.').last;
+// Size validation functions
+bool isValidTopSize(String? size) {
+  if (size == null) return true;
+  return ['xs', 's', 'm', 'l', 'xl', 'xxl'].contains(size.toLowerCase());
+}
 
-    // Define exceptions for irregular plurals
-    const irregularPlurals = {
-      'jeans': 'Jean',
-      'shorts': 'Short',
-      'accessories': 'Accessory',
-    };
+bool isValidShoeSize(String? size) {
+  if (size == null) return true;
+  final sizeNum = int.tryParse(size);
+  return sizeNum != null && sizeNum >= 30 && sizeNum <= 49;
+}
 
-    // Check for irregular plurals
-    if (irregularPlurals.containsKey(rawName)) {
-      return irregularPlurals[rawName]!;
-    }
-
-    // Singularize by removing trailing 's' (basic approach)
-    if (rawName.endsWith('s')) {
-      rawName = rawName.substring(0, rawName.length - 1);
-    }
-
-    // Insert spaces before capital letters, then capitalize the result
-    final words = rawName.replaceAllMapped(
-      RegExp(
-          r'([a-z])([A-Z])'), // Matches a lowercase letter followed by an uppercase letter
-      (match) => '${match.group(1)} ${match.group(2)}',
-    );
-
-    // Capitalize the first letter of each word
-    return words
-        .split(' ')
-        .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase())
-        .join(' ');
-  }
+bool isValidBottomSize(String? size) {
+  if (size == null) return true;
+  final regex = RegExp(r'^W[2-4][0-9]L[2-3][0-9]$');
+  return regex.hasMatch(size);
 }

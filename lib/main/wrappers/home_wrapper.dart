@@ -182,8 +182,10 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
                     builder: (context) => FilterPage(
                       onApplyFilters: (newFilters) {
                         ref.read(filterProvider.notifier).updateFilters(
-                              season: newFilters.season,
-                              sizes: newFilters.sizes,
+                              seasons: newFilters.seasons,
+                              topSizes: newFilters.topSizes,
+                              shoeSizes: newFilters.shoeSizes,
+                              bottomSizes: newFilters.bottomSizes,
                               highCategories: newFilters.highCategories,
                               specificCategories: newFilters.specificCategories,
                               colors: newFilters.colors,

@@ -221,7 +221,7 @@ class WishlistItemCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${item.brand} ${item.specificCategory.displayName}',
+                    '${item.brand} ${categoryToDisplayName(item.specificCategory)}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

@@ -17,6 +17,7 @@ void main() async {
       authFlowType: AuthFlowType.pkce,
       autoRefreshToken: true,
     ),
+    debug: true,
   );
 
   runApp(const ProviderScope(child: MainApp()));
