@@ -246,8 +246,8 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
             padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(
               icon: const Icon(
-                Ionicons.basket,
-                size: 36,
+                Ionicons.bag,
+                size: 30,
               ),
               onPressed: () {},
             ),

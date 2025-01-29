@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/models/items.dart';
 import 'package:lookapp/providers/wishlist_provider.dart';
 import 'package:lookapp/main/pages/discover/dicover_card.dart';
@@ -108,8 +109,8 @@ class _WishlistPageState extends ConsumerState<WishlistPage>
                         ),
                         child: IconButton(
                           icon: Icon(
-                            Icons.add_shopping_cart_rounded,
-                            size: 32,
+                            Ionicons.bag_add,
+                            size: 36,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           onPressed: () {
@@ -159,12 +160,12 @@ class _WishlistPageState extends ConsumerState<WishlistPage>
         }
 
         return GridView.builder(
-          // padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.zero,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            childAspectRatio: 0.75,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
+            childAspectRatio: 0.65,
+            mainAxisSpacing: 0,
+            crossAxisSpacing: 0,
           ),
           itemCount: items.length,
           itemBuilder: (context, index) {
@@ -194,51 +195,69 @@ class WishlistItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.grey.shade200,
+            width: 0.5,
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
+          fit: StackFit.expand,
           children: [
             // Image
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  image: DecorationImage(
-                    image: NetworkImage(item.images.first),
-                    fit: BoxFit.cover,
-                  ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                image: DecorationImage(
+                  image: NetworkImage(item.images.first),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            // Info
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${item.brand} ${categoryToDisplayName(item.specificCategory)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+            // Gradient Overlay with Text
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.4),
+                      Colors.black.withOpacity(0.7),
+                    ],
+                    stops: const [0.0, 0.5, 1.0],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '\$${item.price.toInt()}',
-                    style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${item.brand} ${categoryToDisplayName(item.specificCategory)}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      '\$${item.price.toInt()}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
