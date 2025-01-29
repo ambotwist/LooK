@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static ThemeData get light {
-    const primaryColor = Color.fromARGB(255, 238, 54, 115);
+    const primaryColor = Color.fromARGB(255, 255, 0, 85);
     const secondaryColor = Colors.white;
     final greyColor = Colors.grey.shade700;
 
@@ -13,7 +13,7 @@ class AppTheme {
       // Colors
       primaryColor: primaryColor,
       colorScheme: ColorScheme.light(
-        primary: primaryColor,
+        primary: Colors.black,
         secondary: secondaryColor,
         surface: Colors.white,
         error: Colors.red.shade600,
@@ -145,10 +145,10 @@ class AppTheme {
       ),
 
       // Bottom Navigation Bar Theme
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         selectedItemColor: primaryColor,
-        unselectedItemColor: Colors.grey,
+        unselectedItemColor: Colors.grey.shade700,
       ),
     );
   }

@@ -27,16 +27,18 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
         .from('interactions')
         .select('item_id')
         .eq('user_id', userId);
+
     final interactedItemIds = (interactions as List)
         .map((interaction) => interaction['item_id'] as String)
-        .toSet();
+        .toList();
 
-    // Build the query
     var query = supabase.from('items').select();
 
     // Exclude interacted items
     if (interactedItemIds.isNotEmpty) {
-      query = query.filter('id', 'not.in', interactedItemIds);
+      // Format the list as a comma-separated string within parentheses
+      final formattedIds = '(${interactedItemIds.join(',')})';
+      query = query.not('id', 'in', formattedIds);
     }
 
     // Apply sex filter
@@ -132,6 +134,7 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
         .toList();
   } catch (e) {
     // Generic error for security
+    print('Error: $e');
     throw Exception('Could not load items. Please try again.');
   }
 });

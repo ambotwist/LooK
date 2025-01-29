@@ -118,7 +118,6 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         toolbarHeight: 42,
         leadingWidth: 100,
         leading: Padding(
@@ -258,7 +257,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
         children: _pages,
       ),
       bottomNavigationBar: Container(
-        color: Colors.white,
+        color: theme.bottomNavigationBarTheme.backgroundColor,
         height: navbarHeight,
         padding: const EdgeInsets.only(
           bottom: 20,

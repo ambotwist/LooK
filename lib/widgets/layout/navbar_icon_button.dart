@@ -23,7 +23,9 @@ class NavbarIconButton extends StatelessWidget {
     return IconButton(
       icon: Icon(
         icon,
-        color: isSelected ? selectedColor : Colors.grey.shade800,
+        color: isSelected
+            ? selectedColor
+            : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
         size: size,
       ),
       style: IconButton.styleFrom(
