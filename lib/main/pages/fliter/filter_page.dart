@@ -78,12 +78,29 @@ class _FilterPageState extends ConsumerState<FilterPage> {
       ),
       body: ListView(
         children: [
+          // Styles
+          _buildSection(
+            title: 'Styles',
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 0,
+              children: Categories.styles.map((style) {
+                return FilterChip(
+                  label: Text(categoryToDisplayName(style)),
+                  selected: filterState.styles.contains(style),
+                  onSelected: (selected) {
+                    notifier.toggleStyle(style);
+                  },
+                );
+              }).toList(),
+            ),
+          ),
           // High Level Categories
           _buildSection(
             title: 'Categories',
             child: Wrap(
               spacing: 8,
-              runSpacing: 8,
+              runSpacing: 0,
               children: Categories.highLevel.map((category) {
                 return FilterChip(
                   label: Text(categoryToDisplayName(category)),
@@ -219,24 +236,6 @@ class _FilterPageState extends ConsumerState<FilterPage> {
                 ),
               ],
             ),
-
-          // Styles
-          _buildSection(
-            title: 'Styles',
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: Categories.styles.map((style) {
-                return FilterChip(
-                  label: Text(categoryToDisplayName(style)),
-                  selected: filterState.styles.contains(style),
-                  onSelected: (selected) {
-                    notifier.toggleStyle(style);
-                  },
-                );
-              }).toList(),
-            ),
-          ),
         ],
       ),
       bottomNavigationBar: SafeArea(

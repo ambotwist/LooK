@@ -73,9 +73,15 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                 CardIconTextRow(
                     icon: Icons.supervisor_account_rounded,
                     text: widget.item.sex.displayName),
-                const CardIconTextRow(
-                    icon: Icons.straighten_rounded,
-                    text: 'size 32'),
+                CardIconTextRow(
+                  icon: Icons.straighten_rounded,
+                  text: switch (widget.item.highCategory) {
+                    'tops' => widget.item.topSize?.toUpperCase() ?? 'N/A',
+                    'bottoms' => widget.item.bottomSize ?? 'N/A',
+                    'shoes' => widget.item.shoeSize?.toString() ?? 'N/A',
+                    _ => 'N/A'
+                  },
+                ),
               ],
             ),
           1 => Column(
@@ -111,9 +117,15 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                 CardIconTextRow(
                     icon: Icons.supervisor_account_rounded,
                     text: widget.item.sex.displayName),
-                const CardIconTextRow(
-                    icon: Icons.straighten_rounded,
-                    text: 'size 32'),
+                CardIconTextRow(
+                  icon: Icons.straighten_rounded,
+                  text: switch (widget.item.highCategory) {
+                    'tops' => widget.item.topSize?.toUpperCase() ?? 'N/A',
+                    'bottoms' => widget.item.bottomSize ?? 'N/A',
+                    'shoes' => widget.item.shoeSize?.toString() ?? 'N/A',
+                    _ => 'N/A'
+                  },
+                ),
               ],
             ),
         },
@@ -297,7 +309,7 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
