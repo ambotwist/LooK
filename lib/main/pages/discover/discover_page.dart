@@ -1,11 +1,16 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/main/pages/discover/dicover_card.dart';
+import 'package:lookapp/main/pages/discover/action_bar.dart';
+import 'package:lookapp/main/pages/fliter/filter_page.dart';
+import 'package:lookapp/models/items.dart';
+import 'package:lookapp/providers/discover_provider.dart';
+import 'package:lookapp/providers/filter_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
-import 'package:lookapp/main/pages/discover/action_bar.dart';
-import 'package:lookapp/providers/discover_provider.dart';
-import 'package:lookapp/models/items.dart';
+import 'package:lookapp/providers/overlay_provider.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
   final double navbarHeight;
@@ -20,12 +25,13 @@ class DiscoverPage extends ConsumerStatefulWidget {
 }
 
 class _DiscoverPageState extends ConsumerState<DiscoverPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   Offset dragOffset = Offset.zero;
   late AnimationController slideController;
   Offset? slideOutTween;
   bool isProcessingInteraction = false;
   bool _isDragging = false;
+  late final AnimationController _shakeController;
 
   @override
   void initState() {
@@ -34,11 +40,17 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     )..addStatusListener(_handleAnimationStatus);
+
+    _shakeController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
   }
 
   @override
   void dispose() {
     slideController.dispose();
+    _shakeController.dispose();
     super.dispose();
   }
 
@@ -190,6 +202,58 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     slideController.forward();
   }
 
+  void _handleRewind() async {
+    final discoverNotifier = ref.read(discoverProvider.notifier);
+    final discoverState = ref.read(discoverProvider);
+    final items = ref.read(itemsProvider).asData?.value;
+
+    print(
+        'Rewind triggered - Previous indices: ${discoverState.previousIndices}');
+
+    if (discoverState.previousIndices.isEmpty || items == null) {
+      print('No previous cards to rewind to');
+      _shakeController.forward().then((_) => _shakeController.reset());
+      return;
+    }
+
+    try {
+      // Get the previous item that we're rewinding to
+      final previousIndex = discoverState.previousIndices.last;
+      final previousItem = items[previousIndex];
+
+      // Rewind the card immediately for better UX
+      discoverNotifier.rewindCard();
+
+      // Show the action bar if it was hidden
+      ref.read(overlayProvider).show();
+
+      // Delete the interaction to reset the card's state
+      final success =
+          await ref.read(interactionsProvider.notifier).updateInteraction(
+                previousItem.id,
+                null, // Pass null to delete the interaction
+              );
+
+      if (!success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to reset interaction'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final items = ref.watch(itemsProvider);
@@ -199,36 +263,199 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
 
     return Stack(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: bottomPadding),
-          child: items.when(
-            error: (error, stackTrace) => Center(
-              child: Text('Error: $error'),
-            ),
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            data: (items) {
-              if (items.isEmpty || discoverState.currentIndex >= items.length) {
-                return const Center(
-                  child: Text(
-                    'No more items to discover',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
-                  ),
-                );
-              }
-
-              final animation = CurvedAnimation(
-                parent: slideController,
-                curve: slideOutTween == Offset.zero
-                    ? Curves.easeOutBack
-                    : Curves.easeOutQuart,
-              );
-
-              return Column(
+        Column(
+          children: [
+            Container(
+              height: 48,
+              color: Theme.of(context).appBarTheme.backgroundColor,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Stack(
+                  const SizedBox(width: 12),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.filter_list_rounded,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FilterPage(
+                            onApplyFilters: (newFilters) {
+                              ref.read(filterProvider.notifier).updateFilters(
+                                    seasons: newFilters.seasons,
+                                    topSizes: newFilters.topSizes,
+                                    shoeSizes: newFilters.shoeSizes,
+                                    bottomSizes: newFilters.bottomSizes,
+                                    highCategories: newFilters.highCategories,
+                                    specificCategories:
+                                        newFilters.specificCategories,
+                                    colors: newFilters.colors,
+                                    priceRange: newFilters.priceRange,
+                                    styles: newFilters.styles,
+                                  );
+                              ref.invalidate(itemsProvider);
+                              ref.read(discoverProvider.notifier).updateState(
+                                currentIndex: 0,
+                                currentImageIndex: 0,
+                                previousIndices: [],
+                              );
+                              ref.read(overlayProvider).show();
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  // Brand Filter Dropdown
+                  Container(
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: PopupMenuButton<String>(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      position: PopupMenuPosition.under,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Row(
+                          children: [
+                            const Text(
+                              'Brand',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              color: Theme.of(context).colorScheme.tertiary,
+                            ),
+                          ],
+                        ),
+                      ),
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'nike',
+                          child: Text('Nike'),
+                        ),
+                        const PopupMenuItem(
+                          value: 'adidas',
+                          child: Text('Adidas'),
+                        ),
+                        // Add more brands as needed
+                      ],
+                      onSelected: (value) {
+                        ref
+                            .read(filterProvider.notifier)
+                            .toggleHighCategory(value);
+                        ref.invalidate(itemsProvider);
+                        ref.read(discoverProvider.notifier).updateState(
+                          currentIndex: 0,
+                          currentImageIndex: 0,
+                          previousIndices: [],
+                        );
+                        ref.read(overlayProvider).show();
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Category Filter Dropdown
+                  Container(
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: PopupMenuButton<String>(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      position: PopupMenuPosition.under,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Row(
+                          children: [
+                            const Text(
+                              'Category',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              color: Theme.of(context).colorScheme.tertiary,
+                            ),
+                          ],
+                        ),
+                      ),
+                      itemBuilder: (context) => Categories.highLevel
+                          .map((category) => PopupMenuItem(
+                                value: category,
+                                child: Text(categoryToDisplayName(category)),
+                              ))
+                          .toList(),
+                      onSelected: (value) {
+                        ref
+                            .read(filterProvider.notifier)
+                            .toggleHighCategory(value);
+                        ref.invalidate(itemsProvider);
+                        ref.read(discoverProvider.notifier).updateState(
+                          currentIndex: 0,
+                          currentImageIndex: 0,
+                          previousIndices: [],
+                        );
+                        ref.read(overlayProvider).show();
+                      },
+                    ),
+                  ),
+                  const Spacer(),
+                  const SizedBox(width: 8),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: bottomPadding),
+                child: items.when(
+                  error: (error, stackTrace) => Center(
+                    child: Text('Error: $error'),
+                  ),
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  data: (items) {
+                    if (items.isEmpty ||
+                        discoverState.currentIndex >= items.length) {
+                      return const Center(
+                        child: Text(
+                          'No more items to discover',
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                        ),
+                      );
+                    }
+
+                    final animation = CurvedAnimation(
+                      parent: slideController,
+                      curve: slideOutTween == Offset.zero
+                          ? Curves.easeOutBack
+                          : Curves.easeOutQuart,
+                    );
+
+                    return Stack(
                       children: [
                         // Next card (if available)
                         if (discoverState.currentIndex + 1 < items.length)
@@ -236,7 +463,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                             item: items[discoverState.currentIndex + 1],
                             isCurrentCard: false,
                           ),
-
                         // Current card (with gestures)
                         GestureDetector(
                           onPanUpdate: _onPanUpdate,
@@ -250,7 +476,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                   ? Offset.lerp(
                                       dragOffset, slideOutTween, value)!
                                   : dragOffset;
-
                               return Transform.translate(
                                 offset: offset,
                                 child: Transform.rotate(
@@ -274,12 +499,12 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
         // Action bar overlay - positioned relative to the entire screen
         if (items.hasValue &&

@@ -2,31 +2,34 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static ThemeData get light {
-    const primaryColor = Color.fromARGB(255, 255, 0, 85);
-    const secondaryColor = Colors.white;
-    final greyColor = Colors.grey.shade700;
+    const themeColor = Color.fromARGB(255, 255, 0, 85);
+    const primary = Colors.white;
+    final surface = Colors.grey.shade300;
+    final button = Colors.grey.shade800;
+    const text = Colors.black87;
 
     return ThemeData(
       fontFamily: 'Montserrat',
       useMaterial3: true,
 
       // Colors
-      primaryColor: primaryColor,
+      primaryColor: themeColor,
       colorScheme: ColorScheme.light(
-        primary: Colors.black,
-        secondary: secondaryColor,
-        surface: Colors.white,
+        surface: Colors.grey.shade300,
+        primary: Colors.white,
+        secondary: themeColor,
+        tertiary: button,
         error: Colors.red.shade600,
       ),
 
       // General Theme
-      scaffoldBackgroundColor: Colors.grey.shade200,
-      dividerColor: Colors.grey.shade300,
+      scaffoldBackgroundColor: surface,
+      dividerColor: button,
 
       // AppBar Theme
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.white,
-        foregroundColor: greyColor, // For icons
+        backgroundColor: primary,
+        foregroundColor: button, // For icons
         elevation: 0,
         centerTitle: true,
         titleTextStyle: const TextStyle(
@@ -35,18 +38,18 @@ class AppTheme {
           fontWeight: FontWeight.w600,
         ),
         iconTheme: IconThemeData(
-          color: greyColor,
+          color: button,
         ),
         actionsIconTheme: IconThemeData(
-          color: greyColor,
+          color: button,
         ),
       ),
 
       // Button Themes
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
+          backgroundColor: themeColor,
+          foregroundColor: primary,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(
@@ -57,12 +60,18 @@ class AppTheme {
 
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: greyColor,
+          backgroundColor: surface,
+          foregroundColor: text,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ).copyWith(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            return states.contains(WidgetState.disabled)
+                ? Colors.grey.shade300
+                : null;
+          }),
           foregroundColor: WidgetStateProperty.resolveWith((states) {
             return states.contains(WidgetState.disabled)
-                ? Colors.grey.shade400
+                ? Colors.black87
                 : null;
           }),
         ),
@@ -70,7 +79,7 @@ class AppTheme {
 
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
-          foregroundColor: greyColor,
+          foregroundColor: button,
         ).copyWith(
           foregroundColor: WidgetStateProperty.resolveWith((states) {
             return states.contains(WidgetState.disabled)
@@ -83,7 +92,7 @@ class AppTheme {
       // Chip Theme
       chipTheme: ChipThemeData(
         backgroundColor: Colors.white,
-        selectedColor: primaryColor,
+        selectedColor: themeColor,
         disabledColor: Colors.grey.shade300,
         labelStyle: const TextStyle(color: Colors.black87),
         secondaryLabelStyle: const TextStyle(color: Colors.white),
@@ -96,11 +105,11 @@ class AppTheme {
 
       // Slider Theme
       sliderTheme: SliderThemeData(
-        activeTrackColor: primaryColor,
-        inactiveTrackColor: primaryColor.withOpacity(0.2),
-        thumbColor: primaryColor,
-        overlayColor: primaryColor.withOpacity(0.1),
-        valueIndicatorColor: primaryColor,
+        activeTrackColor: themeColor,
+        inactiveTrackColor: themeColor.withOpacity(0.2),
+        thumbColor: themeColor,
+        overlayColor: themeColor.withOpacity(0.1),
+        valueIndicatorColor: themeColor,
         valueIndicatorTextStyle: const TextStyle(color: Colors.white),
       ),
 
@@ -110,15 +119,15 @@ class AppTheme {
         fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: surface),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: surface),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: primaryColor),
+          borderSide: const BorderSide(color: themeColor),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -146,9 +155,9 @@ class AppTheme {
 
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: Colors.white,
-        selectedItemColor: primaryColor,
-        unselectedItemColor: Colors.grey.shade700,
+        backgroundColor: primary,
+        selectedItemColor: themeColor,
+        unselectedItemColor: button,
       ),
     );
   }

@@ -11,6 +11,7 @@ import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
 import 'package:lookapp/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
+import 'package:lookapp/widgets/layout/search_bar.dart';
 import 'dart:math';
 
 class HomeWrapper extends ConsumerStatefulWidget {
@@ -120,23 +121,24 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
       appBar: AppBar(
         toolbarHeight: 42,
         leadingWidth: 100,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'LooK',
-              style: TextStyle(
-                color: theme.primaryColor,
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
+        leading: _selectedIndex == 0
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'LooK',
+                    style: TextStyle(
+                      color: theme.primaryColor,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
         title: Text(
           switch (_selectedIndex) {
-            0 => '',
             1 => 'Search',
             2 => 'Store',
             3 => 'Wishlist',
@@ -149,61 +151,66 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
         ),
         actions: [
           if (_selectedIndex == 0) ...[
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: AnimatedBuilder(
-                animation: _shakeController,
-                builder: (context, child) {
-                  final shakeValue = sin(_shakeController.value * pi * 8);
-                  return Transform.rotate(
-                    angle: shakeValue * 0.1,
-                    child: child,
-                  );
-                },
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.fast_rewind_rounded,
-                    size: 32,
-                  ),
-                  onPressed: _handleRewind,
-                ),
-              ),
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.filter_list_rounded,
-                size: 30,
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FilterPage(
-                      onApplyFilters: (newFilters) {
-                        ref.read(filterProvider.notifier).updateFilters(
-                              seasons: newFilters.seasons,
-                              topSizes: newFilters.topSizes,
-                              shoeSizes: newFilters.shoeSizes,
-                              bottomSizes: newFilters.bottomSizes,
-                              highCategories: newFilters.highCategories,
-                              specificCategories: newFilters.specificCategories,
-                              colors: newFilters.colors,
-                              priceRange: newFilters.priceRange,
-                              styles: newFilters.styles,
-                            );
-                        ref.invalidate(itemsProvider);
-                        ref.read(discoverProvider.notifier).updateState(
-                          currentIndex: 0,
-                          currentImageIndex: 0,
-                          previousIndices: [],
-                        );
-                        ref.read(overlayProvider).show();
-                      },
-                    ),
-                  ),
+            AnimatedBuilder(
+              animation: _shakeController,
+              builder: (context, child) {
+                final shakeValue = sin(_shakeController.value * pi * 8);
+                return Transform.rotate(
+                  angle: shakeValue * 0.1,
+                  child: child,
                 );
               },
+              child: IconButton(
+                icon: const Icon(
+                  Icons.fast_rewind_rounded,
+                  size: 32,
+                ),
+                onPressed: _handleRewind,
+              ),
             ),
+            const SizedBox(width: 8),
+            Expanded(
+                child: Container(
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    child: const CustomSearchBar(
+                      hintText: 'Looking for something?',
+                    ))),
+            const SizedBox(width: 8),
+            //   IconButton(
+            //     icon: const Icon(
+            //       Icons.filter_list_rounded,
+            //       size: 30,
+            //     ),
+            //     onPressed: () {
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => FilterPage(
+            //             onApplyFilters: (newFilters) {
+            //               ref.read(filterProvider.notifier).updateFilters(
+            //                     seasons: newFilters.seasons,
+            //                     topSizes: newFilters.topSizes,
+            //                     shoeSizes: newFilters.shoeSizes,
+            //                     bottomSizes: newFilters.bottomSizes,
+            //                     highCategories: newFilters.highCategories,
+            //                     specificCategories: newFilters.specificCategories,
+            //                     colors: newFilters.colors,
+            //                     priceRange: newFilters.priceRange,
+            //                     styles: newFilters.styles,
+            //                   );
+            //               ref.invalidate(itemsProvider);
+            //               ref.read(discoverProvider.notifier).updateState(
+            //                 currentIndex: 0,
+            //                 currentImageIndex: 0,
+            //                 previousIndices: [],
+            //               );
+            //               ref.read(overlayProvider).show();
+            //             },
+            //           ),
+            //         ),
+            //       );
+            //     },
+            //   ),
           ],
           // if (_selectedIndex == 3) ...[
           //   IconButton(
@@ -257,7 +264,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
         children: _pages,
       ),
       bottomNavigationBar: Container(
-        color: theme.bottomNavigationBarTheme.backgroundColor,
+        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
         height: navbarHeight,
         padding: const EdgeInsets.only(
           bottom: 20,
