@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/models/items.dart';
 import 'package:lookapp/providers/wishlist_provider.dart';
@@ -135,9 +136,9 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
           width: 52,
           child: IconButton(
             padding: EdgeInsets.zero,
-            iconSize: 52,
+            iconSize: 42,
             icon: Icon(
-              isInWishlist ? Icons.star_rounded : Icons.star_outline_rounded,
+              isInWishlist ? Ionicons.bookmark_outline : Ionicons.bookmark,
               color: Colors.white.withOpacity(0.9),
             ),
             onPressed: () async {
@@ -219,7 +220,7 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                           widget.item.images.length,
                           (index) => Expanded(
                             child: Container(
-                              height: 4,
+                              height: 5,
                               margin:
                                   const EdgeInsets.symmetric(horizontal: 4.0),
                               decoration: BoxDecoration(
@@ -227,7 +228,7 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                                     ? Colors.white
                                     : Colors.black.withOpacity(0.4),
                                 border: Border.all(
-                                    color: Colors.white.withOpacity(0.5)),
+                                    color: Colors.white.withOpacity(0.7)),
                                 borderRadius: BorderRadius.circular(1.0),
                               ),
                             ),
