@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class FilterDropdown extends StatelessWidget {
   final String label;
@@ -108,7 +109,7 @@ class FilterDropdown extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Icon(
-                Icons.arrow_drop_down,
+                const FaIcon(FontAwesomeIcons.chevronDown),
                 color: theme.colorScheme.tertiary,
               ),
             ],

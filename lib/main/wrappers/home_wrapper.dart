@@ -168,7 +168,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
                 child: Container(
                     constraints: const BoxConstraints(maxWidth: 400),
                     child: const CustomSearchBar(
-                      hintText: 'Looking for something?',
+                      hintText: 'What are you looking for?',
                     ))),
             const SizedBox(width: 8),
             //   IconButton(
