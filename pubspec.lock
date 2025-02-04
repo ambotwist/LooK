@@ -240,6 +240,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  ionicons:
+    dependency: "direct main"
+    description:
+      name: ionicons
+      sha256: "5496bc65a16115ecf05b15b78f494ee4a8869504357668f0a11d689e970523cf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.2"
   jwt_decode:
     dependency: transitive
     description:
@@ -501,14 +509,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  social_login_buttons:
-    dependency: "direct main"
-    description:
-      name: social_login_buttons
-      sha256: "052b88f1a9fed69430097093c02ed738a0fbf4c5fa4b0ed0ce4e8aa3caf592de"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.7"
   source_span:
     dependency: transitive
     description:
