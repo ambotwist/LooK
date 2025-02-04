@@ -613,6 +613,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
           child: Container(
             decoration: BoxDecoration(
               color: overlayColor.withOpacity(baseOpacity * 0.3),
+              borderRadius: BorderRadius.circular(40),
             ),
           ),
         ),

@@ -137,9 +137,19 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
           child: IconButton(
             padding: EdgeInsets.zero,
             iconSize: 42,
-            icon: Icon(
-              isInWishlist ? Ionicons.bookmark_outline : Ionicons.bookmark,
-              color: Colors.white.withOpacity(0.9),
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 100),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return ScaleTransition(
+                  scale: animation,
+                  child: child,
+                );
+              },
+              child: Icon(
+                isInWishlist ? Ionicons.bookmark : Ionicons.bookmark_outline,
+                key: ValueKey<bool>(isInWishlist),
+                color: Colors.white.withOpacity(0.9),
+              ),
             ),
             onPressed: () async {
               final success = await ref

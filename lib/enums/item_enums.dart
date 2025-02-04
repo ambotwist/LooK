@@ -142,11 +142,44 @@ extension ConditionName on Condition {
 
 // Helper functions for categories
 String categoryToDisplayName(String databaseValue) {
-  return databaseValue
+  // First split and capitalize each word
+  String displayName = databaseValue
       .split('_')
       .map((word) => word[0].toUpperCase() + word.substring(1))
       .join(' ')
       .replaceAll('-', ' ');
+
+  // Convert plural forms to singular
+  displayName = displayName
+      .replaceAll('Pants', 'Pants')
+      .replaceAll('Shorts', 'Shorts')
+      .replaceAll('Jeans', 'Jeans')
+      .replaceAll('Leggings', 'Legging')
+      .replaceAll('Shoes', 'Shoes')
+      .replaceAll('Boots', 'Boots')
+      .replaceAll('Sandals', 'Sandals')
+      .replaceAll('Flats', 'Flats')
+      .replaceAll('Heels', 'Heels')
+      .replaceAll('Loafers', 'Loafers')
+      .replaceAll('Tops', 'Top')
+      .replaceAll('Shirts', 'Shirt')
+      .replaceAll('Sweaters', 'Sweater')
+      .replaceAll('Hoodies', 'Hoodie')
+      .replaceAll('Blouses', 'Blouse')
+      .replaceAll('Jackets', 'Jacket')
+      .replaceAll('Coats', 'Coat')
+      .replaceAll('Blazers', 'Blazer')
+      .replaceAll('Vests', 'Vest')
+      .replaceAll('Scarves', 'Scarf')
+      .replaceAll('Gloves', 'Gloves')
+      .replaceAll('Sunglasses', 'Sunglasses')
+      .replaceAll('Watches', 'Watch')
+      .replaceAll('Dresses', 'Dress')
+      .replaceAll('Skirts', 'Skirt')
+      .replaceAll('Suits', 'Suit')
+      .replaceAll('Tuxedos', 'Tuxedo');
+
+  return displayName;
 }
 
 // Size validation functions
