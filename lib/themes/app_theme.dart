@@ -2,25 +2,47 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static ThemeData get light {
+    const fontFamily = 'Montserrat';
     const themeColor = Color.fromARGB(255, 255, 0, 85);
     const primary = Colors.white;
-    final surface = Colors.grey.shade300;
+    final surface = Colors.grey.shade200;
     final button = Colors.grey.shade800;
-    const text = Colors.black87;
+    const lightText = Colors.black87;
 
     return ThemeData(
-      fontFamily: 'Montserrat',
+      fontFamily: fontFamily,
       useMaterial3: true,
 
       // Colors
       primaryColor: themeColor,
       colorScheme: ColorScheme.light(
-        surface: Colors.grey.shade300,
+        surface: surface,
+        onSurface: button,
         primary: Colors.white,
-        onPrimary: Colors.black87,
+        onPrimary: Colors.black,
         secondary: themeColor,
         tertiary: button,
+
         error: Colors.red.shade600,
+      ),
+
+      // Text Theme
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(fontFamily: fontFamily),
+        displayMedium: TextStyle(fontFamily: fontFamily),
+        displaySmall: TextStyle(fontFamily: fontFamily),
+        headlineLarge: TextStyle(fontFamily: fontFamily),
+        headlineMedium: TextStyle(fontFamily: fontFamily),
+        headlineSmall: TextStyle(fontFamily: fontFamily),
+        titleLarge: TextStyle(fontFamily: fontFamily),
+        titleMedium: TextStyle(fontFamily: fontFamily),
+        titleSmall: TextStyle(fontFamily: fontFamily),
+        bodyLarge: TextStyle(fontFamily: fontFamily),
+        bodyMedium: TextStyle(fontFamily: fontFamily),
+        bodySmall: TextStyle(fontFamily: fontFamily),
+        labelLarge: TextStyle(fontFamily: fontFamily),
+        labelMedium: TextStyle(fontFamily: fontFamily),
+        labelSmall: TextStyle(fontFamily: fontFamily),
       ),
 
       // General Theme
@@ -34,6 +56,7 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
         titleTextStyle: const TextStyle(
+          fontFamily: fontFamily,
           color: Colors.black87,
           fontSize: 20,
           fontWeight: FontWeight.w600,
@@ -49,12 +72,16 @@ class AppTheme {
       // Button Themes
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: themeColor,
-          foregroundColor: primary,
+          backgroundColor: primary,
+          foregroundColor: Colors.black87,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+          textStyle: const TextStyle(
+            fontFamily: fontFamily,
+            fontWeight: FontWeight.w500,
+          ),
+          padding: EdgeInsets.zero,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
           ),
         ),
       ),
@@ -62,7 +89,11 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           backgroundColor: surface,
-          foregroundColor: text,
+          foregroundColor: lightText,
+          textStyle: const TextStyle(
+            fontFamily: fontFamily,
+            fontWeight: FontWeight.w500,
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ).copyWith(
           backgroundColor: WidgetStateProperty.resolveWith((states) {
@@ -95,8 +126,14 @@ class AppTheme {
         backgroundColor: Colors.white,
         selectedColor: themeColor,
         disabledColor: Colors.grey.shade300,
-        labelStyle: const TextStyle(color: Colors.black87),
-        secondaryLabelStyle: const TextStyle(color: Colors.white),
+        labelStyle: const TextStyle(
+          fontFamily: fontFamily,
+          color: Colors.black87,
+        ),
+        secondaryLabelStyle: const TextStyle(
+          fontFamily: fontFamily,
+          color: Colors.white,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),

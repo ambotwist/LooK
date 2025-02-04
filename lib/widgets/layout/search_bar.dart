@@ -49,7 +49,7 @@ class CustomSearchBar extends StatelessWidget {
           ),
           border: OutlineInputBorder(
             borderSide: BorderSide(
-              color: theme.colorScheme.tertiary,
+              color: theme.colorScheme.onPrimary,
             ),
             borderRadius: BorderRadius.circular(40),
           ),

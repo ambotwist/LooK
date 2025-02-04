@@ -274,7 +274,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                 children: [
                   IconButton(
                     icon: const Icon(Ionicons.filter_outline),
-                    color: Theme.of(context).colorScheme.tertiary,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     onPressed: () {
                       Navigator.push(
                         context,

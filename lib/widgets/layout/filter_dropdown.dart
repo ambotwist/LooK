@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+
 class FilterDropdown extends StatelessWidget {
   final String label;
   final List<PopupMenuItem<String>> items;
@@ -27,7 +28,7 @@ class FilterDropdown extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.transparent,
         border: Border.all(
-          color: theme.colorScheme.tertiary,
+          color: theme.colorScheme.onPrimary,
         ),
         borderRadius: BorderRadius.circular(40),
       ),
@@ -101,16 +102,17 @@ class FilterDropdown extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               const SizedBox(width: 4),
               Icon(
                 Ionicons.chevron_down_outline,
                 size: 14,
-                color: theme.colorScheme.tertiary,
+                color: theme.colorScheme.onPrimary,
               ),
             ],
           ),
