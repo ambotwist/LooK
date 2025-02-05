@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
+import 'package:lookapp/providers/user_profile_provider.dart';
 
 class PhonePage extends ConsumerStatefulWidget {
   const PhonePage({super.key});
@@ -26,6 +27,31 @@ class _PhonePageState extends ConsumerState<PhonePage> {
     }
   }
 
+  Future<void> _savePhoneNumber() async {
+    if (_completePhoneNumber != null) {
+      final success =
+          await ref.read(userProfileProvider.notifier).updateUserProfile(
+                phoneNumber: _completePhoneNumber,
+              );
+
+      if (success) {
+        // Update the local state
+        ref
+            .read(userPreferencesProvider.notifier)
+            .updatePhoneNumber(_completePhoneNumber);
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to save changes')),
+        );
+        return;
+      }
+    }
+
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,14 +67,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              if (_completePhoneNumber != null) {
-                ref
-                    .read(userPreferencesProvider.notifier)
-                    .updatePhoneNumber(_completePhoneNumber);
-              }
-              Navigator.of(context).pop();
-            },
+            onPressed: _savePhoneNumber,
             child: const Text(
               'Save',
               style: TextStyle(

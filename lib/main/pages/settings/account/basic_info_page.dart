@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
+import 'package:lookapp/providers/user_profile_provider.dart';
 
 class BasicInfoPage extends ConsumerStatefulWidget {
   const BasicInfoPage({super.key});
@@ -31,6 +32,34 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
     super.dispose();
   }
 
+  Future<void> _saveBasicInfo() async {
+    final success =
+        await ref.read(userProfileProvider.notifier).updateUserProfile(
+              firstName: _firstNameController.text.isEmpty
+                  ? null
+                  : _firstNameController.text,
+              lastName: _lastNameController.text.isEmpty
+                  ? null
+                  : _lastNameController.text,
+            );
+
+    if (success) {
+      // Update the local state
+      ref.read(userPreferencesProvider.notifier)
+        ..updateFirstName(_firstNameController.text)
+        ..updateLastName(_lastNameController.text);
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to save changes')),
+      );
+      return;
+    }
+
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,12 +75,7 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              ref.read(userPreferencesProvider.notifier)
-                ..updateFirstName(_firstNameController.text)
-                ..updateLastName(_lastNameController.text);
-              Navigator.of(context).pop();
-            },
+            onPressed: _saveBasicInfo,
             child: const Text(
               'Save',
               style: TextStyle(
