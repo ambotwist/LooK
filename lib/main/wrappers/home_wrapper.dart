@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lookapp/main/pages/account/account_page.dart';
+import 'package:lookapp/main/pages/settings/settings_page.dart';
 import 'package:lookapp/main/pages/discover/discover_page.dart';
 import 'package:lookapp/main/pages/wishlist/wishlist_page.dart';
 import 'package:lookapp/providers/discover_provider.dart';
@@ -35,7 +35,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
       const TestPage(),
       const TestPage(),
       const WishlistPage(),
-      const AccountPage(),
+      const SettingsPage(),
     ];
 
     _shakeController = AnimationController(
@@ -141,11 +141,12 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
             1 => 'Search',
             2 => 'Store',
             3 => 'Wishlist',
-            4 => 'Account',
+            4 => 'Settings',
             _ => '',
           },
           style: const TextStyle(
             fontWeight: FontWeight.w600,
+            fontSize: 18,
           ),
         ),
         actions: [

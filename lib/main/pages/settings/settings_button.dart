@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 
-class AccountButton extends StatelessWidget {
+class SettingsButton extends StatelessWidget {
   final String title;
   final IconData icon;
   final double iconSize;
   final Color iconBackgroundColor;
-  const AccountButton({
+  final VoidCallback onPressed;
+
+  const SettingsButton({
     super.key,
     required this.title,
     required this.icon,
     required this.iconSize,
     this.iconBackgroundColor = Colors.transparent,
+    required this.onPressed,
   });
 
   @override
@@ -20,7 +23,7 @@ class AccountButton extends StatelessWidget {
       width: double.infinity,
       height: 48,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           alignment: Alignment.centerLeft,
           padding: EdgeInsets.zero,

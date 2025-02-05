@@ -17,13 +17,13 @@ class SettingsButtonContainer extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Text(title,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: FontWeight.w400,
               color: Theme.of(context).colorScheme.onSurface,
             )),
       ),
       ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(14),
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
