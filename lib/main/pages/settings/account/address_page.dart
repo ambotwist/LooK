@@ -396,6 +396,7 @@ class _AddressFormState extends ConsumerState<AddressForm> {
                 ? null
                 : _countryController.text,
             style: inputStyle,
+            dropdownColor: theme.colorScheme.primary,
             decoration: InputDecoration(
               labelText: 'Country',
               labelStyle: labelStyle,
@@ -410,7 +411,10 @@ class _AddressFormState extends ConsumerState<AddressForm> {
             items: countries.keys.map((String country) {
               return DropdownMenuItem<String>(
                 value: country,
-                child: Text(country),
+                child: Text(
+                  country,
+                  style: inputStyle,
+                ),
               );
             }).toList(),
             onChanged: (String? newValue) {

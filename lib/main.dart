@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lookapp/themes/app_theme.dart';
 import 'package:lookapp/main/wrappers/auth_wrapper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lookapp/providers/user_profile_provider.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized
@@ -20,16 +21,27 @@ void main() async {
     debug: true,
   );
 
-  runApp(const ProviderScope(child: MainApp()));
+  runApp(
+    ProviderScope(
+      overrides: [
+        // Initialize and watch the userProfileProvider at app start
+        userProfileProvider,
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 final supabase = Supabase.instance.client;
 
-class MainApp extends StatelessWidget {
+class MainApp extends ConsumerWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the provider to ensure it stays initialized
+    ref.watch(userProfileProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'LooK',

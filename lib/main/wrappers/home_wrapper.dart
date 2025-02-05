@@ -7,6 +7,7 @@ import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
+import 'package:lookapp/providers/user_profile_provider.dart';
 import 'package:lookapp/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
 import 'package:lookapp/widgets/layout/search_bar.dart';

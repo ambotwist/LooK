@@ -151,6 +151,9 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           textCapitalization: textCapitalization,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
