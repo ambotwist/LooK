@@ -21,8 +21,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
     final userPrefs = ref.read(userPreferencesProvider);
     _completePhoneNumber = userPrefs.phoneNumber;
 
-    // Set initial country code from saved preferences
-    if (userPrefs.isoCode != null) {
+    // Set initial country code from saved preferences with fallback
+    if (userPrefs.isoCode != null && userPrefs.isoCode!.isNotEmpty) {
       _initialCountryCode = userPrefs.isoCode!;
     }
   }
@@ -31,11 +31,6 @@ class _PhonePageState extends ConsumerState<PhonePage> {
     if (_completePhoneNumber != null) {
       final dialCode = ref.read(userPreferencesProvider).dialCode ?? '';
       final isoCode = ref.read(userPreferencesProvider).isoCode ?? '';
-
-      print('Saving phone details:');
-      print('Phone: $_completePhoneNumber');
-      print('Dial Code: $dialCode');
-      print('ISO Code: $isoCode');
 
       final success =
           await ref.read(userProfileProvider.notifier).updateUserProfile(
@@ -108,39 +103,64 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                 ),
               ),
               const SizedBox(height: 16),
-              IntlPhoneField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
-                ),
-                onChanged: (phone) {
-                  print('Phone field changed:');
-                  print('Complete number: ${phone.completeNumber}');
-                  print('Country code: ${phone.countryCode}');
-                  print('ISO code: ${phone.countryISOCode}');
-
-                  _completePhoneNumber = phone.completeNumber;
-                  // Save the dial code and ISO code separately
-                  ref.read(userPreferencesProvider.notifier)
-                    ..updateDialCode(phone.countryCode)
-                    ..updateIsoCode(phone.countryISOCode);
-                },
-                onCountryChanged: (country) {
-                  print('Country changed:');
-                  print('Dial code: +${country.dialCode}');
-                  print('ISO code: ${country.code}');
-
-                  ref.read(userPreferencesProvider.notifier)
-                    ..updateDialCode('+${country.dialCode}')
-                    ..updateIsoCode(country.code);
-                },
-                initialCountryCode: _initialCountryCode,
-                initialValue:
-                    ref.read(userPreferencesProvider).phoneNumber?.replaceAll(
-                          ref.read(userPreferencesProvider).dialCode ?? '',
-                          '',
+              Builder(
+                builder: (context) {
+                  try {
+                    return IntlPhoneField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(),
                         ),
+                      ),
+                      onChanged: (phone) {
+                        setState(() {
+                          _completePhoneNumber = phone.completeNumber;
+                        });
+                        // Save the dial code and ISO code separately
+                        ref.read(userPreferencesProvider.notifier)
+                          ..updateDialCode(phone.countryCode)
+                          ..updateIsoCode(phone.countryISOCode);
+                      },
+                      onCountryChanged: (country) {
+                        ref.read(userPreferencesProvider.notifier)
+                          ..updateDialCode('+${country.dialCode}')
+                          ..updateIsoCode(country.code);
+                      },
+                      initialCountryCode: _initialCountryCode,
+                      initialValue: ref
+                          .read(userPreferencesProvider)
+                          .phoneNumber
+                          ?.replaceAll(
+                            ref.read(userPreferencesProvider).dialCode ?? '',
+                            '',
+                          ),
+                    );
+                  } catch (e) {
+                    print('Error initializing phone field: $e');
+                    // Fallback to US if there's an error
+                    return IntlPhoneField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(),
+                        ),
+                      ),
+                      onChanged: (phone) {
+                        setState(() {
+                          _completePhoneNumber = phone.completeNumber;
+                        });
+                        ref.read(userPreferencesProvider.notifier)
+                          ..updateDialCode(phone.countryCode)
+                          ..updateIsoCode(phone.countryISOCode);
+                      },
+                      onCountryChanged: (country) {
+                        ref.read(userPreferencesProvider.notifier)
+                          ..updateDialCode('+${country.dialCode}')
+                          ..updateIsoCode(country.code);
+                      },
+                      initialCountryCode: 'US',
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 12),
               Text(
