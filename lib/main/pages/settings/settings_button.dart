@@ -7,6 +7,7 @@ class SettingsButton extends StatelessWidget {
   final double iconSize;
   final Color iconBackgroundColor;
   final VoidCallback onPressed;
+  final String? subtitle;
 
   const SettingsButton({
     super.key,
@@ -15,6 +16,7 @@ class SettingsButton extends StatelessWidget {
     required this.iconSize,
     this.iconBackgroundColor = Colors.transparent,
     required this.onPressed,
+    this.subtitle,
   });
 
   @override
@@ -55,6 +57,20 @@ class SettingsButton extends StatelessWidget {
               ),
             ),
             const Spacer(),
+            if (subtitle != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Text(
+                  subtitle!,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.5),
+                  ),
+                ),
+              ),
             Padding(
               padding: const EdgeInsets.only(right: 16),
               child: Icon(

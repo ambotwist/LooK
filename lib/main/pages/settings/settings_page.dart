@@ -1,26 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:lookapp/main.dart';
 import 'package:lookapp/main/pages/settings/account/account_page.dart';
 import 'package:lookapp/main/pages/settings/notifications/notifications_page.dart';
 import 'package:lookapp/main/pages/settings/settings_button.dart';
 import 'package:lookapp/main/pages/settings/settings_button_container.dart';
-import 'package:lookapp/main/pages/login/login_page.dart';
 import 'package:lookapp/main/pages/settings/style_preferences/style_preferences_page.dart';
-import 'package:lookapp/widgets/layout/regular_Button.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
-import 'package:lookapp/providers/discover_provider.dart';
-import 'package:lookapp/providers/item_provider.dart';
-import 'package:lookapp/enums/item_enums.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
+  void _showLanguageDialog(BuildContext context, WidgetRef ref) {
+    final currentLanguage = ref.read(userPreferencesProvider).language;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Language'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: ['English', 'Français', 'Español'].map((language) {
+            return ListTile(
+              title: Text(language),
+              trailing: language == currentLanguage
+                  ? Icon(
+                      Icons.check,
+                      color: Theme.of(context).primaryColor,
+                    )
+                  : null,
+              onTap: () {
+                ref
+                    .read(userPreferencesProvider.notifier)
+                    .updateLanguage(language);
+                Navigator.of(context).pop();
+              },
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userPrefs = ref.watch(userPreferencesProvider);
+    final selectedLanguage = ref.watch(userPreferencesProvider).language;
 
     return SingleChildScrollView(
       child: Padding(
@@ -35,7 +69,8 @@ class SettingsPage extends ConsumerWidget {
                   title: 'Language',
                   icon: Ionicons.language_outline,
                   iconSize: 22,
-                  onPressed: () {},
+                  subtitle: selectedLanguage,
+                  onPressed: () => _showLanguageDialog(context, ref),
                 ),
                 SettingsButton(
                   title: 'Style Preferences',
@@ -96,6 +131,29 @@ class SettingsPage extends ConsumerWidget {
               ],
             ),
             SettingsButtonContainer(
+              title: 'Support',
+              children: [
+                SettingsButton(
+                  title: 'Help Center & FAQs',
+                  icon: Ionicons.help_circle_outline,
+                  iconSize: 26,
+                  onPressed: () {},
+                ),
+                SettingsButton(
+                  title: 'Contact Us',
+                  icon: Ionicons.mail_outline,
+                  iconSize: 22,
+                  onPressed: () {},
+                ),
+                SettingsButton(
+                  title: 'Report a Problem',
+                  icon: Ionicons.alert_circle_outline,
+                  iconSize: 24,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+            SettingsButtonContainer(
               title: 'App Information',
               children: [
                 SettingsButton(
@@ -114,18 +172,6 @@ class SettingsPage extends ConsumerWidget {
                   title: 'About',
                   icon: Ionicons.information_circle_outline,
                   iconSize: 26,
-                  onPressed: () {},
-                ),
-                SettingsButton(
-                  title: 'Help Center & FAQs',
-                  icon: Ionicons.help_circle_outline,
-                  iconSize: 26,
-                  onPressed: () {},
-                ),
-                SettingsButton(
-                  title: 'Contact Us',
-                  icon: Ionicons.mail_outline,
-                  iconSize: 22,
                   onPressed: () {},
                 ),
               ],

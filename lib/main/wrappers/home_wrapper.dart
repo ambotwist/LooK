@@ -248,7 +248,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
             child: IconButton(
               icon: const Icon(
                 Ionicons.bag,
-                size: 30,
+                size: 26,
               ),
               onPressed: () {},
             ),
@@ -278,17 +278,17 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
               selectedColor: theme.primaryColor,
               onPressed: () => _handlePageChange(0),
             ),
+            // NavbarIconButton(
+            //   icon: Ionicons.search_outline,
+            //   selectedIcon: Ionicons.search,
+            //   size: 32,
+            //   isSelected: _selectedIndex == 1,
+            //   selectedColor: theme.primaryColor,
+            //   onPressed: () => _handlePageChange(1),
+            // ),
             NavbarIconButton(
-              icon: Ionicons.search_outline,
-              selectedIcon: Ionicons.search,
-              size: 32,
-              isSelected: _selectedIndex == 1,
-              selectedColor: theme.primaryColor,
-              onPressed: () => _handlePageChange(1),
-            ),
-            NavbarIconButton(
-              icon: Ionicons.add_circle_outline,
-              selectedIcon: Ionicons.add_circle,
+              icon: Ionicons.compass_outline,
+              selectedIcon: Ionicons.compass,
               size: 36,
               isSelected: _selectedIndex == 2,
               selectedColor: theme.primaryColor,
