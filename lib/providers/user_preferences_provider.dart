@@ -7,11 +7,12 @@ class UserPreferencesState {
   final Map<String, String> bottomSizes; // Map with 'waist' and 'length' keys
   final String? shoeSize;
   final String language;
+  final String? firstName;
+  final String? lastName;
   final String? phoneNumber;
   final String? dialCode;
   final String? isoCode;
-  final Map<String, String> billingAddress;
-  final Map<String, String> deliveryAddress;
+  final bool useBillingAddressForDelivery;
 
   const UserPreferencesState({
     this.sex = Sex.unisex,
@@ -19,27 +20,12 @@ class UserPreferencesState {
     this.bottomSizes = const {'waist': '', 'length': ''},
     this.shoeSize,
     this.language = 'English',
+    this.firstName,
+    this.lastName,
     this.phoneNumber,
     this.dialCode,
     this.isoCode,
-    this.billingAddress = const {
-      'street': '',
-      'number': '',
-      'additionalInfo': '',
-      'zipCode': '',
-      'city': '',
-      'country': '',
-      'countryCode': 'US',
-    },
-    this.deliveryAddress = const {
-      'street': '',
-      'number': '',
-      'additionalInfo': '',
-      'zipCode': '',
-      'city': '',
-      'country': '',
-      'countryCode': 'US',
-    },
+    this.useBillingAddressForDelivery = false,
   });
 
   UserPreferencesState copyWith({
@@ -48,11 +34,12 @@ class UserPreferencesState {
     Map<String, String>? bottomSizes,
     String? shoeSize,
     String? language,
+    String? firstName,
+    String? lastName,
     String? phoneNumber,
     String? dialCode,
     String? isoCode,
-    Map<String, String>? billingAddress,
-    Map<String, String>? deliveryAddress,
+    bool? useBillingAddressForDelivery,
   }) {
     return UserPreferencesState(
       sex: sex ?? this.sex,
@@ -60,11 +47,13 @@ class UserPreferencesState {
       bottomSizes: bottomSizes ?? this.bottomSizes,
       shoeSize: shoeSize ?? this.shoeSize,
       language: language ?? this.language,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       dialCode: dialCode ?? this.dialCode,
       isoCode: isoCode ?? this.isoCode,
-      billingAddress: billingAddress ?? this.billingAddress,
-      deliveryAddress: deliveryAddress ?? this.deliveryAddress,
+      useBillingAddressForDelivery:
+          useBillingAddressForDelivery ?? this.useBillingAddressForDelivery,
     );
   }
 }
@@ -106,12 +95,16 @@ class UserPreferencesNotifier extends StateNotifier<UserPreferencesState> {
     state = state.copyWith(isoCode: isoCode);
   }
 
-  void updateBillingAddress(Map<String, String> address) {
-    state = state.copyWith(billingAddress: address);
+  void updateFirstName(String? firstName) {
+    state = state.copyWith(firstName: firstName);
   }
 
-  void updateDeliveryAddress(Map<String, String> address) {
-    state = state.copyWith(deliveryAddress: address);
+  void updateLastName(String? lastName) {
+    state = state.copyWith(lastName: lastName);
+  }
+
+  void updateUseBillingAddressForDelivery(bool value) {
+    state = state.copyWith(useBillingAddressForDelivery: value);
   }
 }
 

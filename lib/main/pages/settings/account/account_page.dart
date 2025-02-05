@@ -33,9 +33,20 @@ class AccountPage extends ConsumerWidget {
                 title: 'Personal Information',
                 children: [
                   SettingsButton(
-                    title: 'Basic Info',
+                    title: 'Name',
                     icon: Ionicons.person_outline,
                     iconSize: 22,
+                    subtitle: ref.watch(userPreferencesProvider).firstName !=
+                            null
+                        ? '${ref.watch(userPreferencesProvider).firstName} ${ref.watch(userPreferencesProvider).lastName}'
+                        : null,
+                    subtitleStyle: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.5),
+                    ),
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(

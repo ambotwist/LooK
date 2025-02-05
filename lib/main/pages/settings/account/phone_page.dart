@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:intl_phone_field/countries.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
 
 class PhonePage extends ConsumerStatefulWidget {
@@ -14,7 +11,6 @@ class PhonePage extends ConsumerStatefulWidget {
 }
 
 class _PhonePageState extends ConsumerState<PhonePage> {
-  final _phoneController = TextEditingController();
   String? _completePhoneNumber;
   String _initialCountryCode = 'US'; // Default to US
 

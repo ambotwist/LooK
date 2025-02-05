@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lookapp/providers/user_preferences_provider.dart';
 
 class BasicInfoPage extends ConsumerStatefulWidget {
   const BasicInfoPage({super.key});
@@ -13,6 +14,14 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final userPrefs = ref.read(userPreferencesProvider);
+    _firstNameController.text = userPrefs.firstName ?? '';
+    _lastNameController.text = userPrefs.lastName ?? '';
+  }
 
   @override
   void dispose() {
@@ -38,7 +47,9 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
         actions: [
           TextButton(
             onPressed: () {
-              // TODO: Save basic info
+              ref.read(userPreferencesProvider.notifier)
+                ..updateFirstName(_firstNameController.text)
+                ..updateLastName(_lastNameController.text);
               Navigator.of(context).pop();
             },
             child: const Text(
