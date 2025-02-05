@@ -3,9 +3,9 @@ import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/main.dart';
 import 'package:lookapp/main/pages/login/login_page.dart';
 import 'package:lookapp/main/pages/settings/account/address_page.dart';
+import 'package:lookapp/main/pages/settings/account/basic_info_page.dart';
 import 'package:lookapp/main/pages/settings/settings_button.dart';
 import 'package:lookapp/main/pages/settings/settings_button_container.dart';
-import 'package:lookapp/widgets/layout/regular_Button.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -29,6 +29,18 @@ class AccountPage extends StatelessWidget {
                 title: 'Personal Information',
                 children: [
                   SettingsButton(
+                    title: 'Basic Info',
+                    icon: Ionicons.person_outline,
+                    iconSize: 22,
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const BasicInfoPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  SettingsButton(
                     title: 'Address',
                     icon: Ionicons.home_outline,
                     iconSize: 22,
@@ -43,6 +55,12 @@ class AccountPage extends StatelessWidget {
                   SettingsButton(
                     title: 'Phone Number',
                     icon: Ionicons.call_outline,
+                    iconSize: 22,
+                    onPressed: () {},
+                  ),
+                  SettingsButton(
+                    title: 'Email',
+                    icon: Ionicons.mail_outline,
                     iconSize: 22,
                     onPressed: () {},
                   ),
