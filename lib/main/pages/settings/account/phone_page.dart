@@ -29,8 +29,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
   Future<void> _savePhoneNumber() async {
     if (_completePhoneNumber != null) {
-      final dialCode = ref.read(userPreferencesProvider).dialCode;
-      final isoCode = ref.read(userPreferencesProvider).isoCode;
+      final dialCode = ref.read(userPreferencesProvider).dialCode ?? '';
+      final isoCode = ref.read(userPreferencesProvider).isoCode ?? '';
 
       print('Saving phone details:');
       print('Phone: $_completePhoneNumber');
@@ -45,10 +45,14 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               );
 
       if (success) {
-        // Update the local state already handled in onChanged of IntlPhoneField
-        ref
-            .read(userPreferencesProvider.notifier)
-            .updatePhoneNumber(_completePhoneNumber);
+        // Update the local state
+        ref.read(userPreferencesProvider.notifier)
+          ..updatePhoneNumber(_completePhoneNumber)
+          ..updateDialCode(dialCode)
+          ..updateIsoCode(isoCode);
+
+        // Refresh the user profile to ensure all states are in sync
+        ref.read(userProfileProvider.notifier).loadUserProfile();
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to save changes')),

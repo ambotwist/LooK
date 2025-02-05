@@ -154,6 +154,9 @@ class _AddressPageState extends ConsumerState<AddressPage> {
       }
     }
 
+    // Refresh the addresses provider to update local state
+    ref.invalidate(addressesProvider);
+
     // Update the checkbox state based on the final state of addresses
     _compareAddresses();
 

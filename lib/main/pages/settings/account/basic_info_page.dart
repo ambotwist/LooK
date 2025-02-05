@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
+import 'package:lookapp/providers/user_profile_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:developer' as developer;
 
@@ -37,7 +38,7 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
     try {
       final supabase = Supabase.instance.client;
 
-      await supabase
+      final response = await supabase
           .from('user_profiles')
           .update({
             'first_name': _firstNameController.text.trim(),
@@ -51,6 +52,9 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
       ref.read(userPreferencesProvider.notifier)
         ..updateFirstName(_firstNameController.text)
         ..updateLastName(_lastNameController.text);
+
+      // Refresh the user profile to ensure all states are in sync
+      ref.read(userProfileProvider.notifier).loadUserProfile();
 
       if (mounted) {
         Navigator.of(context).pop();
