@@ -17,11 +17,6 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<void>> {
         loadUserProfile();
       }
     });
-
-    // Initial load
-    Future.delayed(Duration.zero, () {
-      loadUserProfile();
-    });
   }
 
   final Ref ref;
@@ -49,7 +44,9 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<void>> {
       notifier
         ..updateFirstName(response['first_name'])
         ..updateLastName(response['last_name'])
-        ..updatePhoneNumber(response['phone_number']);
+        ..updatePhoneNumber(response['phone_number'])
+        ..updateDialCode(response['dial_code'] ?? '')
+        ..updateIsoCode(response['iso_code'] ?? '');
 
       developer.log(
           'UserPreferences updated - First Name: ${response['first_name']}, Last Name: ${response['last_name']}',
@@ -65,6 +62,8 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<void>> {
     String? firstName,
     String? lastName,
     String? phoneNumber,
+    String? dialCode,
+    String? isoCode,
   }) async {
     state = const AsyncValue.loading();
     try {
@@ -76,17 +75,41 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<void>> {
       if (firstName != null) updates['first_name'] = firstName;
       if (lastName != null) updates['last_name'] = lastName;
       if (phoneNumber != null) updates['phone_number'] = phoneNumber;
+      if (dialCode != null) updates['dial_code'] = dialCode;
+      if (isoCode != null) updates['iso_code'] = isoCode;
+
+      developer.log(
+        'Updating user profile',
+        name: 'UserProfileNotifier',
+        error: {
+          'updates': updates,
+          'userId': userId,
+        },
+      );
 
       if (updates.isEmpty) return true;
 
-      await supabase
+      final response = await supabase
           .from('user_profiles')
           .update(updates)
-          .eq('user_id', userId);
+          .eq('user_id', userId)
+          .select();
+
+      developer.log(
+        'Profile updated',
+        name: 'UserProfileNotifier',
+        error: response,
+      );
 
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
+      developer.log(
+        'Error updating profile',
+        error: e,
+        stackTrace: st,
+        name: 'UserProfileNotifier',
+      );
       state = AsyncValue.error(e, st);
       return false;
     }

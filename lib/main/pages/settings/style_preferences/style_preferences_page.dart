@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/providers/discover_provider.dart';

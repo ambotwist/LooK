@@ -29,13 +29,23 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
   Future<void> _savePhoneNumber() async {
     if (_completePhoneNumber != null) {
+      final dialCode = ref.read(userPreferencesProvider).dialCode;
+      final isoCode = ref.read(userPreferencesProvider).isoCode;
+
+      print('Saving phone details:');
+      print('Phone: $_completePhoneNumber');
+      print('Dial Code: $dialCode');
+      print('ISO Code: $isoCode');
+
       final success =
           await ref.read(userProfileProvider.notifier).updateUserProfile(
                 phoneNumber: _completePhoneNumber,
+                dialCode: dialCode,
+                isoCode: isoCode,
               );
 
       if (success) {
-        // Update the local state
+        // Update the local state already handled in onChanged of IntlPhoneField
         ref
             .read(userPreferencesProvider.notifier)
             .updatePhoneNumber(_completePhoneNumber);
@@ -101,14 +111,32 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                   ),
                 ),
                 onChanged: (phone) {
+                  print('Phone field changed:');
+                  print('Complete number: ${phone.completeNumber}');
+                  print('Country code: ${phone.countryCode}');
+                  print('ISO code: ${phone.countryISOCode}');
+
                   _completePhoneNumber = phone.completeNumber;
                   // Save the dial code and ISO code separately
                   ref.read(userPreferencesProvider.notifier)
                     ..updateDialCode(phone.countryCode)
                     ..updateIsoCode(phone.countryISOCode);
                 },
+                onCountryChanged: (country) {
+                  print('Country changed:');
+                  print('Dial code: +${country.dialCode}');
+                  print('ISO code: ${country.code}');
+
+                  ref.read(userPreferencesProvider.notifier)
+                    ..updateDialCode('+${country.dialCode}')
+                    ..updateIsoCode(country.code);
+                },
                 initialCountryCode: _initialCountryCode,
-                initialValue: ref.read(userPreferencesProvider).phoneNumber,
+                initialValue:
+                    ref.read(userPreferencesProvider).phoneNumber?.replaceAll(
+                          ref.read(userPreferencesProvider).dialCode ?? '',
+                          '',
+                        ),
               ),
               const SizedBox(height: 12),
               Text(

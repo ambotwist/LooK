@@ -15,7 +15,6 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
       String itemId, InteractionStatus? status) async {
     state = const AsyncValue.loading();
     try {
-      print('Updating interaction - Item: $itemId, Status: ${status?.name}');
       final supabase = Supabase.instance.client;
 
       if (status == null) {
@@ -32,13 +31,10 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
           'updated_at': DateTime.now().toIso8601String(),
         }, onConflict: 'user_id,item_id');
       }
-      print('Database update completed successfully');
 
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
-      print('Error updating interaction: $e');
-      print('Stack trace: $st');
       state = AsyncValue.error(e, st);
       return false;
     }

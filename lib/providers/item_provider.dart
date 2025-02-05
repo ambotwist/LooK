@@ -121,12 +121,6 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
     final response =
         await query.order('created_at', ascending: false).limit(pageSize);
 
-    print('Debug - about to execute items query with filters:');
-    print('High Categories: ${filterState.highCategories}');
-    print('Top Sizes: ${filterState.topSizes}');
-    print('Bottom Sizes: ${filterState.bottomSizes}');
-    print('Shoe Sizes: ${filterState.shoeSizes}');
-
     if (response.isEmpty) return [];
 
     return (response as List)

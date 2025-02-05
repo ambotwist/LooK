@@ -7,7 +7,6 @@ import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
-import 'package:lookapp/providers/user_profile_provider.dart';
 import 'package:lookapp/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
 import 'package:lookapp/widgets/layout/search_bar.dart';
@@ -60,11 +59,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
     final discoverState = ref.read(discoverProvider);
     final items = ref.read(itemsProvider).asData?.value;
 
-    print(
-        'Rewind triggered - Previous indices: ${discoverState.previousIndices}');
-
     if (discoverState.previousIndices.isEmpty || items == null) {
-      print('No previous cards to rewind to');
       _shakeController.forward().then((_) => _shakeController.reset());
       return;
     }
@@ -73,23 +68,19 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
       // Get the previous item that we're rewinding to
       final previousIndex = discoverState.previousIndices.last;
       final previousItem = items[previousIndex];
-      print('Rewinding to item: ${previousItem.id} at index: $previousIndex');
 
       // Rewind the card immediately for better UX
       discoverNotifier.rewindCard();
-      print('Card rewound in UI');
 
       // Show the action bar if it was hidden
       ref.read(overlayProvider).show();
 
       // Delete the interaction to reset the card's state
-      print('Attempting to delete interaction');
       final success =
           await ref.read(interactionsProvider.notifier).updateInteraction(
                 previousItem.id,
                 null, // Pass null to delete the interaction
               );
-      print('Database update result: $success');
 
       if (!success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -99,9 +90,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
           ),
         );
       }
-    } catch (e, stackTrace) {
-      print('Error during rewind: $e');
-      print('Stack trace: $stackTrace');
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

@@ -208,11 +208,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     final discoverState = ref.read(discoverProvider);
     final items = ref.read(itemsProvider).asData?.value;
 
-    print(
-        'Rewind triggered - Previous indices: ${discoverState.previousIndices}');
-
     if (discoverState.previousIndices.isEmpty || items == null) {
-      print('No previous cards to rewind to');
       _shakeController.forward().then((_) => _shakeController.reset());
       return;
     }

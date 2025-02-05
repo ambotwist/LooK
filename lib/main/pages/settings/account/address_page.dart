@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/models/address.dart';
 import 'package:lookapp/providers/address_provider.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
-import 'package:lookapp/widgets/buttons/look_button.dart';
 
 const Map<String, String> countries = {
   'United Kingdom': 'GB',
@@ -25,13 +24,72 @@ class AddressPage extends ConsumerStatefulWidget {
 class _AddressPageState extends ConsumerState<AddressPage> {
   final _billingFormKey = GlobalKey<_AddressFormState>();
   final _deliveryFormKey = GlobalKey<_AddressFormState>();
-  bool _sameAsBilling = false;
+  late bool _sameAsBilling;
 
   @override
   void initState() {
     super.initState();
+    // Initialize with the value from provider
     _sameAsBilling =
         ref.read(userPreferencesProvider).useBillingAddressForDelivery;
+
+    // Delay the comparison until after the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _compareAddresses();
+    });
+  }
+
+  void _compareAddresses() {
+    final addresses = ref.read(addressesProvider).value ?? [];
+    final billingAddress = addresses.firstWhere(
+      (a) => a.type == 'billing',
+      orElse: () => Address(
+        userId: '',
+        type: 'billing',
+        street: '',
+        houseNumber: '',
+        zipCode: '',
+        city: '',
+        country: '',
+        countryCode: '',
+      ),
+    );
+    final deliveryAddress = addresses.firstWhere(
+      (a) => a.type == 'delivery',
+      orElse: () => Address(
+        userId: '',
+        type: 'delivery',
+        street: '',
+        houseNumber: '',
+        zipCode: '',
+        city: '',
+        country: '',
+        countryCode: '',
+      ),
+    );
+
+    // Check if addresses are the same and update both local and provider state
+    final areEqual = _areAddressesEqual(billingAddress, deliveryAddress);
+
+    // Only update if the value has actually changed
+    if (_sameAsBilling != areEqual) {
+      setState(() {
+        _sameAsBilling = areEqual;
+      });
+      ref
+          .read(userPreferencesProvider.notifier)
+          .updateUseBillingAddressForDelivery(areEqual);
+    }
+  }
+
+  bool _areAddressesEqual(Address a1, Address a2) {
+    return a1.street == a2.street &&
+        a1.houseNumber == a2.houseNumber &&
+        a1.additionalInfo == a2.additionalInfo &&
+        a1.zipCode == a2.zipCode &&
+        a1.city == a2.city &&
+        a1.country == a2.country &&
+        a1.countryCode == a2.countryCode;
   }
 
   void _handleSameAsBillingChanged(bool? value) {
@@ -96,8 +154,12 @@ class _AddressPageState extends ConsumerState<AddressPage> {
       }
     }
 
-    // Refresh the addresses list
-    ref.invalidate(addressesProvider);
+    // Update the checkbox state based on the final state of addresses
+    _compareAddresses();
+
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -119,7 +181,6 @@ class _AddressPageState extends ConsumerState<AddressPage> {
           TextButton(
             onPressed: () {
               _saveAddresses();
-              Navigator.of(context).pop();
             },
             child: const Text(
               'Save',

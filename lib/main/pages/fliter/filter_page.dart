@@ -153,7 +153,7 @@ class _FilterPageState extends ConsumerState<FilterPage> {
                   );
                 }).toList(),
               ),
-            ),
+            ), 
 
           // Shoe Sizes
           if (notifier.shouldShowSizeFilter('shoes'))
