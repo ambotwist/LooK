@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/countries.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
 
@@ -15,11 +16,18 @@ class PhonePage extends ConsumerStatefulWidget {
 class _PhonePageState extends ConsumerState<PhonePage> {
   final _phoneController = TextEditingController();
   String? _completePhoneNumber;
+  String _initialCountryCode = 'US'; // Default to US
 
   @override
   void initState() {
     super.initState();
-    _completePhoneNumber = ref.read(userPreferencesProvider).phoneNumber;
+    final userPrefs = ref.read(userPreferencesProvider);
+    _completePhoneNumber = userPrefs.phoneNumber;
+
+    // Set initial country code from saved preferences
+    if (userPrefs.isoCode != null) {
+      _initialCountryCode = userPrefs.isoCode!;
+    }
   }
 
   @override
@@ -77,14 +85,15 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                     borderSide: BorderSide(),
                   ),
                 ),
-                initialCountryCode: 'IN',
                 onChanged: (phone) {
                   _completePhoneNumber = phone.completeNumber;
+                  // Save the dial code and ISO code separately
+                  ref.read(userPreferencesProvider.notifier)
+                    ..updateDialCode(phone.countryCode)
+                    ..updateIsoCode(phone.countryISOCode);
                 },
-                initialValue: ref
-                    .read(userPreferencesProvider)
-                    .phoneNumber
-                    ?.replaceFirst('+', ''),
+                initialCountryCode: _initialCountryCode,
+                initialValue: ref.read(userPreferencesProvider).phoneNumber,
               ),
               const SizedBox(height: 12),
               Text(
