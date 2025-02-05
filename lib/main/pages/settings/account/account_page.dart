@@ -13,7 +13,11 @@ class AccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Account'),
+        toolbarHeight: 42,
+        title: const Text(
+          'Account',
+          style: TextStyle(fontSize: 18),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(

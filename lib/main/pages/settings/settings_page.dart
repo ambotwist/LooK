@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/main.dart';
 import 'package:lookapp/main/pages/settings/account/account_page.dart';
+import 'package:lookapp/main/pages/settings/notifications/notifications_page.dart';
 import 'package:lookapp/main/pages/settings/settings_button.dart';
 import 'package:lookapp/main/pages/settings/settings_button_container.dart';
 import 'package:lookapp/main/pages/login/login_page.dart';
@@ -51,7 +52,12 @@ class SettingsPage extends ConsumerWidget {
                   title: 'Notifications',
                   icon: Ionicons.notifications_outline,
                   iconSize: 24,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const NotificationsPage()),
+                    );
+                  },
                 ),
                 SettingsButton(
                   title: 'Account',
