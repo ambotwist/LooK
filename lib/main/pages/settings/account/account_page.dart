@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/main.dart';
 import 'package:lookapp/main/pages/login/login_page.dart';
+import 'package:lookapp/main/pages/settings/account/address_page.dart';
 import 'package:lookapp/main/pages/settings/settings_button.dart';
 import 'package:lookapp/main/pages/settings/settings_button_container.dart';
 import 'package:lookapp/widgets/layout/regular_Button.dart';
@@ -31,7 +32,13 @@ class AccountPage extends StatelessWidget {
                     title: 'Address',
                     icon: Ionicons.home_outline,
                     iconSize: 22,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const AddressPage(),
+                        ),
+                      );
+                    },
                   ),
                   SettingsButton(
                     title: 'Phone Number',
