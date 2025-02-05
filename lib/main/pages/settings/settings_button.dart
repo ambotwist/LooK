@@ -8,6 +8,7 @@ class SettingsButton extends StatelessWidget {
   final Color iconBackgroundColor;
   final VoidCallback onPressed;
   final String? subtitle;
+  final TextStyle? subtitleStyle;
 
   const SettingsButton({
     super.key,
@@ -17,6 +18,7 @@ class SettingsButton extends StatelessWidget {
     this.iconBackgroundColor = Colors.transparent,
     required this.onPressed,
     this.subtitle,
+    this.subtitleStyle,
   });
 
   @override
@@ -48,27 +50,29 @@ class SettingsButton extends StatelessWidget {
                 ),
               ),
             ),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onPrimary,
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
               ),
             ),
-            const Spacer(),
             if (subtitle != null)
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Text(
                   subtitle!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.5),
-                  ),
+                  style: subtitleStyle ??
+                      TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.5),
+                      ),
                 ),
               ),
             Padding(

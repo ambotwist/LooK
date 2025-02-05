@@ -7,6 +7,7 @@ class UserPreferencesState {
   final Map<String, String> bottomSizes; // Map with 'waist' and 'length' keys
   final String? shoeSize;
   final String language;
+  final String? phoneNumber;
 
   UserPreferencesState({
     this.sex = Sex.unisex,
@@ -14,6 +15,7 @@ class UserPreferencesState {
     this.bottomSizes = const {'waist': '', 'length': ''},
     this.shoeSize,
     this.language = 'English',
+    this.phoneNumber,
   });
 
   UserPreferencesState copyWith({
@@ -22,6 +24,7 @@ class UserPreferencesState {
     Map<String, String>? bottomSizes,
     String? shoeSize,
     String? language,
+    String? phoneNumber,
   }) {
     return UserPreferencesState(
       sex: sex ?? this.sex,
@@ -29,6 +32,7 @@ class UserPreferencesState {
       bottomSizes: bottomSizes ?? this.bottomSizes,
       shoeSize: shoeSize ?? this.shoeSize,
       language: language ?? this.language,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
     );
   }
 }
@@ -56,6 +60,10 @@ class UserPreferencesNotifier extends StateNotifier<UserPreferencesState> {
 
   void updateLanguage(String language) {
     state = state.copyWith(language: language);
+  }
+
+  void updatePhoneNumber(String? phoneNumber) {
+    state = state.copyWith(phoneNumber: phoneNumber);
   }
 }
 

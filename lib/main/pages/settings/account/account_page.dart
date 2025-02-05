@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/main.dart';
 import 'package:lookapp/main/pages/login/login_page.dart';
 import 'package:lookapp/main/pages/settings/account/address_page.dart';
 import 'package:lookapp/main/pages/settings/account/basic_info_page.dart';
+import 'package:lookapp/main/pages/settings/account/email_page.dart';
+import 'package:lookapp/main/pages/settings/account/phone_page.dart';
 import 'package:lookapp/main/pages/settings/settings_button.dart';
 import 'package:lookapp/main/pages/settings/settings_button_container.dart';
+import 'package:lookapp/providers/user_preferences_provider.dart';
 
-class AccountPage extends StatelessWidget {
+class AccountPage extends ConsumerWidget {
   const AccountPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 42,
@@ -56,13 +60,41 @@ class AccountPage extends StatelessWidget {
                     title: 'Phone Number',
                     icon: Ionicons.call_outline,
                     iconSize: 22,
-                    onPressed: () {},
+                    subtitle: ref.watch(userPreferencesProvider).phoneNumber,
+                    subtitleStyle: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.5),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const PhonePage(),
+                        ),
+                      );
+                    },
                   ),
                   SettingsButton(
                     title: 'Email',
                     icon: Ionicons.mail_outline,
                     iconSize: 22,
-                    onPressed: () {},
+                    subtitle: supabase.auth.currentUser?.email,
+                    subtitleStyle: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.5),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const EmailPage(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
