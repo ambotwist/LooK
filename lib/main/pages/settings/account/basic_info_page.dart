@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
 import 'package:lookapp/providers/user_profile_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:developer' as developer;
 
 class BasicInfoPage extends ConsumerStatefulWidget {
   const BasicInfoPage({super.key});
@@ -33,30 +35,42 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
   }
 
   Future<void> _saveBasicInfo() async {
-    final success =
-        await ref.read(userProfileProvider.notifier).updateUserProfile(
-              firstName: _firstNameController.text.isEmpty
-                  ? null
-                  : _firstNameController.text,
-              lastName: _lastNameController.text.isEmpty
-                  ? null
-                  : _lastNameController.text,
-            );
+    try {
+      final supabase = Supabase.instance.client;
 
-    if (success) {
+      await supabase
+          .from('user_profiles')
+          .update({
+            'first_name': _firstNameController.text.trim(),
+            'last_name': _lastNameController.text.trim(),
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('user_id', supabase.auth.currentUser!.id)
+          .select();
+
       // Update the local state
       ref.read(userPreferencesProvider.notifier)
         ..updateFirstName(_firstNameController.text)
         ..updateLastName(_lastNameController.text);
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to save changes')),
-      );
-      return;
-    }
 
-    if (mounted) {
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } catch (error, stackTrace) {
+      developer.log(
+        'Error saving basic info',
+        error: error,
+        stackTrace: stackTrace,
+        name: 'BasicInfoPage',
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Failed to save changes: ${error.toString()}')),
+        );
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -93,15 +107,6 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Personal Information',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 16),
               _buildTextField(
                 controller: _firstNameController,
                 label: 'First Name',
