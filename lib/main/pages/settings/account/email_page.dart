@@ -43,7 +43,18 @@ class _EmailPageState extends ConsumerState<EmailPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 42,
-        leading: const Text(''),
+        leadingWidth: 100,
+        leading: TextButton(
+          onPressed: Navigator.of(context).pop,
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
         title: const Text(
           'Email',
           style: TextStyle(
@@ -54,13 +65,12 @@ class _EmailPageState extends ConsumerState<EmailPage> {
         actions: [
           TextButton(
             onPressed: () {
-              // TODO: Save email
-              Navigator.of(context).pop();
+              // Does nothing for now
             },
             child: const Text(
               'Save',
               style: TextStyle(
-                color: Colors.blue,
+                color: Colors.grey,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),

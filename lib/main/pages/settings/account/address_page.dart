@@ -178,7 +178,18 @@ class _AddressPageState extends ConsumerState<AddressPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 42,
-        leading: const Text(''),
+        leadingWidth: 100,
+        leading: TextButton(
+          onPressed: Navigator.of(context).pop,
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
         title: const Text(
           'Address',
           style: TextStyle(
