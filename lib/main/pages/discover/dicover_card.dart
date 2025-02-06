@@ -159,7 +159,7 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
 
   @override
   Widget build(BuildContext context) {
-    const infoSectionHeight = 180.0;
+    const infoSectionHeight = 160.0;
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -282,7 +282,7 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                                               color: Colors.white,
                                               fontSize: 26,
                                               fontWeight: FontWeight.w600,
-                                              height: 1.5,
+                                              height: 1.0,
                                             ),
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
@@ -313,7 +313,7 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                                       '\$${widget.item.price.toInt()}',
                                       style: const TextStyle(
                                         color: Colors.white,
-                                        fontSize: 32,
+                                        fontSize: 36,
                                         fontWeight: FontWeight.w700,
                                         height: 1.2,
                                       ),

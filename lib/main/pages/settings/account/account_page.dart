@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/main.dart';
@@ -193,13 +194,64 @@ class AccountPage extends ConsumerWidget {
                     icon: Ionicons.log_out_outline,
                     iconSize: 22,
                     onPressed: () async {
-                      await supabase.auth.signOut();
-                      if (context.mounted) {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
-                          ),
-                        );
+                      final shouldSignOut = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          final platform = Theme.of(context).platform;
+                          return platform == TargetPlatform.iOS
+                              ? CupertinoAlertDialog(
+                                  title: const Text('Sign Out'),
+                                  content: const Text(
+                                      'Are you sure you want to sign out?'),
+                                  actions: [
+                                    CupertinoDialogAction(
+                                      isDefaultAction: true,
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                          color: Colors.grey.shade700,
+                                        ),
+                                      ),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                    ),
+                                    CupertinoDialogAction(
+                                      isDestructiveAction: true,
+                                      child: const Text('Sign Out'),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                    ),
+                                  ],
+                                )
+                              : AlertDialog(
+                                  title: const Text('Sign Out'),
+                                  content: const Text(
+                                      'Are you sure you want to sign out?'),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('Cancel'),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                    ),
+                                    TextButton(
+                                      child: const Text('Sign Out'),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                    ),
+                                  ],
+                                );
+                        },
+                      );
+
+                      if (shouldSignOut == true && context.mounted) {
+                        await supabase.auth.signOut();
+                        if (context.mounted) {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPage(),
+                            ),
+                          );
+                        }
                       }
                     },
                   ),
