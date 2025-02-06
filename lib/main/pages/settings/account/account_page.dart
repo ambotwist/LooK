@@ -10,6 +10,8 @@ import 'package:lookapp/main/pages/settings/account/phone_page.dart';
 import 'package:lookapp/main/pages/settings/settings_button.dart';
 import 'package:lookapp/main/pages/settings/settings_button_container.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
+import 'package:lookapp/providers/address_provider.dart';
+import 'package:lookapp/models/address.dart';
 
 class AccountPage extends ConsumerWidget {
   const AccountPage({super.key});
@@ -59,6 +61,33 @@ class AccountPage extends ConsumerWidget {
                     title: 'Address',
                     icon: Ionicons.home_outline,
                     iconSize: 22,
+                    subtitle: ref.watch(addressesProvider).when(
+                          data: (addresses) {
+                            final billingAddress = addresses.firstWhere(
+                              (a) => a.type == 'billing',
+                              orElse: () => Address(
+                                userId: '',
+                                type: 'billing',
+                                street: '',
+                                houseNumber: '',
+                                zipCode: '',
+                                city: '',
+                                country: '',
+                                countryCode: '',
+                              ),
+                            );
+                            return billingAddress.city;
+                          },
+                          loading: () => null,
+                          error: (_, __) => null,
+                        ),
+                    subtitleStyle: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.5),
+                    ),
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
