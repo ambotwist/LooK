@@ -56,6 +56,17 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         );
         return;
       }
+
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+      return;
+    }
+    if (_isEditing) {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+      return;
     }
 
     setState(() {
