@@ -83,9 +83,15 @@ class _AddressPageState extends ConsumerState<AddressPage> {
   }
 
   bool _areAddressesEqual(Address a1, Address a2) {
+    // Treat null and empty string as equivalent for additionalInfo
+    final additionalInfo1 =
+        a1.additionalInfo?.isEmpty ?? true ? null : a1.additionalInfo;
+    final additionalInfo2 =
+        a2.additionalInfo?.isEmpty ?? true ? null : a2.additionalInfo;
+
     return a1.street == a2.street &&
         a1.houseNumber == a2.houseNumber &&
-        a1.additionalInfo == a2.additionalInfo &&
+        additionalInfo1 == additionalInfo2 &&
         a1.zipCode == a2.zipCode &&
         a1.city == a2.city &&
         a1.country == a2.country &&
