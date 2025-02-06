@@ -11,6 +11,10 @@ class SettingsButton extends StatelessWidget {
   final TextStyle? subtitleStyle;
   final Color? iconColor;
   final Color? textColor;
+  final bool isCheckable;
+  final bool isEditing;
+  final bool? isChecked;
+  final ValueChanged<bool>? onCheckChanged;
 
   const SettingsButton({
     super.key,
@@ -23,6 +27,10 @@ class SettingsButton extends StatelessWidget {
     this.subtitleStyle,
     this.iconColor,
     this.textColor,
+    this.isCheckable = false,
+    this.isEditing = false,
+    this.isChecked,
+    this.onCheckChanged,
   });
 
   @override
@@ -31,7 +39,9 @@ class SettingsButton extends StatelessWidget {
       width: double.infinity,
       height: 48,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isCheckable && isEditing
+            ? () => onCheckChanged?.call(!isChecked!)
+            : onPressed,
         style: ElevatedButton.styleFrom(
           alignment: Alignment.centerLeft,
           padding: EdgeInsets.zero,
@@ -81,11 +91,21 @@ class SettingsButton extends StatelessWidget {
               ),
             Padding(
               padding: const EdgeInsets.only(right: 16),
-              child: Icon(
-                Ionicons.chevron_forward,
-                size: 20,
-                color: Theme.of(context).colorScheme.scrim,
-              ),
+              child: !isCheckable
+                  ? Icon(
+                      Ionicons.chevron_forward,
+                      size: 26,
+                      color: Theme.of(context).colorScheme.scrim,
+                    )
+                  : Icon(
+                      isChecked == true
+                          ? Ionicons.checkmark_circle
+                          : Ionicons.ellipse_outline,
+                      size: 26,
+                      color: isEditing
+                          ? Theme.of(context).colorScheme.secondary
+                          : Theme.of(context).colorScheme.scrim,
+                    ),
             ),
           ],
         ),
