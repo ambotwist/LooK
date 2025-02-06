@@ -21,6 +21,36 @@ class AccountPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 42,
+        leadingWidth: 120,
+        leading: Row(
+          children: [
+            IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: Navigator.of(context).pop,
+              icon: const Icon(Ionicons.chevron_back),
+            ),
+            Transform.translate(
+              offset: const Offset(-12, 0),
+              child: TextButton(
+                onPressed: Navigator.of(context).pop,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  'Settings',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
         title: const Text(
           'Account',
           style: TextStyle(fontSize: 18),

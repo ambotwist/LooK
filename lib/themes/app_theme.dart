@@ -22,7 +22,6 @@ class AppTheme {
         onPrimary: Colors.black,
         secondary: themeColor,
         tertiary: button,
-
         error: Colors.red.shade600,
       ),
 
