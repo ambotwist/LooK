@@ -208,6 +208,8 @@ class AccountPage extends ConsumerWidget {
                     icon: Ionicons.trash_outline,
                     iconSize: 22,
                     onPressed: () {},
+                    iconColor: Theme.of(context).colorScheme.error,
+                    textColor: Theme.of(context).colorScheme.error,
                   ),
                 ],
               ),

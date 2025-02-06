@@ -9,6 +9,8 @@ class SettingsButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String? subtitle;
   final TextStyle? subtitleStyle;
+  final Color? iconColor;
+  final Color? textColor;
 
   const SettingsButton({
     super.key,
@@ -19,6 +21,8 @@ class SettingsButton extends StatelessWidget {
     required this.onPressed,
     this.subtitle,
     this.subtitleStyle,
+    this.iconColor,
+    this.textColor,
   });
 
   @override
@@ -46,7 +50,7 @@ class SettingsButton extends StatelessWidget {
                 child: Icon(
                   icon,
                   size: iconSize,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: iconColor ?? Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ),
@@ -56,7 +60,7 @@ class SettingsButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: textColor ?? Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ),
@@ -80,7 +84,7 @@ class SettingsButton extends StatelessWidget {
               child: Icon(
                 Ionicons.chevron_forward,
                 size: 20,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: Theme.of(context).colorScheme.scrim,
               ),
             ),
           ],

@@ -22,6 +22,7 @@ class AppTheme {
         onPrimary: Colors.black,
         secondary: themeColor,
         tertiary: button,
+        scrim: Colors.grey.shade400,
         error: Colors.red.shade600,
       ),
 
