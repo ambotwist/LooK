@@ -163,9 +163,21 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(
+                color: Colors.transparent,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(
+                color: Colors.transparent,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.outline,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
             contentPadding: const EdgeInsets.symmetric(
