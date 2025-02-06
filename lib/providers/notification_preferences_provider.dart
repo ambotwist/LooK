@@ -4,14 +4,25 @@ import 'dart:developer' as developer;
 
 class NotificationPreferencesNotifier
     extends StateNotifier<AsyncValue<Map<String, bool>>> {
-  NotificationPreferencesNotifier() : super(const AsyncValue.data({})) {
+  NotificationPreferencesNotifier() : super(const AsyncValue.loading()) {
     loadNotificationPreferences();
   }
 
   Future<void> loadNotificationPreferences() async {
     try {
       final userId = supabase.auth.currentUser?.id;
-      if (userId == null) return;
+      if (userId == null) {
+        state = const AsyncValue.data({
+          'personalized_finds': false,
+          'new_arrivals': false,
+          'orders_status': false,
+          'wishlist_price_drop': false,
+          'wishlist_low_stock': false,
+          'wishlist_back_in_stock': false,
+          'fav_sales': false,
+        });
+        return;
+      }
 
       final response = await supabase
           .from('user_profiles')
@@ -19,8 +30,9 @@ class NotificationPreferencesNotifier
           .eq('user_id', userId)
           .single();
 
-      final preferences = (response['notification_preferences'] as Map?)
-              ?.cast<String, bool>() ??
+      final preferences = (response['notification_preferences'] as Map?)?.map(
+            (key, value) => MapEntry(key.toString(), value as bool),
+          ) ??
           {
             'personalized_finds': false,
             'new_arrivals': false,

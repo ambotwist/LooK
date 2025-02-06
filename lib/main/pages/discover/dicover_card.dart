@@ -310,10 +310,10 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      '\$${widget.item.price.toInt()}',
+                                      '\$${widget.item.price}',
                                       style: const TextStyle(
                                         color: Colors.white,
-                                        fontSize: 36,
+                                        fontSize: 32,
                                         fontWeight: FontWeight.w700,
                                         height: 1.2,
                                       ),

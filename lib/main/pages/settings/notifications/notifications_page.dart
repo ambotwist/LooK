@@ -14,49 +14,22 @@ class NotificationsPage extends ConsumerStatefulWidget {
 
 class _NotificationsPageState extends ConsumerState<NotificationsPage> {
   bool _isEditing = false;
-  late Map<String, bool> _notifications;
   bool _hasChanges = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _notifications = {
-      'personalized_finds': false,
-      'new_arrivals': false,
-      'orders_status': false,
-      'wishlist_price_drop': false,
-      'wishlist_low_stock': false,
-      'wishlist_back_in_stock': false,
-      'fav_sales': false,
-    };
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Load current preferences
-    final currentPrefs = ref.read(notificationPreferencesProvider).value;
-    if (currentPrefs != null) {
-      setState(() {
-        _notifications = Map.from(currentPrefs);
-      });
-    }
+  void _updateNotification(String key, bool value) {
+    setState(() {
+      _hasChanges = true;
+    });
+    ref
+        .read(notificationPreferencesProvider.notifier)
+        .saveNotificationPreferences({
+      ...ref.read(notificationPreferencesProvider).value ?? {},
+      key: value,
+    });
   }
 
   Future<void> _toggleEdit() async {
     if (_isEditing && _hasChanges) {
-      // Save changes
-      final success = await ref
-          .read(notificationPreferencesProvider.notifier)
-          .saveNotificationPreferences(_notifications);
-
-      if (!success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save changes')),
-        );
-        return;
-      }
-
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -75,17 +48,9 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     });
   }
 
-  void _updateNotification(String key, bool value) {
-    setState(() {
-      _notifications[key] = value;
-      _hasChanges = true;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Watch the provider to rebuild on changes
-    ref.watch(notificationPreferencesProvider);
+    final notificationState = ref.watch(notificationPreferencesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -138,109 +103,113 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              SettingsButtonContainer(
-                title: 'Sales & Promotions',
-                children: [
-                  SettingsButton(
-                    title: 'Favorite Brands Sales',
-                    icon: Ionicons.megaphone_outline,
-                    iconSize: 22,
-                    onPressed: () {},
-                    isCheckable: true,
-                    isEditing: _isEditing,
-                    isChecked: _notifications['fav_sales'],
-                    onCheckChanged: (value) =>
-                        _updateNotification('fav_sales', value),
-                  ),
-                ],
-              ),
-              SettingsButtonContainer(
-                title: 'Wishlist Updates',
-                children: [
-                  SettingsButton(
-                    title: 'Item Price Drop',
-                    icon: Ionicons.flash_outline,
-                    iconSize: 22,
-                    onPressed: () {},
-                    isCheckable: true,
-                    isEditing: _isEditing,
-                    isChecked: _notifications['wishlist_price_drop'],
-                    onCheckChanged: (value) =>
-                        _updateNotification('wishlist_price_drop', value),
-                  ),
-                  SettingsButton(
-                    title: 'Low Stock Alert',
-                    icon: Ionicons.alert_circle_outline,
-                    iconSize: 22,
-                    onPressed: () {},
-                    isCheckable: true,
-                    isEditing: _isEditing,
-                    isChecked: _notifications['wishlist_low_stock'],
-                    onCheckChanged: (value) =>
-                        _updateNotification('wishlist_low_stock', value),
-                  ),
-                  SettingsButton(
-                    title: 'Back in Stock',
-                    icon: Ionicons.bag_handle_outline,
-                    iconSize: 22,
-                    onPressed: () {},
-                    isCheckable: true,
-                    isEditing: _isEditing,
-                    isChecked: _notifications['wishlist_back_in_stock'],
-                    onCheckChanged: (value) =>
-                        _updateNotification('wishlist_back_in_stock', value),
-                  ),
-                ],
-              ),
-              SettingsButtonContainer(
-                title: 'A.I. Recommendations',
-                children: [
-                  SettingsButton(
-                    title: 'Personalized Finds',
-                    icon: Ionicons.sparkles_outline,
-                    iconSize: 22,
-                    onPressed: () {},
-                    isCheckable: true,
-                    isEditing: _isEditing,
-                    isChecked: _notifications['personalized_finds'],
-                    onCheckChanged: (value) =>
-                        _updateNotification('personalized_finds', value),
-                  ),
-                  SettingsButton(
-                    title: 'New Arrivals',
-                    icon: Ionicons.cube_outline,
-                    iconSize: 22,
-                    onPressed: () {},
-                    isCheckable: true,
-                    isEditing: _isEditing,
-                    isChecked: _notifications['new_arrivals'],
-                    onCheckChanged: (value) =>
-                        _updateNotification('new_arrivals', value),
-                  ),
-                ],
-              ),
-              SettingsButtonContainer(
-                title: 'Order Updates',
-                children: [
-                  SettingsButton(
-                    title: 'Order Status',
-                    icon: Ionicons.bag_handle_outline,
-                    iconSize: 22,
-                    onPressed: () {},
-                    isCheckable: true,
-                    isEditing: _isEditing,
-                    isChecked: _notifications['orders_status'],
-                    onCheckChanged: (value) =>
-                        _updateNotification('orders_status', value),
-                  ),
-                ],
-              ),
-            ],
+      body: notificationState.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+        data: (notifications) => SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                SettingsButtonContainer(
+                  title: 'Sales & Promotions',
+                  children: [
+                    SettingsButton(
+                      title: 'Favorite Brands Sales',
+                      icon: Ionicons.megaphone_outline,
+                      iconSize: 22,
+                      onPressed: () {},
+                      isCheckable: true,
+                      isEditing: _isEditing,
+                      isChecked: notifications['fav_sales'],
+                      onCheckChanged: (value) =>
+                          _updateNotification('fav_sales', value),
+                    ),
+                  ],
+                ),
+                SettingsButtonContainer(
+                  title: 'Wishlist Updates',
+                  children: [
+                    SettingsButton(
+                      title: 'Item Price Drop',
+                      icon: Ionicons.flash_outline,
+                      iconSize: 22,
+                      onPressed: () {},
+                      isCheckable: true,
+                      isEditing: _isEditing,
+                      isChecked: notifications['wishlist_price_drop'],
+                      onCheckChanged: (value) =>
+                          _updateNotification('wishlist_price_drop', value),
+                    ),
+                    SettingsButton(
+                      title: 'Low Stock Alert',
+                      icon: Ionicons.alert_circle_outline,
+                      iconSize: 22,
+                      onPressed: () {},
+                      isCheckable: true,
+                      isEditing: _isEditing,
+                      isChecked: notifications['wishlist_low_stock'],
+                      onCheckChanged: (value) =>
+                          _updateNotification('wishlist_low_stock', value),
+                    ),
+                    SettingsButton(
+                      title: 'Back in Stock',
+                      icon: Ionicons.bag_handle_outline,
+                      iconSize: 22,
+                      onPressed: () {},
+                      isCheckable: true,
+                      isEditing: _isEditing,
+                      isChecked: notifications['wishlist_back_in_stock'],
+                      onCheckChanged: (value) =>
+                          _updateNotification('wishlist_back_in_stock', value),
+                    ),
+                  ],
+                ),
+                SettingsButtonContainer(
+                  title: 'A.I. Recommendations',
+                  children: [
+                    SettingsButton(
+                      title: 'Personalized Finds',
+                      icon: Ionicons.sparkles_outline,
+                      iconSize: 22,
+                      onPressed: () {},
+                      isCheckable: true,
+                      isEditing: _isEditing,
+                      isChecked: notifications['personalized_finds'],
+                      onCheckChanged: (value) =>
+                          _updateNotification('personalized_finds', value),
+                    ),
+                    SettingsButton(
+                      title: 'New Arrivals',
+                      icon: Ionicons.cube_outline,
+                      iconSize: 22,
+                      onPressed: () {},
+                      isCheckable: true,
+                      isEditing: _isEditing,
+                      isChecked: notifications['new_arrivals'],
+                      onCheckChanged: (value) =>
+                          _updateNotification('new_arrivals', value),
+                    ),
+                  ],
+                ),
+                SettingsButtonContainer(
+                  title: 'Order Updates',
+                  children: [
+                    SettingsButton(
+                      title: 'Order Status',
+                      icon: Ionicons.bag_handle_outline,
+                      iconSize: 22,
+                      onPressed: () {},
+                      isCheckable: true,
+                      isEditing: _isEditing,
+                      isChecked: notifications['orders_status'],
+                      onCheckChanged: (value) =>
+                          _updateNotification('orders_status', value),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
