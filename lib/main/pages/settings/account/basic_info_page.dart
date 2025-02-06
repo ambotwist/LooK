@@ -95,7 +95,7 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
           ),
         ),
         title: const Text(
-          'Basic Info',
+          'Name',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
