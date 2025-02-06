@@ -1,41 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/main/pages/settings/settings_button.dart';
 import 'package:lookapp/main/pages/settings/settings_button_container.dart';
+import 'package:lookapp/providers/notification_preferences_provider.dart';
 
-class NotificationsPage extends StatefulWidget {
+class NotificationsPage extends ConsumerStatefulWidget {
   const NotificationsPage({super.key});
 
   @override
-  State<NotificationsPage> createState() => _NotificationsPageState();
+  ConsumerState<NotificationsPage> createState() => _NotificationsPageState();
 }
 
-class _NotificationsPageState extends State<NotificationsPage> {
+class _NotificationsPageState extends ConsumerState<NotificationsPage> {
   bool _isEditing = false;
-  final Map<String, bool> _notifications = {
-    'personalized_finds': false,
-    'new_arrivals': false,
-    'orders_status': false,
-    'wishlist_price_drop': false,
-    'wishlist_low_stock': false,
-    'wishlist_back_in_stock': false,
-    'fav_sales': false,
-  };
+  late Map<String, bool> _notifications;
+  bool _hasChanges = false;
 
-  void _toggleEdit() {
+  @override
+  void initState() {
+    super.initState();
+    _notifications = {
+      'personalized_finds': false,
+      'new_arrivals': false,
+      'orders_status': false,
+      'wishlist_price_drop': false,
+      'wishlist_low_stock': false,
+      'wishlist_back_in_stock': false,
+      'fav_sales': false,
+    };
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Load current preferences
+    final currentPrefs = ref.read(notificationPreferencesProvider).value;
+    if (currentPrefs != null) {
+      setState(() {
+        _notifications = Map.from(currentPrefs);
+      });
+    }
+  }
+
+  Future<void> _toggleEdit() async {
+    if (_isEditing && _hasChanges) {
+      // Save changes
+      final success = await ref
+          .read(notificationPreferencesProvider.notifier)
+          .saveNotificationPreferences(_notifications);
+
+      if (!success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to save changes')),
+        );
+        return;
+      }
+    }
+
     setState(() {
       _isEditing = !_isEditing;
+      _hasChanges = false;
     });
   }
 
   void _updateNotification(String key, bool value) {
     setState(() {
       _notifications[key] = value;
+      _hasChanges = true;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Watch the provider to rebuild on changes
+    ref.watch(notificationPreferencesProvider);
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 42,
@@ -113,7 +153,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 children: [
                   SettingsButton(
                     title: 'Item Price Drop',
-                    icon: Ionicons.pricetags_outline,
+                    icon: Ionicons.flash_outline,
                     iconSize: 22,
                     onPressed: () {},
                     isCheckable: true,
@@ -151,7 +191,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 children: [
                   SettingsButton(
                     title: 'Personalized Finds',
-                    icon: Ionicons.cube_outline,
+                    icon: Ionicons.sparkles_outline,
                     iconSize: 22,
                     onPressed: () {},
                     isCheckable: true,

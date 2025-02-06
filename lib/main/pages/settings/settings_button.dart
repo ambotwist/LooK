@@ -40,7 +40,7 @@ class SettingsButton extends StatelessWidget {
       height: 48,
       child: ElevatedButton(
         onPressed: isCheckable && isEditing
-            ? () => onCheckChanged?.call(!isChecked!)
+            ? () => onCheckChanged?.call(!(isChecked ?? false))
             : onPressed,
         style: ElevatedButton.styleFrom(
           alignment: Alignment.centerLeft,
