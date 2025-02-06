@@ -72,61 +72,47 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CardIconTextRow(
-                    icon: Icons.supervisor_account_rounded,
-                    text: widget.item.sex.displayName),
+                    icon: Ionicons.shirt, text: widget.item.styles.join(', ')),
                 CardIconTextRow(
-                  icon: Icons.straighten_rounded,
-                  text: switch (widget.item.highCategory) {
-                    'tops' => widget.item.topSize?.toUpperCase() ?? 'N/A',
-                    'bottoms' => widget.item.bottomSize ?? 'N/A',
-                    'shoes' => widget.item.shoeSize?.toString() ?? 'N/A',
-                    _ => 'N/A'
-                  },
-                ),
-              ],
-            ),
-          1 => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CardIconTextRow(
-                    icon: Icons.iron_rounded,
-                    text: widget.item.styles.join(', ')),
-                CardIconTextRow(
-                    icon: Icons.balance_rounded,
+                    icon: Ionicons.pricetag,
                     text: widget.item.materials.join(', ')),
               ],
-            ),
-          2 => Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '"${widget.item.description}"',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
+              //   ),
+              // 1 => Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       CardIconTextRow(
+              //           icon: Icons.iron_rounded,
+              //           text: widget.item.styles.join(', ')),
+              //       CardIconTextRow(
+              //           icon: Icons.balance_rounded,
+              //           text: widget.item.materials.join(', ')),
+              //     ],
+              //   ),
+              // 2 => Expanded(
+              //     child: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Text(
+              //           '"${widget.item.description}"',
+              //           style: const TextStyle(
+              //             color: Colors.white,
+              //             fontSize: 18,
+              //             fontWeight: FontWeight.w500,
+              //             fontStyle: FontStyle.italic,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
             ),
           _ => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CardIconTextRow(
-                    icon: Icons.supervisor_account_rounded,
-                    text: widget.item.sex.displayName),
+                    icon: Ionicons.shirt, text: widget.item.styles.join(', ')),
                 CardIconTextRow(
-                  icon: Icons.straighten_rounded,
-                  text: switch (widget.item.highCategory) {
-                    'tops' => widget.item.topSize?.toUpperCase() ?? 'N/A',
-                    'bottoms' => widget.item.bottomSize ?? 'N/A',
-                    'shoes' => widget.item.shoeSize?.toString() ?? 'N/A',
-                    _ => 'N/A'
-                  },
-                ),
+                    icon: Ionicons.pricetag,
+                    text: widget.item.materials.join(', ')),
               ],
             ),
         },
@@ -289,21 +275,29 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        FittedBox(
-                                          fit: BoxFit.scaleDown,
+                                        Expanded(
                                           child: Text(
-                                            '${widget.item.brand} ${categoryToDisplayName(widget.item.specificCategory)}',
+                                            widget.item.name,
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 26,
                                               fontWeight: FontWeight.w600,
-                                              height: 1.2,
+                                              height: 1.5,
                                             ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
                                           ),
                                         ),
-                                        CardIconTextRow(
-                                            icon: Icons.store_rounded,
-                                            text: widget.item.storeName),
+                                        Text(
+                                          widget.item.brand,
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
                                         const SizedBox(
                                           height: 16.0,
                                         ),
@@ -326,15 +320,6 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                                     ),
                                     const SizedBox(
                                       height: 0.0,
-                                    ),
-                                    CardIconTextRow(
-                                      icon: Icons.stars_rounded,
-                                      text: widget.item.condition.displayName,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700,
-                                      ),
                                     ),
                                   ],
                                 ),
@@ -366,11 +351,13 @@ class CardIconTextRow extends StatelessWidget {
       fontSize: 18,
       fontWeight: FontWeight.w500,
     ),
+    this.iconSize = 20,
   });
 
   final IconData icon;
   final String text;
   final TextStyle style;
+  final double? iconSize;
 
   @override
   Widget build(BuildContext context) {
@@ -379,6 +366,7 @@ class CardIconTextRow extends StatelessWidget {
         Icon(
           icon,
           color: Colors.white,
+          size: iconSize,
         ),
         const SizedBox(
           width: 8.0,

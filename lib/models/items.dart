@@ -2,6 +2,7 @@ import 'package:lookapp/enums/item_enums.dart';
 
 class Item {
   final String id;
+  final String name;
   final String storeName;
   final String brand;
   final String storeId;
@@ -27,6 +28,7 @@ class Item {
 
   Item({
     required this.id,
+    required this.name,
     required this.storeName,
     required this.brand,
     required this.storeId,
@@ -74,6 +76,7 @@ class Item {
 
     return Item(
       id: json['id'] as String,
+      name: json['name'] as String? ?? '',
       storeName: json['store_name'] as String? ?? '',
       brand: json['brand'] as String? ?? '',
       storeId: json['store_id'] as String? ?? '',
@@ -124,6 +127,7 @@ class Item {
 
     return {
       'id': id,
+      'name': name,
       'store_name': storeName,
       'brand': brand,
       'store_id': storeId,
