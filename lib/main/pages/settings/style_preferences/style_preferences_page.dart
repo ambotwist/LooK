@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/providers/discover_provider.dart';
@@ -105,9 +106,38 @@ class StylePreferencesPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 42,
-        leading: const Text(''),
+        leadingWidth: 120,
+        leading: Row(
+          children: [
+            IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: Navigator.of(context).pop,
+              icon: const Icon(Ionicons.chevron_back),
+            ),
+            Transform.translate(
+              offset: const Offset(-12, 0),
+              child: TextButton(
+                onPressed: Navigator.of(context).pop,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  'Settings',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
         title: const Text(
-          'Style Preferences',
+          'Style',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -123,6 +153,7 @@ class StylePreferencesPage extends ConsumerWidget {
               style: TextStyle(
                 color: Colors.blue,
                 fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
             ),
           ),
@@ -167,7 +198,7 @@ class StylePreferencesPage extends ConsumerWidget {
                           : Theme.of(context).colorScheme.onPrimary,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     onSelected: (selected) {
                       if (selected) {

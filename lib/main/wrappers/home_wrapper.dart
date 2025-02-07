@@ -268,14 +268,14 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
               selectedColor: theme.primaryColor,
               onPressed: () => _handlePageChange(0),
             ),
-            // NavbarIconButton(
-            //   icon: Ionicons.search_outline,
-            //   selectedIcon: Ionicons.search,
-            //   size: 32,
-            //   isSelected: _selectedIndex == 1,
-            //   selectedColor: theme.primaryColor,
-            //   onPressed: () => _handlePageChange(1),
-            // ),
+            NavbarIconButton(
+              icon: Ionicons.search_outline,
+              selectedIcon: Ionicons.search,
+              size: 32,
+              isSelected: _selectedIndex == 1,
+              selectedColor: theme.primaryColor,
+              onPressed: () => _handlePageChange(1),
+            ),
             NavbarIconButton(
               icon: Ionicons.compass_outline,
               selectedIcon: Ionicons.compass,
