@@ -59,7 +59,7 @@ class UserPreferencesState {
 }
 
 class UserPreferencesNotifier extends StateNotifier<UserPreferencesState> {
-  UserPreferencesNotifier() : super(UserPreferencesState());
+  UserPreferencesNotifier() : super(const UserPreferencesState());
 
   void updateSex(Sex sex) {
     state = state.copyWith(sex: sex);

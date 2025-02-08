@@ -20,8 +20,8 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   numberpicker: ^2.1.2
   intl_phone_field: ^3.2.0
-  country_picker: ^2.0.25 
-
+  country_picker: ^2.0.25
+  flutter_svg: ^2.0.9
 
 dev_dependencies:
   flutter_test:
@@ -35,6 +35,7 @@ flutter:
     - assets/logos/google_light.png
     - assets/logos/apple_light.png
     - assets/logos/facebook.png
+
   fonts:
     - family: Inter
       fonts:
@@ -86,3 +87,6 @@ flutter:
         - asset: assets/fonts/Montserrat/static/Montserrat-BlackItalic.ttf
           weight: 900
           style: italic
+    - family: Look_custom_icons
+      fonts:
+        - asset: assets/fonts/Look_custom_icons.ttf

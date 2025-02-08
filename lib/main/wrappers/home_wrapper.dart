@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lookapp/config/look_custom_icons_icons.dart';
 import 'package:lookapp/main/pages/settings/settings_page.dart';
 import 'package:lookapp/main/pages/discover/discover_page.dart';
 import 'package:lookapp/main/pages/wishlist/wishlist_page.dart';
@@ -128,8 +129,8 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
               ),
         title: Text(
           switch (_selectedIndex) {
-            1 => 'Search',
-            2 => 'Store',
+            1 => 'Outfitter',
+            2 => 'Discover',
             3 => 'Wishlist',
             4 => 'Settings',
             _ => '',
@@ -261,16 +262,16 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             NavbarIconButton(
-              icon: Ionicons.sparkles_outline,
-              selectedIcon: Ionicons.sparkles,
+              icon: Look_custom_icons.cards_outline,
+              selectedIcon: Look_custom_icons.cards,
               size: 30,
               isSelected: _selectedIndex == 0,
               selectedColor: theme.primaryColor,
               onPressed: () => _handlePageChange(0),
             ),
             NavbarIconButton(
-              icon: Ionicons.search_outline,
-              selectedIcon: Ionicons.search,
+              icon: Ionicons.sparkles_outline,
+              selectedIcon: Ionicons.sparkles,
               size: 32,
               isSelected: _selectedIndex == 1,
               selectedColor: theme.primaryColor,
