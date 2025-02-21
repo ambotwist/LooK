@@ -21,7 +21,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   Future<void> _checkAuth() async {
     try {
-      final session = supabase.auth.currentSession;
+      // Check if the user is authenticated
+      supabase.auth.currentSession;
+      // If the widget is mounted, set the loading state to false
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -34,16 +36,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    // If the user is loading, show a loading indicator
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (supabase.auth.currentSession != null) {
+    // If the user is authenticated, show the home wrapper
+      if (supabase.auth.currentSession != null) {
       return const HomeWrapper();
     }
 
+    // If the user is not authenticated, show the login page
     return const LoginPage();
   }
 }
