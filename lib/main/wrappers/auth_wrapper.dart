@@ -44,7 +44,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     }
 
     // If the user is authenticated, show the home wrapper
-      if (supabase.auth.currentSession != null) {
+    if (supabase.auth.currentSession != null) {
       return const HomeWrapper();
     }
 

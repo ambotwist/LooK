@@ -9,12 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/providers/user_profile_provider.dart';
 import 'package:lookapp/widgets/layout/connection_status_snackbar.dart';
 import 'package:lookapp/providers/connection_provider.dart';
+import 'package:lookapp/widgets/layout/loading_screen.dart';
 
-void main() async {
-  // Ensure Flutter bindings are initialized
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Supabase with original configuration
+Future<void> initializeSupabase() async {
   await Supabase.initialize(
     url: 'https://vwkurdhiepsexgevmakb.supabase.co',
     anonKey:
@@ -25,7 +22,45 @@ void main() async {
     ),
     debug: true,
   );
+}
 
+void main() async {
+  // Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Show loading screen while we initialize
+  runApp(const LoadingScreen(message: 'Connecting to LooK ...'));
+
+  // Wait for internet connection
+  bool hasConnection = false;
+  while (!hasConnection) {
+    hasConnection = await InternetConnection().hasInternetAccess;
+    if (!hasConnection) {
+      await Future.delayed(const Duration(seconds: 2));
+    }
+  }
+
+  // Update loading message
+  runApp(const LoadingScreen(message: 'Initializing...'));
+
+  // Initialize Supabase
+  try {
+    await initializeSupabase();
+  } catch (e) {
+    // If initialization fails, show error and retry
+    while (true) {
+      runApp(const LoadingScreen(message: 'Retrying connection...'));
+      await Future.delayed(const Duration(seconds: 2));
+      try {
+        await initializeSupabase();
+        break;
+      } catch (_) {
+        continue;
+      }
+    }
+  }
+
+  // Start the app
   runApp(
     ProviderScope(
       overrides: [
