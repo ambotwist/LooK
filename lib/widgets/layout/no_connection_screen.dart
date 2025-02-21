@@ -13,7 +13,7 @@ class NoConnectionScreen extends StatelessWidget {
           Icon(
             Ionicons.cloud_offline_outline,
             size: 64,
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
           const SizedBox(height: 16),
           Text(
@@ -21,7 +21,7 @@ class NoConnectionScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           const SizedBox(height: 8),
@@ -29,7 +29,7 @@ class NoConnectionScreen extends StatelessWidget {
             'Please check your connection and try again',
             style: TextStyle(
               fontSize: 16,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],

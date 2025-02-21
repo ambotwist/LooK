@@ -5,6 +5,8 @@ import 'package:lookapp/models/items.dart';
 import 'package:lookapp/providers/wishlist_provider.dart';
 import 'package:lookapp/main/pages/discover/dicover_card.dart';
 import 'package:lookapp/enums/item_enums.dart';
+import 'package:lookapp/widgets/layout/no_connection_screen.dart';
+import 'package:lookapp/providers/connection_provider.dart';
 
 class WishlistPage extends ConsumerStatefulWidget {
   const WishlistPage({super.key});
@@ -139,7 +141,13 @@ class _WishlistPageState extends ConsumerState<WishlistPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isConnected = ref.watch(connectionProvider);
     final wishlistItemsState = ref.watch(wishlistItemsProvider);
+
+    // If there's no internet connection, show the no connection screen
+    if (!isConnected) {
+      return const NoConnectionScreen();
+    }
 
     return wishlistItemsState.when(
       loading: () => const Center(child: CircularProgressIndicator()),
