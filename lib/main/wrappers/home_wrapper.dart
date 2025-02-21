@@ -4,6 +4,7 @@ import 'package:lookapp/config/look_custom_icons_icons.dart';
 import 'package:lookapp/main/pages/settings/settings_page.dart';
 import 'package:lookapp/main/pages/discover/discover_page.dart';
 import 'package:lookapp/main/pages/wishlist/wishlist_page.dart';
+import 'package:lookapp/providers/connection_provider.dart';
 import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
@@ -106,6 +107,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isConnected = ref.watch(connectionProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -141,7 +143,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
           ),
         ),
         actions: [
-          if (_selectedIndex == 0) ...[
+          if (_selectedIndex == 0 && isConnected) ...[
             AnimatedBuilder(
               animation: _shakeController,
               builder: (context, child) {
@@ -198,6 +200,9 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
             //       );
             //     },
             //   ),
+          ],
+          if (_selectedIndex == 0 && !isConnected) ...[
+            // Nothing
           ],
           // if (_selectedIndex == 3) ...[
           //   IconButton(

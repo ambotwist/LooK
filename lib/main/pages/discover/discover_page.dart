@@ -12,6 +12,8 @@ import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
 import 'package:lookapp/widgets/layout/filter_dropdown.dart';
+import 'package:lookapp/widgets/layout/no_connection_screen.dart';
+import 'package:lookapp/providers/connection_provider.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
   final double navbarHeight;
@@ -253,10 +255,16 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
 
   @override
   Widget build(BuildContext context) {
+    final isConnected = ref.watch(connectionProvider);
     final items = ref.watch(itemsProvider);
     final discoverState = ref.watch(discoverProvider);
     final size = MediaQuery.of(context).size;
     const bottomPadding = 36.0;
+
+    // If there's no internet connection, show the no connection screen
+    if (!isConnected) {
+      return const NoConnectionScreen();
+    }
 
     return Stack(
       children: [
