@@ -4,6 +4,8 @@ import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/main/pages/settings/settings_button.dart';
 import 'package:lookapp/main/pages/settings/settings_button_container.dart';
 import 'package:lookapp/providers/notification_preferences_provider.dart';
+import 'package:lookapp/providers/connection_provider.dart';
+import 'package:lookapp/widgets/buttons/save_button.dart';
 
 class NotificationsPage extends ConsumerStatefulWidget {
   const NotificationsPage({super.key});
@@ -90,16 +92,9 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
           style: TextStyle(fontSize: 18),
         ),
         actions: [
-          TextButton(
+          SaveButton(
             onPressed: _toggleEdit,
-            child: Text(
-              _isEditing ? 'Save' : 'Edit',
-              style: const TextStyle(
-                color: Colors.blue,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            text: _isEditing ? 'Save' : 'Edit',
           ),
         ],
       ),

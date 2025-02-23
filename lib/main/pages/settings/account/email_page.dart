@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/main.dart';
+import 'package:lookapp/providers/connection_provider.dart';
+import 'package:lookapp/widgets/buttons/save_button.dart';
 
 class EmailPage extends ConsumerStatefulWidget {
   const EmailPage({super.key});
@@ -63,18 +65,10 @@ class _EmailPageState extends ConsumerState<EmailPage> {
           ),
         ),
         actions: [
-          TextButton(
+          SaveButton(
             onPressed: () {
               // Does nothing for now
             },
-            child: const Text(
-              'Save',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
           ),
         ],
       ),

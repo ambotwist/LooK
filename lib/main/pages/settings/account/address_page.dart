@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/models/address.dart';
 import 'package:lookapp/providers/address_provider.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
+import 'package:lookapp/providers/connection_provider.dart';
+import 'package:lookapp/widgets/buttons/save_button.dart';
 
 const Map<String, String> countries = {
   'United Kingdom': 'GB',
@@ -198,18 +200,8 @@ class _AddressPageState extends ConsumerState<AddressPage> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () {
-              _saveAddresses();
-            },
-            child: const Text(
-              'Save',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+          SaveButton(
+            onPressed: _saveAddresses,
           ),
         ],
       ),

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
 import 'package:lookapp/providers/user_profile_provider.dart';
+import 'package:lookapp/providers/connection_provider.dart';
+import 'package:lookapp/widgets/buttons/save_button.dart';
 
 class PhonePage extends ConsumerStatefulWidget {
   const PhonePage({super.key});
@@ -63,6 +65,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isConnected = ref.watch(connectionProvider);
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 42,
@@ -86,16 +90,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           ),
         ),
         actions: [
-          TextButton(
+          SaveButton(
             onPressed: _savePhoneNumber,
-            child: const Text(
-              'Save',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
           ),
         ],
       ),

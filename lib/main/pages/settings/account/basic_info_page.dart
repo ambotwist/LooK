@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
 import 'package:lookapp/providers/user_profile_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:lookapp/providers/connection_provider.dart';
+import 'package:lookapp/widgets/buttons/save_button.dart';
 import 'dart:developer' as developer;
 
 class BasicInfoPage extends ConsumerStatefulWidget {
@@ -102,16 +104,8 @@ class _BasicInfoPageState extends ConsumerState<BasicInfoPage> {
           ),
         ),
         actions: [
-          TextButton(
+          SaveButton(
             onPressed: _saveBasicInfo,
-            child: const Text(
-              'Save',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
           ),
         ],
       ),
