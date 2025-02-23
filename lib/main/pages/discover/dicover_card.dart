@@ -21,7 +21,7 @@ class DiscoverCard extends ConsumerStatefulWidget {
 }
 
 class _DiscoverCardState extends ConsumerState<DiscoverCard> {
-  final List<ImageProvider> _preloadedImages = [];
+  final Map<String, ImageProvider> _imageCache = {};
   bool _didPreloadImages = false;
 
   @override
@@ -36,26 +36,24 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
   @override
   void didUpdateWidget(DiscoverCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.item != widget.item ||
-        oldWidget.isCurrentCard != widget.isCurrentCard) {
+    if (oldWidget.item != widget.item) {
       _preloadImages();
-      _didPreloadImages = true;
     }
   }
 
   void _preloadImages() {
-    _preloadedImages.clear();
-
-    // For non-current cards, only preload the first image
-    final imagesToLoad =
-        widget.isCurrentCard ? widget.item.images : [widget.item.images.first];
-
-    for (final imageUrl in imagesToLoad) {
-      final imageProvider = NetworkImage(imageUrl);
-      _preloadedImages.add(imageProvider);
-      // Trigger image preloading
-      precacheImage(imageProvider, context);
+    // Preload all images for both current and next cards
+    for (final imageUrl in widget.item.images) {
+      if (!_imageCache.containsKey(imageUrl)) {
+        final imageProvider = NetworkImage(imageUrl);
+        _imageCache[imageUrl] = imageProvider;
+        precacheImage(imageProvider, context);
+      }
     }
+  }
+
+  ImageProvider _getImageProvider(String imageUrl) {
+    return _imageCache[imageUrl] ?? NetworkImage(imageUrl);
   }
 
   Row getInfoColumn(int index) {
@@ -176,14 +174,14 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                 children: [
                   // Item images
                   Image(
-                    image: _preloadedImages.isNotEmpty
-                        ? _preloadedImages[
-                            widget.currentImageIndex % _preloadedImages.length]
-                        : NetworkImage(
-                            widget.item.images[widget.currentImageIndex]),
+                    image: _getImageProvider(
+                      widget.item.images[widget.currentImageIndex],
+                    ),
                     fit: BoxFit.cover,
                     width: double.infinity,
                     height: double.infinity,
+                    gaplessPlayback:
+                        true, // Prevent flickering during image changes
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
                       return Container(
@@ -258,8 +256,8 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                             bottomRight: Radius.circular(40)),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 16.0),
+                        padding: const EdgeInsets.only(
+                            bottom: 8.0, left: 16.0, right: 16.0),
                         child: Column(
                           children: [
                             Row(
@@ -316,9 +314,6 @@ class _DiscoverCardState extends ConsumerState<DiscoverCard> {
                                         fontWeight: FontWeight.w700,
                                         height: 1.2,
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      height: 0.0,
                                     ),
                                   ],
                                 ),

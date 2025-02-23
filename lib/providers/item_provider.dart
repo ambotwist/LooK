@@ -119,7 +119,7 @@ final itemsProvider = FutureProvider<List<Item>>((ref) async {
 
     // Move limit() and order() to the very end, after all other filters
     final response =
-        await query.order('created_at', ascending: false).limit(pageSize);
+        await query.order('updated_at', ascending: false).limit(pageSize);
 
     if (response.isEmpty) return [];
 

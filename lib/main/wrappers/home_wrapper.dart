@@ -110,147 +110,124 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
     final isConnected = ref.watch(connectionProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 42,
-        leadingWidth: 100,
-        leading: _selectedIndex == 0
-            ? null
-            : Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'LooK',
+      appBar: _selectedIndex == 0 && isConnected
+          ? null
+          : _selectedIndex == 0 && !isConnected
+              ? AppBar(
+                  elevation: 0,
+                  toolbarHeight: 42,
+                  leadingWidth: 100,
+                  leading: _selectedIndex == 0
+                      ? null
+                      : Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'LooK',
+                              style: TextStyle(
+                                color: theme.primaryColor,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -1,
+                              ),
+                            ),
+                          ),
+                        ),
+                  title: const Text(
+                    'Discover',
                     style: TextStyle(
-                      color: theme.primaryColor,
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
                     ),
                   ),
+                )
+              : AppBar(
+                  elevation: 0,
+                  toolbarHeight: 42,
+                  leadingWidth: 100,
+                  leading: _selectedIndex == 0
+                      ? null
+                      : Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'LooK',
+                              style: TextStyle(
+                                color: theme.primaryColor,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -1,
+                              ),
+                            ),
+                          ),
+                        ),
+                  title: Text(
+                    switch (_selectedIndex) {
+                      1 => 'Outfitter',
+                      2 => 'Occasions',
+                      3 => 'Wishlist',
+                      4 => 'Settings',
+                      _ => '',
+                    },
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
+                  ),
+                  actions: [
+                    if (_selectedIndex == 0 && isConnected) ...[
+                      AnimatedBuilder(
+                        animation: _shakeController,
+                        builder: (context, child) {
+                          final shakeValue =
+                              sin(_shakeController.value * pi * 8);
+                          return Transform.rotate(
+                            angle: shakeValue * 0.1,
+                            child: child,
+                          );
+                        },
+                        child: IconButton(
+                          icon: const Icon(Ionicons.arrow_undo, size: 28),
+                          onPressed: _handleRewind,
+                        ),
+                      ),
+                      Expanded(
+                          child: Container(
+                              constraints: const BoxConstraints(maxWidth: 400),
+                              child: const CustomSearchBar(
+                                hintText: 'What are you looking for?',
+                              ))),
+                      const SizedBox(width: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: IconButton(
+                          icon: const Icon(
+                            Ionicons.bag,
+                            size: 26,
+                          ),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ],
+                    if (_selectedIndex == 0 && !isConnected) ...[
+                      // Nothing
+                    ],
+                    if (_selectedIndex != 0) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: IconButton(
+                          icon: const Icon(
+                            Ionicons.bag,
+                            size: 26,
+                          ),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-              ),
-        title: Text(
-          switch (_selectedIndex) {
-            1 => 'Outfitter',
-            2 => 'Discover',
-            3 => 'Wishlist',
-            4 => 'Settings',
-            _ => '',
-          },
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
-        ),
-        actions: [
-          if (_selectedIndex == 0 && isConnected) ...[
-            AnimatedBuilder(
-              animation: _shakeController,
-              builder: (context, child) {
-                final shakeValue = sin(_shakeController.value * pi * 8);
-                return Transform.rotate(
-                  angle: shakeValue * 0.1,
-                  child: child,
-                );
-              },
-              child: IconButton(
-                icon: const Icon(Ionicons.arrow_undo, size: 28),
-                onPressed: _handleRewind,
-              ),
-            ),
-            Expanded(
-                child: Container(
-                    constraints: const BoxConstraints(maxWidth: 400),
-                    child: const CustomSearchBar(
-                      hintText: 'What are you looking for?',
-                    ))),
-            const SizedBox(width: 8),
-            //   IconButton(
-            //     icon: const Icon(
-            //       Icons.filter_list_rounded,
-            //       size: 30,
-            //     ),
-            //     onPressed: () {
-            //       Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) => FilterPage(
-            //             onApplyFilters: (newFilters) {
-            //               ref.read(filterProvider.notifier).updateFilters(
-            //                     seasons: newFilters.seasons,
-            //                     topSizes: newFilters.topSizes,
-            //                     shoeSizes: newFilters.shoeSizes,
-            //                     bottomSizes: newFilters.bottomSizes,
-            //                     highCategories: newFilters.highCategories,
-            //                     specificCategories: newFilters.specificCategories,
-            //                     colors: newFilters.colors,
-            //                     priceRange: newFilters.priceRange,
-            //                     styles: newFilters.styles,
-            //                   );
-            //               ref.invalidate(itemsProvider);
-            //               ref.read(discoverProvider.notifier).updateState(
-            //                 currentIndex: 0,
-            //                 currentImageIndex: 0,
-            //                 previousIndices: [],
-            //               );
-            //               ref.read(overlayProvider).show();
-            //             },
-            //           ),
-            //         ),
-            //       );
-            //     },
-            //   ),
-          ],
-          if (_selectedIndex == 0 && !isConnected) ...[
-            // Nothing
-          ],
-          // if (_selectedIndex == 3) ...[
-          //   IconButton(
-          //     icon: const Icon(
-          //       Icons.filter_list_rounded,
-          //       size: 30,
-          //     ),
-          //     onPressed: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => FilterPage(
-          //             onApplyFilters: (newFilters) {
-          //               ref.read(filterProvider.notifier).updateFilters(
-          //                     season: newFilters.season,
-          //                     sizes: newFilters.sizes,
-          //                     highCategories: newFilters.highCategories,
-          //                     specificCategories: newFilters.specificCategories,
-          //                     colors: newFilters.colors,
-          //                     priceRange: newFilters.priceRange,
-          //                     styles: newFilters.styles,
-          //                   );
-          //               ref.invalidate(itemsProvider);
-          //               ref.read(wishlistProvider.notifier).updateState(
-          //                 currentIndex: 0,
-          //                 currentImageIndex: 0,
-          //                 previousIndices: [],
-          //               );
-          //               ref.read(overlayProvider).show();
-          //             },
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ],
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(
-              icon: const Icon(
-                Ionicons.bag,
-                size: 26,
-              ),
-              onPressed: () {},
-            ),
-          ),
-        ],
-      ),
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,

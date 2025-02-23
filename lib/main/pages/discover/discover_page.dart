@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
@@ -14,6 +16,7 @@ import 'package:lookapp/providers/overlay_provider.dart';
 import 'package:lookapp/widgets/layout/filter_dropdown.dart';
 import 'package:lookapp/widgets/layout/no_connection_screen.dart';
 import 'package:lookapp/providers/connection_provider.dart';
+import 'package:lookapp/widgets/layout/search_bar.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
   final double navbarHeight;
@@ -253,6 +256,45 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     }
   }
 
+  Widget _buildAppBar() {
+    return AppBar(
+      toolbarHeight: 42,
+      actions: [
+        AnimatedBuilder(
+          animation: _shakeController,
+          builder: (context, child) {
+            final shakeValue = sin(_shakeController.value * pi * 8);
+            return Transform.rotate(
+              angle: shakeValue * 0.1,
+              child: child,
+            );
+          },
+          child: IconButton(
+            icon: const Icon(Ionicons.arrow_undo, size: 28),
+            onPressed: _handleRewind,
+          ),
+        ),
+        Expanded(
+            child: Container(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: const CustomSearchBar(
+                  hintText: 'What are you looking for?',
+                ))),
+        const SizedBox(width: 8),
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: IconButton(
+            icon: const Icon(
+              Ionicons.bag,
+              size: 26,
+            ),
+            onPressed: () {},
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isConnected = ref.watch(connectionProvider);
@@ -270,6 +312,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
       children: [
         Column(
           children: [
+            _buildAppBar(),
             Container(
               height: 48,
               color: Theme.of(context).appBarTheme.backgroundColor,
@@ -456,50 +499,93 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                           : Curves.easeOutQuart,
                     );
 
-                    return Stack(
-                      children: [
-                        // Next card (if available)
-                        if (discoverState.currentIndex + 1 < items.length)
-                          DiscoverCard(
-                            item: items[discoverState.currentIndex + 1],
-                            isCurrentCard: false,
-                          ),
-                        // Current card (with gestures)
-                        GestureDetector(
-                          onPanUpdate: _onPanUpdate,
-                          onPanEnd: (details) => _onPanEnd(details, size),
-                          onTapUp: (details) =>
-                              _handleTapUp(details, items, discoverState),
-                          child: ValueListenableBuilder<double>(
-                            valueListenable: animation,
-                            builder: (context, value, child) {
-                              final offset = slideOutTween != null
-                                  ? Offset.lerp(
-                                      dragOffset, slideOutTween, value)!
-                                  : dragOffset;
-                              return Transform.translate(
-                                offset: offset,
-                                child: Transform.rotate(
-                                  angle: offset.dx / size.width * 0.4 +
-                                      offset.dy / size.height * 0.2,
-                                  child: Stack(
-                                    children: [
-                                      DiscoverCard(
-                                        item: items[discoverState.currentIndex],
-                                        currentImageIndex:
-                                            discoverState.currentImageIndex,
-                                        isCurrentCard: true,
+                    return LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // Background card (next card)
+                            if (discoverState.currentIndex + 1 < items.length)
+                              Positioned.fill(
+                                child: AnimatedBuilder(
+                                  animation: animation,
+                                  builder: (context, child) {
+                                    // Only show next card when current card is moving
+                                    final showNextCard = _isDragging ||
+                                        slideController.isAnimating;
+                                    final scale = showNextCard
+                                        ? 0.95 + (0.05 * animation.value)
+                                        : 0.95;
+                                    final opacity = (slideController.isAnimating
+                                            ? animation.value
+                                            : _isDragging
+                                                ? (dragOffset.distance /
+                                                    (size.width / 2))
+                                                : 0.0)
+                                        .clamp(0.0, 1.0);
+
+                                    return AnimatedOpacity(
+                                      duration:
+                                          const Duration(milliseconds: 150),
+                                      opacity: opacity,
+                                      child: Transform(
+                                        transform: Matrix4.identity()
+                                          ..translate(0.0, 0.0, 0.0)
+                                          ..scale(scale),
+                                        alignment: Alignment.center,
+                                        child: child,
                                       ),
-                                      if (_isDragging)
-                                        _buildOverlays(offset, size),
-                                    ],
+                                    );
+                                  },
+                                  child: DiscoverCard(
+                                    item: items[discoverState.currentIndex + 1],
+                                    isCurrentCard: false,
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+                              ),
+                            // Top card (current card)
+                            Positioned.fill(
+                              child: GestureDetector(
+                                onPanUpdate: _onPanUpdate,
+                                onPanEnd: (details) => _onPanEnd(details, size),
+                                onTapUp: (details) =>
+                                    _handleTapUp(details, items, discoverState),
+                                child: ValueListenableBuilder<double>(
+                                  valueListenable: animation,
+                                  builder: (context, value, child) {
+                                    final offset = slideOutTween != null
+                                        ? Offset.lerp(
+                                            dragOffset, slideOutTween, value)!
+                                        : dragOffset;
+                                    return Transform(
+                                      transform: Matrix4.identity()
+                                        ..setEntry(3, 2, 0.001) // perspective
+                                        ..translate(offset.dx, offset.dy,
+                                            1.0) // Ensure it's above background card
+                                        ..rotateZ(offset.dx / size.width * 0.4 +
+                                            offset.dy / size.height * 0.2),
+                                      alignment: Alignment.center,
+                                      child: Stack(
+                                        children: [
+                                          DiscoverCard(
+                                            item: items[
+                                                discoverState.currentIndex],
+                                            currentImageIndex:
+                                                discoverState.currentImageIndex,
+                                            isCurrentCard: true,
+                                          ),
+                                          if (_isDragging)
+                                            _buildOverlays(offset, size),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
                 ),
