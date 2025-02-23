@@ -10,6 +10,7 @@ import 'package:lookapp/providers/user_profile_provider.dart';
 import 'package:lookapp/widgets/layout/connection_status_snackbar.dart';
 import 'package:lookapp/providers/connection_provider.dart';
 import 'package:lookapp/widgets/layout/loading_screen.dart';
+import 'package:lookapp/widgets/layout/connection_failed_screen.dart';
 
 Future<void> initializeSupabase() async {
   await Supabase.initialize(
@@ -24,20 +25,26 @@ Future<void> initializeSupabase() async {
   );
 }
 
-void main() async {
-  // Ensure Flutter bindings are initialized
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Show loading screen while we initialize
-  runApp(const LoadingScreen(message: 'Connecting to LooK ...'));
-
-  // Wait for internet connection
+Future<bool> waitForConnection() async {
+  final stopwatch = Stopwatch()..start();
   bool hasConnection = false;
-  while (!hasConnection) {
+
+  while (!hasConnection && stopwatch.elapsed.inSeconds < 15) {
     hasConnection = await InternetConnection().hasInternetAccess;
     if (!hasConnection) {
       await Future.delayed(const Duration(seconds: 2));
     }
+  }
+
+  stopwatch.stop();
+  return hasConnection;
+}
+
+Future<void> initializeApp() async {
+  // Wait for internet connection
+  bool hasConnection = await waitForConnection();
+  if (!hasConnection) {
+    return;
   }
 
   // Update loading message
@@ -46,30 +53,36 @@ void main() async {
   // Initialize Supabase
   try {
     await initializeSupabase();
-  } catch (e) {
-    // If initialization fails, show error and retry
-    while (true) {
-      runApp(const LoadingScreen(message: 'Retrying connection...'));
-      await Future.delayed(const Duration(seconds: 2));
-      try {
-        await initializeSupabase();
-        break;
-      } catch (_) {
-        continue;
-      }
-    }
-  }
 
-  // Start the app
-  runApp(
-    ProviderScope(
-      overrides: [
-        // Initialize and watch the userProfileProvider at app start
-        userProfileProvider,
-      ],
-      child: const MainApp(),
-    ),
-  );
+    // Start the app
+    runApp(
+      ProviderScope(
+        overrides: [
+          userProfileProvider,
+        ],
+        child: const MainApp(),
+      ),
+    );
+  } catch (e) {
+    // If initialization fails, show connection failed screen
+    runApp(ConnectionFailedScreen(
+      onRetry: () async {
+        runApp(const LoadingScreen(message: 'Connecting to LooK ...'));
+        initializeApp();
+      },
+    ));
+  }
+}
+
+void main() async {
+  // Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Show loading screen while we initialize
+  runApp(const LoadingScreen(message: 'Connecting to LooK ...'));
+
+  // Start initialization process
+  await initializeApp();
 }
 
 final supabase = Supabase.instance.client;

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LoadingScreen extends StatelessWidget {
@@ -17,12 +16,11 @@ class LoadingScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CupertinoActivityIndicator(),
+              const CircularProgressIndicator(),
               const SizedBox(height: 16),
               Text(
                 message,
                 style: const TextStyle(
-                  fontFamily: 'Montserrat',
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),

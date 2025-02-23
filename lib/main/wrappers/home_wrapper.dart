@@ -11,7 +11,7 @@ import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
 import 'package:lookapp/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
-import 'package:lookapp/widgets/layout/search_bar.dart';
+import 'package:lookapp/widgets/layout/look_app_bar.dart';
 import 'dart:math';
 import 'package:ionicons/ionicons.dart';
 
@@ -112,122 +112,12 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
     return Scaffold(
       appBar: _selectedIndex == 0 && isConnected
           ? null
-          : _selectedIndex == 0 && !isConnected
-              ? AppBar(
-                  elevation: 0,
-                  toolbarHeight: 42,
-                  leadingWidth: 100,
-                  leading: _selectedIndex == 0
-                      ? null
-                      : Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'LooK',
-                              style: TextStyle(
-                                color: theme.primaryColor,
-                                fontSize: 26,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -1,
-                              ),
-                            ),
-                          ),
-                        ),
-                  title: const Text(
-                    'Discover',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
-                  ),
-                )
-              : AppBar(
-                  elevation: 0,
-                  toolbarHeight: 42,
-                  leadingWidth: 100,
-                  leading: _selectedIndex == 0
-                      ? null
-                      : Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'LooK',
-                              style: TextStyle(
-                                color: theme.primaryColor,
-                                fontSize: 26,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -1,
-                              ),
-                            ),
-                          ),
-                        ),
-                  title: Text(
-                    switch (_selectedIndex) {
-                      1 => 'Outfitter',
-                      2 => 'Occasions',
-                      3 => 'Wishlist',
-                      4 => 'Settings',
-                      _ => '',
-                    },
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
-                  ),
-                  actions: [
-                    if (_selectedIndex == 0 && isConnected) ...[
-                      AnimatedBuilder(
-                        animation: _shakeController,
-                        builder: (context, child) {
-                          final shakeValue =
-                              sin(_shakeController.value * pi * 8);
-                          return Transform.rotate(
-                            angle: shakeValue * 0.1,
-                            child: child,
-                          );
-                        },
-                        child: IconButton(
-                          icon: const Icon(Ionicons.arrow_undo, size: 28),
-                          onPressed: _handleRewind,
-                        ),
-                      ),
-                      Expanded(
-                          child: Container(
-                              constraints: const BoxConstraints(maxWidth: 400),
-                              child: const CustomSearchBar(
-                                hintText: 'What are you looking for?',
-                              ))),
-                      const SizedBox(width: 8),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: IconButton(
-                          icon: const Icon(
-                            Ionicons.bag,
-                            size: 26,
-                          ),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ],
-                    if (_selectedIndex == 0 && !isConnected) ...[
-                      // Nothing
-                    ],
-                    if (_selectedIndex != 0) ...[
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: IconButton(
-                          icon: const Icon(
-                            Ionicons.bag,
-                            size: 26,
-                          ),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+          : LookAppBar(
+              selectedIndex: _selectedIndex,
+              isConnected: isConnected,
+              onRewind: _selectedIndex == 0 ? _handleRewind : null,
+              shakeAnimation: _selectedIndex == 0 ? _shakeController : null,
+            ),
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
