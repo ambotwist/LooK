@@ -44,6 +44,13 @@ Future<void> initializeApp() async {
   // Wait for internet connection
   bool hasConnection = await waitForConnection();
   if (!hasConnection) {
+    // Show connection failed screen if no connection is detected
+    runApp(ConnectionFailedScreen(
+      onRetry: () async {
+        runApp(const LoadingScreen(message: 'Connecting to LooK ...'));
+        initializeApp();
+      },
+    ));
     return;
   }
 
