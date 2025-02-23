@@ -111,9 +111,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     const velocityThreshold = 1000.0; // pixels per second
 
     if (dx.abs() > size.width * positionThreshold ||
-        dy.abs() > size.height * positionThreshold ||
-        velocity.pixelsPerSecond.dx.abs() > velocityThreshold ||
-        velocity.pixelsPerSecond.dy.abs() > velocityThreshold) {
+        velocity.pixelsPerSecond.dx.abs() > velocityThreshold) {
       final items = ref.read(itemsProvider).asData?.value;
       final currentIndex = ref.read(discoverProvider).currentIndex;
 
@@ -126,18 +124,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
 
       final currentItem = items[currentIndex];
 
-      // Determine the interaction status based on dominant direction
-      // Use projected values for more natural feel with velocity
-      final InteractionStatus status;
-      if (projectedDx.abs() > projectedDy.abs()) {
-        status = projectedDx > 0
-            ? InteractionStatus.like
-            : InteractionStatus.dislike;
-      } else {
-        status = projectedDy > 0
-            ? InteractionStatus.badCondition
-            : InteractionStatus.tooExpensive;
-      }
+      // Determine the interaction status based on horizontal direction only
+      final InteractionStatus status =
+          dx > 0 ? InteractionStatus.like : InteractionStatus.dislike;
 
       setState(() {
         isProcessingInteraction = true;
@@ -175,12 +164,8 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
               0.3; // Adjust this to control velocity influence
           setState(() {
             slideOutTween = Offset(
-              projectedDx.abs() > projectedDy.abs()
-                  ? (projectedDx > 0 ? size.width * 1.5 : -size.width * 1.5)
-                  : velocity.pixelsPerSecond.dx * velocityMultiplier,
-              projectedDy.abs() > projectedDx.abs()
-                  ? (projectedDy > 0 ? size.height * 1.5 : -size.height * 1.5)
-                  : velocity.pixelsPerSecond.dy * velocityMultiplier,
+              dx > 0 ? size.width * 1.5 : -size.width * 1.5,
+              velocity.pixelsPerSecond.dy * velocityMultiplier,
             );
           });
         }
@@ -668,24 +653,10 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
 
   Widget _buildOverlays(Offset offset, Size size) {
     final dx = offset.dx;
-    final dy = offset.dy;
     final baseOpacity = (offset.distance / size.width).clamp(0.0, 0.5);
 
-    // Determine overlay color based on drag direction
-    Color overlayColor = Colors.white;
-    if (dx.abs() > dy.abs()) {
-      if (dx > 0) {
-        overlayColor = Colors.green;
-      } else {
-        overlayColor = Colors.red;
-      }
-    } else {
-      if (dy > 0) {
-        overlayColor = Colors.purple;
-      } else {
-        overlayColor = const Color.fromARGB(255, 225, 73, 17);
-      }
-    }
+    // Determine overlay color based on horizontal direction only
+    Color overlayColor = dx > 0 ? Colors.green : Colors.red;
 
     return Stack(
       children: [
@@ -712,9 +683,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
           top: 40,
           left: 30,
           child: Opacity(
-            opacity: (dx > 0 && dx.abs() > dy.abs())
-                ? (dx / (size.width / 2)).clamp(0.0, 1.0)
-                : 0.0,
+            opacity: dx > 0 ? (dx / (size.width / 2)).clamp(0.0, 1.0) : 0.0,
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.5),
@@ -739,9 +708,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
           top: 40,
           right: 30,
           child: Opacity(
-            opacity: (dx < 0 && dx.abs() > dy.abs())
-                ? (-dx / (size.width / 2)).clamp(0.0, 1.0)
-                : 0.0,
+            opacity: dx < 0 ? (-dx / (size.width / 2)).clamp(0.0, 1.0) : 0.0,
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.5),
@@ -756,74 +723,6 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                   color: Colors.red,
                   fontSize: 42,
                   fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ),
-        // Too Expensive overlay (bottom)
-        Positioned(
-          bottom: 30,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Opacity(
-              opacity: (dy < 0 && dy.abs() > dx.abs())
-                  ? (-dy / (size.height / 4)).clamp(0.0, 1.0)
-                  : 0.0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.5),
-                  border: Border.all(
-                    color: const Color.fromARGB(255, 225, 73, 17),
-                    width: 4,
-                  ),
-                ),
-                child: const Text(
-                  'TOO EXPENSIVE',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 225, 73, 17),
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        // Bad Condition overlay (top)
-        Positioned(
-          top: 30,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Opacity(
-              opacity: (dy > 0 && dy.abs() > dx.abs())
-                  ? (dy / (size.height / 4)).clamp(0.0, 1.0)
-                  : 0.0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.5),
-                  border: Border.all(
-                    color: Colors.purple,
-                    width: 4,
-                  ),
-                ),
-                child: const Text(
-                  'BAD CONDITION',
-                  style: TextStyle(
-                    color: Colors.purple,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
                 ),
               ),
             ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/main.dart';
-import 'package:lookapp/providers/connection_provider.dart';
 import 'package:lookapp/widgets/buttons/save_button.dart';
 
 class EmailPage extends ConsumerStatefulWidget {

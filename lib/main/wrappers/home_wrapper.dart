@@ -12,7 +12,6 @@ import 'package:lookapp/providers/overlay_provider.dart';
 import 'package:lookapp/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
 import 'package:lookapp/widgets/layout/look_app_bar.dart';
-import 'dart:math';
 import 'package:ionicons/ionicons.dart';
 
 class HomeWrapper extends ConsumerStatefulWidget {

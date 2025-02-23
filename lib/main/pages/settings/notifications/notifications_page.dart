@@ -4,7 +4,6 @@ import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/main/pages/settings/settings_button.dart';
 import 'package:lookapp/main/pages/settings/settings_button_container.dart';
 import 'package:lookapp/providers/notification_preferences_provider.dart';
-import 'package:lookapp/providers/connection_provider.dart';
 import 'package:lookapp/widgets/buttons/save_button.dart';
 
 class NotificationsPage extends ConsumerStatefulWidget {

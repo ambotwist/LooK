@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-enum InteractionStatus { like, dislike, tooExpensive, badCondition }
+enum InteractionStatus { like, dislike }
 
 final interactionsProvider =
     StateNotifierProvider<InteractionsNotifier, AsyncValue<void>>((ref) {
