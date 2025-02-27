@@ -2,26 +2,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:developer' as developer;
 
-enum InteractionStatus { like, dislike, superlike }
+enum HMInteractionStatus { like, dislike, superlike }
 
-final interactionsProvider =
-    StateNotifierProvider<InteractionsNotifier, AsyncValue<void>>((ref) {
-  return InteractionsNotifier();
+final hmInteractionsProvider =
+    StateNotifierProvider<HMInteractionsNotifier, AsyncValue<void>>((ref) {
+  return HMInteractionsNotifier();
 });
 
-class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
-  InteractionsNotifier() : super(const AsyncValue.data(null));
+class HMInteractionsNotifier extends StateNotifier<AsyncValue<void>> {
+  HMInteractionsNotifier() : super(const AsyncValue.data(null));
 
   Future<bool> updateInteraction(
-      String itemId, InteractionStatus? status) async {
+      String itemId, HMInteractionStatus? status) async {
     state = const AsyncValue.loading();
     try {
       final supabase = Supabase.instance.client;
       final userId = supabase.auth.currentUser?.id;
 
       developer.log(
-        'Updating interaction',
-        name: 'InteractionsNotifier',
+        'Updating HM interaction',
+        name: 'HMInteractionsNotifier',
         error: {
           'userId': userId,
           'itemId': itemId,
@@ -32,22 +32,22 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
       if (userId == null) {
         developer.log(
           'No user ID found',
-          name: 'InteractionsNotifier',
+          name: 'HMInteractionsNotifier',
         );
         return false;
       }
 
-      // Check if the item exists
+      // Check if the HM item exists
       final itemExists = await supabase
-          .from('items')
+          .from('hm_items')
           .select('id')
           .eq('id', itemId)
           .maybeSingle();
 
       if (itemExists == null) {
         developer.log(
-          'Item not found in table',
-          name: 'InteractionsNotifier',
+          'HM Item not found',
+          name: 'HMInteractionsNotifier',
           error: {'itemId': itemId},
         );
         return false;
@@ -55,19 +55,19 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
 
       if (status == null) {
         // Delete the interaction
-        final response = await supabase.from('interactions').delete().match({
+        final response = await supabase.from('hm_interactions').delete().match({
           'user_id': userId,
           'item_id': itemId,
         });
 
         developer.log(
-          'Deleted interaction',
-          name: 'InteractionsNotifier',
+          'Deleted HM interaction',
+          name: 'HMInteractionsNotifier',
           error: response,
         );
       } else {
         // Insert or update the interaction
-        final response = await supabase.from('interactions').upsert({
+        final response = await supabase.from('hm_interactions').upsert({
           'user_id': userId,
           'item_id': itemId,
           'interaction_type': status.name,
@@ -75,8 +75,8 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
         });
 
         developer.log(
-          'Upserted interaction',
-          name: 'InteractionsNotifier',
+          'Upserted HM interaction',
+          name: 'HMInteractionsNotifier',
           error: response,
         );
       }
@@ -85,10 +85,10 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
       return true;
     } catch (e, st) {
       developer.log(
-        'Error updating interaction',
+        'Error updating HM interaction',
         error: e,
         stackTrace: st,
-        name: 'InteractionsNotifier',
+        name: 'HMInteractionsNotifier',
       );
       state = AsyncValue.error(e, st);
       return false;

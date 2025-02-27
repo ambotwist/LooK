@@ -12,8 +12,8 @@ final interactionsProvider =
 class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
   InteractionsNotifier() : super(const AsyncValue.data(null));
 
-  Future<bool> updateInteraction(
-      String itemId, InteractionStatus? status) async {
+  Future<bool> updateInteraction(String itemId, InteractionStatus? status,
+      {String tableName = 'items'}) async {
     state = const AsyncValue.loading();
     try {
       final supabase = Supabase.instance.client;
@@ -26,6 +26,7 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
           'userId': userId,
           'itemId': itemId,
           'status': status?.name,
+          'tableName': tableName,
         },
       );
 
@@ -37,9 +38,9 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
         return false;
       }
 
-      // Check if the item exists
+      // First, check if the item exists in the specified table
       final itemExists = await supabase
-          .from('items')
+          .from(tableName)
           .select('id')
           .eq('id', itemId)
           .maybeSingle();
@@ -48,14 +49,18 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
         developer.log(
           'Item not found in table',
           name: 'InteractionsNotifier',
-          error: {'itemId': itemId},
+          error: {'itemId': itemId, 'tableName': tableName},
         );
         return false;
       }
 
+      // Determine which interactions table to use
+      final interactionsTable =
+          tableName == 'hm_items' ? 'hm_interactions' : 'interactions';
+
       if (status == null) {
         // Delete the interaction
-        final response = await supabase.from('interactions').delete().match({
+        final response = await supabase.from(interactionsTable).delete().match({
           'user_id': userId,
           'item_id': itemId,
         });
@@ -66,8 +71,8 @@ class InteractionsNotifier extends StateNotifier<AsyncValue<void>> {
           error: response,
         );
       } else {
-        // Insert or update the interaction
-        final response = await supabase.from('interactions').upsert({
+        // Insert or update the interaction in the appropriate table
+        final response = await supabase.from(interactionsTable).upsert({
           'user_id': userId,
           'item_id': itemId,
           'interaction_type': status.name,

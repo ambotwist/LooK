@@ -60,9 +60,11 @@ class _ActionBarState extends State<ActionBar>
     bool isMainAction = false,
     bool scaleOnDragLeft = false,
     bool scaleOnDragRight = false,
+    bool scaleOnDragUp = false,
   }) {
     final bool isVerticalDominant =
         widget.dragOffset.dy.abs() > widget.dragOffset.dx.abs();
+    final bool isUpwardSwipe = isVerticalDominant && widget.dragOffset.dy < 0;
 
     return ScaleTransition(
       scale: _scaleAnimation,
@@ -70,10 +72,12 @@ class _ActionBarState extends State<ActionBar>
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
         scale: (!showWhenDragging && widget.isDragging) ||
-                (isMainAction && isVerticalDominant)
+                (isMainAction && isVerticalDominant && !scaleOnDragUp) ||
+                (isMainAction && isUpwardSwipe && !scaleOnDragUp)
             ? 0.0
             : (scaleOnDragLeft && widget.dragOffset.dx < 0) ||
-                    (scaleOnDragRight && widget.dragOffset.dx > 0)
+                    (scaleOnDragRight && widget.dragOffset.dx > 0) ||
+                    (scaleOnDragUp && isUpwardSwipe)
                 ? 1.3
                 : 1.0,
         child: Container(
@@ -87,6 +91,7 @@ class _ActionBarState extends State<ActionBar>
                   ? _getBackgroundColor(
                       scaleOnDragLeft: scaleOnDragLeft,
                       scaleOnDragRight: scaleOnDragRight,
+                      scaleOnDragUp: scaleOnDragUp,
                       color: color,
                     )
                   : Colors.white,
@@ -106,6 +111,7 @@ class _ActionBarState extends State<ActionBar>
                     ? _getIconColor(
                         scaleOnDragLeft: scaleOnDragLeft,
                         scaleOnDragRight: scaleOnDragRight,
+                        scaleOnDragUp: scaleOnDragUp,
                         color: color,
                       )
                     : color,
@@ -120,12 +126,21 @@ class _ActionBarState extends State<ActionBar>
   Color _getBackgroundColor({
     required bool scaleOnDragLeft,
     required bool scaleOnDragRight,
+    bool scaleOnDragUp = false,
     required Color color,
   }) {
+    final bool isVerticalDominant =
+        widget.dragOffset.dy.abs() > widget.dragOffset.dx.abs();
+    final bool isUpwardSwipe = isVerticalDominant && widget.dragOffset.dy < 0;
+
     if ((scaleOnDragLeft && widget.dragOffset.dx < 0) ||
         (scaleOnDragRight && widget.dragOffset.dx > 0)) {
       return color.withOpacity(
         (widget.dragOffset.dx.abs() / (widget.screenWidth / 2)).clamp(0.0, 1.0),
+      );
+    } else if (scaleOnDragUp && isUpwardSwipe) {
+      return color.withOpacity(
+        (widget.dragOffset.dy.abs() / (widget.screenWidth / 3)).clamp(0.0, 1.0),
       );
     }
     return Colors.white;
@@ -134,10 +149,16 @@ class _ActionBarState extends State<ActionBar>
   Color _getIconColor({
     required bool scaleOnDragLeft,
     required bool scaleOnDragRight,
+    bool scaleOnDragUp = false,
     required Color color,
   }) {
+    final bool isVerticalDominant =
+        widget.dragOffset.dy.abs() > widget.dragOffset.dx.abs();
+    final bool isUpwardSwipe = isVerticalDominant && widget.dragOffset.dy < 0;
+
     if ((scaleOnDragLeft && widget.dragOffset.dx < 0) ||
-        (scaleOnDragRight && widget.dragOffset.dx > 0)) {
+        (scaleOnDragRight && widget.dragOffset.dx > 0) ||
+        (scaleOnDragUp && isUpwardSwipe)) {
       return Colors.white;
     }
     return color;

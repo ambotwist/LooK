@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/config/look_custom_icons_icons.dart';
 import 'package:lookapp/main/pages/settings/settings_page.dart';
-import 'package:lookapp/main/pages/discover/discover_page.dart';
 import 'package:lookapp/main/pages/wishlist/wishlist_page.dart';
 import 'package:lookapp/providers/connection_provider.dart';
 import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
-import 'package:lookapp/test_page.dart';
+import 'package:lookapp/test/pages/discover/test_discover_page.dart';
+import 'package:lookapp/test/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
 import 'package:lookapp/widgets/layout/look_app_bar.dart';
 import 'package:ionicons/ionicons.dart';
@@ -32,7 +32,7 @@ class _HomeWrapperState extends ConsumerState<HomeWrapper>
   void initState() {
     super.initState();
     _pages = [
-      DiscoverPage(navbarHeight: navbarHeight),
+      TestDiscoverPage(navbarHeight: navbarHeight),
       const TestPage(),
       const TestPage(),
       const WishlistPage(),
