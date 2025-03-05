@@ -23,6 +23,7 @@ import 'package:lookapp/widgets/layout/filter_dropdown.dart';
 import 'package:lookapp/widgets/layout/no_connection_screen.dart';
 import 'package:lookapp/providers/connection_provider.dart';
 import 'package:lookapp/widgets/layout/search_bar.dart';
+import 'package:lookapp/features/discover/presentation/animations/discover_animations.dart';
 
 // Create repository providers
 final itemRepositoryProvider = Provider((ref) => ItemRepository());
@@ -56,15 +57,10 @@ class _TestDiscoverPageState extends ConsumerState<TestDiscoverPage>
   @override
   void initState() {
     super.initState();
-    slideController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
+    // Use animation definitions for controller creation
+    slideController = SwipeAnimation.createController(this);
 
-    _shakeController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
+    _shakeController = ShakeAnimation.createController(this);
 
     // Initialize our controllers
     _swipeController = SwipeAnimationController(
@@ -144,9 +140,11 @@ class _TestDiscoverPageState extends ConsumerState<TestDiscoverPage>
         AnimatedBuilder(
           animation: _shakeController,
           builder: (context, child) {
-            final shakeValue = sin(_shakeController.value * pi * 8);
+            // Use the shake animation definition
+            final shakeValue =
+                ShakeAnimation.calculateRotationAngle(_shakeController.value);
             return Transform.rotate(
-              angle: shakeValue * 0.1,
+              angle: shakeValue,
               child: child,
             );
           },
@@ -464,9 +462,9 @@ class _TestDiscoverPageState extends ConsumerState<TestDiscoverPage>
 
                     final animation = CurvedAnimation(
                       parent: slideController,
-                      curve: _swipeController.slideOutTween == Offset.zero
-                          ? Curves.easeOutBack
-                          : Curves.easeOutQuart,
+                      // Use the curve definitions
+                      curve: DiscoverCurves.getSwipeCurve(
+                          _swipeController.slideOutTween == Offset.zero),
                     );
 
                     return LayoutBuilder(

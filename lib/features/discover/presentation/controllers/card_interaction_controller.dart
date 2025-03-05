@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/features/discover/data/repositories/item_interaction_repository.dart';
 import 'package:lookapp/features/discover/presentation/controllers/discover_card_preloader.dart';
 import 'package:lookapp/features/discover/presentation/controllers/swipe_animation_controller.dart';
+import 'package:lookapp/features/discover/presentation/animations/discover_animations.dart';
 import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
 import 'package:lookapp/features/discover/data/models/hm_items.dart';
@@ -67,7 +68,7 @@ class CardInteractionController {
 
     if (discoverState.previousIndices.isEmpty || items.isEmpty) {
       // Shake the rewind button to indicate nothing to rewind
-      shakeController.forward().then((_) => shakeController.reset());
+      ShakeAnimation.triggerShake(shakeController);
       return;
     }
 
