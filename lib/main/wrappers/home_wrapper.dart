@@ -8,7 +8,7 @@ import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/interactions_provider.dart';
 import 'package:lookapp/providers/item_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
-import 'package:lookapp/test/pages/discover/test_discover_page.dart';
+import 'package:lookapp/features/discover/presentation/screens/test_discover_page.dart';
 import 'package:lookapp/test/test_page.dart';
 import 'package:lookapp/widgets/layout/navbar_icon_button.dart';
 import 'package:lookapp/widgets/layout/look_app_bar.dart';

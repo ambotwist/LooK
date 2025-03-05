@@ -6,9 +6,9 @@ import 'package:lookapp/features/discover/presentation/controllers/discover_card
 import 'package:lookapp/features/discover/presentation/controllers/swipe_animation_controller.dart';
 import 'package:lookapp/providers/discover_provider.dart';
 import 'package:lookapp/providers/overlay_provider.dart';
-import 'package:lookapp/test/models/hm_items.dart';
-import 'package:lookapp/test/providers/hm_interactions_provider.dart';
-import 'package:lookapp/test/providers/hm_item_provider.dart';
+import 'package:lookapp/features/discover/data/models/hm_items.dart';
+import 'package:lookapp/features/discover/data/providers/hm_interactions_provider.dart';
+import 'package:lookapp/features/discover/data/providers/hm_item_provider.dart';
 
 /// Provider for the ItemInteractionRepository
 final itemInteractionRepositoryProvider =

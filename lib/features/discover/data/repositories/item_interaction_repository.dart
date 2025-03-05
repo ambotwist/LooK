@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:lookapp/test/providers/hm_interactions_provider.dart';
+import 'package:lookapp/features/discover/data/providers/hm_interactions_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Repository for handling all interactions with items (like, dislike, superlike)

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:lookapp/test/models/hm_items.dart';
+import 'package:lookapp/features/discover/data/models/hm_items.dart';
 import 'package:lookapp/providers/filter_provider.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
 import 'package:lookapp/enums/item_enums.dart';

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/features/discover/presentation/controllers/image_preloader_controller.dart';
 import 'package:lookapp/features/discover/presentation/widgets/card_info_section.dart';
 import 'package:lookapp/features/discover/presentation/widgets/image_indicators.dart';
-import 'package:lookapp/test/models/hm_items.dart';
+import 'package:lookapp/features/discover/data/models/hm_items.dart';
 
 /// A card displaying product information with images, used in the discover section
 class DiscoverCard extends ConsumerStatefulWidget {

@@ -6,7 +6,7 @@ import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/providers/provider_refresh.dart';
 import 'dart:async';
 
-import 'package:lookapp/test/models/hm_items.dart';
+import 'package:lookapp/features/discover/data/models/hm_items.dart';
 
 // State class to hold both items and loading state
 class HMItemsState {

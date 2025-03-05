@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lookapp/features/discover/domain/services/image_cache_service.dart';
-import 'package:lookapp/test/models/hm_items.dart';
+import 'package:lookapp/features/discover/data/models/hm_items.dart';
 
 /// Controller for preloading and managing card images in the discover section
 class DiscoverCardPreloader {

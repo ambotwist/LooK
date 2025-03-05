@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/features/discover/presentation/widgets/card_icon_text_row.dart';
 import 'package:lookapp/providers/wishlist_provider.dart';
-import 'package:lookapp/test/models/hm_items.dart';
+import 'package:lookapp/features/discover/data/models/hm_items.dart';
 
 /// Section displaying product information at the bottom of the card
 class CardInfoSection extends ConsumerWidget {
