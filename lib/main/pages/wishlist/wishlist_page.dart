@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:lookapp/models/items.dart';
+import 'package:lookapp/discover/models/items.dart';
 import 'package:lookapp/providers/wishlist_provider.dart';
-import 'package:lookapp/main/pages/discover/dicover_card.dart';
+import 'package:lookapp/discover/dicover_card.dart';
 import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/widgets/layout/no_connection_screen.dart';
 import 'package:lookapp/providers/connection_provider.dart';

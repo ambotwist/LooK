@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lookapp/models/items.dart';
+import 'package:lookapp/discover/models/items.dart';
 import 'package:lookapp/main.dart';
-import 'package:lookapp/providers/filter_provider.dart';
+import 'package:lookapp/discover/providers/filter_provider.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
 import 'package:lookapp/enums/item_enums.dart';
 import 'package:lookapp/providers/provider_refresh.dart';
