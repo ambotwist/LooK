@@ -6,7 +6,6 @@ import 'package:lookapp/discover/animations/slide_animation.dart';
 import 'package:lookapp/discover/dicover_card.dart';
 import 'package:lookapp/discover/models/items.dart';
 import 'package:lookapp/discover/providers/discover_provider.dart';
-import 'package:lookapp/enums/item_enums.dart';
 
 class CardStack extends ConsumerWidget {
   final List<Item> items;

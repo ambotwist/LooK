@@ -1,22 +1,11 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:lookapp/enums/item_enums.dart';
-import 'package:lookapp/discover/dicover_card.dart';
 import 'package:lookapp/discover/widgets/action_bar.dart';
-import 'package:lookapp/main/pages/fliter/filter_page.dart';
-import 'package:lookapp/discover/models/items.dart';
 import 'package:lookapp/discover/providers/discover_provider.dart';
-import 'package:lookapp/discover/providers/filter_provider.dart';
 import 'package:lookapp/discover/providers/interactions_provider.dart';
 import 'package:lookapp/discover/providers/item_provider.dart';
-import 'package:lookapp/discover/providers/overlay_provider.dart';
-import 'package:lookapp/widgets/layout/filter_dropdown.dart';
 import 'package:lookapp/widgets/layout/no_connection_screen.dart';
 import 'package:lookapp/providers/connection_provider.dart';
-import 'package:lookapp/widgets/layout/search_bar.dart';
 import 'package:lookapp/discover/animations/slide_animation.dart';
 import 'package:lookapp/discover/animations/shake_animation.dart';
 import 'package:lookapp/discover/animations/overlay_animation.dart';

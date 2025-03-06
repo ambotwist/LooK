@@ -65,7 +65,6 @@ class SlideAnimation {
   }
 
   void prepareSlideOut(Size size, bool isLike) {
-    const velocityMultiplier = 0.3; // Adjust this to control velocity influence
     slideOutTween = Offset(
       isLike ? size.width * 1.5 : -size.width * 1.5,
       0, // We're not using vertical velocity in this simplified version

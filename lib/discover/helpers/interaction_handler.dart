@@ -6,7 +6,6 @@ import 'package:lookapp/discover/providers/discover_provider.dart';
 import 'package:lookapp/discover/providers/interactions_provider.dart';
 import 'package:lookapp/discover/providers/item_provider.dart';
 import 'package:lookapp/discover/providers/overlay_provider.dart';
-import 'package:lookapp/enums/item_enums.dart';
 
 class InteractionHandler {
   final WidgetRef ref;
