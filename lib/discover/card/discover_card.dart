@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:lookapp/discover/models/items.dart';
+import 'package:lookapp/discover/shared/models/items.dart';
 import 'package:lookapp/providers/wishlist_provider.dart';
 
 class DiscoverCard extends ConsumerStatefulWidget {

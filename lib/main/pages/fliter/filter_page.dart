@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/enums/item_enums.dart';
-import 'package:lookapp/discover/providers/filter_provider.dart';
+import 'package:lookapp/discover/shared/providers/filter_provider.dart';
 
 /// Configuration class to control which filter sections are visible
 class FilterConfiguration {

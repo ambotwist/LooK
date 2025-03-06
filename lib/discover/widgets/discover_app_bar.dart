@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:lookapp/widgets/layout/search_bar.dart';
-import 'package:lookapp/discover/animations/shake_animation.dart';
+import 'package:lookapp/discover/shared/animations/shake_animation.dart';
 
 class DiscoverAppBar extends ConsumerWidget {
   final ShakeAnimation shakeAnimation;

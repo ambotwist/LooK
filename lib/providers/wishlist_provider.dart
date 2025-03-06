@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:lookapp/discover/models/items.dart';
+import 'package:lookapp/discover/shared/models/items.dart';
 
 // Keep track of when to refresh the wishlist
 final _wishlistRefreshProvider = StateProvider<int>((ref) => 0);

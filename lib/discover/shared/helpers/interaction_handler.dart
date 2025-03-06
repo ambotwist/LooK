@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lookapp/discover/animations/slide_animation.dart';
-import 'package:lookapp/discover/models/items.dart';
-import 'package:lookapp/discover/providers/discover_provider.dart';
-import 'package:lookapp/discover/providers/interactions_provider.dart';
-import 'package:lookapp/discover/providers/item_provider.dart';
-import 'package:lookapp/discover/providers/overlay_provider.dart';
+import 'package:lookapp/discover/shared/animations/slide_animation.dart';
+import 'package:lookapp/discover/shared/models/items.dart';
+import 'package:lookapp/discover/shared/providers/discover_provider.dart';
+import 'package:lookapp/discover/shared/providers/interactions_provider.dart';
+import 'package:lookapp/discover/shared/providers/item_provider.dart';
+import 'package:lookapp/discover/shared/providers/overlay_provider.dart';
 
 class InteractionHandler {
   final WidgetRef ref;

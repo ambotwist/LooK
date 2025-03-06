@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lookapp/discover/widgets/action_bar.dart';
-import 'package:lookapp/discover/providers/discover_provider.dart';
-import 'package:lookapp/discover/providers/interactions_provider.dart';
-import 'package:lookapp/discover/providers/item_provider.dart';
+import 'package:lookapp/discover/shared/providers/discover_provider.dart';
+import 'package:lookapp/discover/shared/providers/interactions_provider.dart';
+import 'package:lookapp/discover/shared/providers/item_provider.dart';
 import 'package:lookapp/widgets/layout/no_connection_screen.dart';
 import 'package:lookapp/providers/connection_provider.dart';
-import 'package:lookapp/discover/animations/slide_animation.dart';
-import 'package:lookapp/discover/animations/shake_animation.dart';
-import 'package:lookapp/discover/animations/overlay_animation.dart';
-import 'package:lookapp/discover/animations/card_animation.dart';
-import 'package:lookapp/discover/helpers/interaction_handler.dart';
-import 'package:lookapp/discover/widgets/card_stack.dart';
+import 'package:lookapp/discover/shared/animations/slide_animation.dart';
+import 'package:lookapp/discover/shared/animations/shake_animation.dart';
+import 'package:lookapp/discover/shared/animations/overlay_animation.dart';
+import 'package:lookapp/discover/shared/animations/card_animation.dart';
+import 'package:lookapp/discover/shared/helpers/interaction_handler.dart';
+import 'package:lookapp/discover/card/card_stack.dart';
 import 'package:lookapp/discover/widgets/discover_app_bar.dart';
-import 'package:lookapp/discover/widgets/filter_row.dart';
+import 'package:lookapp/discover/filters/filter_row.dart';
 
 class DiscoverPage extends ConsumerStatefulWidget {
   final double navbarHeight;

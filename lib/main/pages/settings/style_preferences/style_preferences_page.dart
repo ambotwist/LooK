@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:lookapp/enums/item_enums.dart';
-import 'package:lookapp/discover/providers/discover_provider.dart';
-import 'package:lookapp/discover/providers/item_provider.dart';
+import 'package:lookapp/discover/shared/providers/discover_provider.dart';
+import 'package:lookapp/discover/shared/providers/item_provider.dart';
 import 'package:lookapp/providers/user_preferences_provider.dart';
 
 class StylePreferencesPage extends ConsumerWidget {

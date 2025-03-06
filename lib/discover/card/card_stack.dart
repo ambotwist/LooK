@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lookapp/discover/animations/card_animation.dart';
-import 'package:lookapp/discover/animations/overlay_animation.dart';
-import 'package:lookapp/discover/animations/slide_animation.dart';
-import 'package:lookapp/discover/dicover_card.dart';
-import 'package:lookapp/discover/models/items.dart';
-import 'package:lookapp/discover/providers/discover_provider.dart';
+import 'package:lookapp/discover/shared/animations/card_animation.dart';
+import 'package:lookapp/discover/shared/animations/overlay_animation.dart';
+import 'package:lookapp/discover/shared/animations/slide_animation.dart';
+import 'package:lookapp/discover/card/discover_card.dart';
+import 'package:lookapp/discover/shared/models/items.dart';
+import 'package:lookapp/discover/shared/providers/discover_provider.dart';
 
 class CardStack extends ConsumerWidget {
   final List<Item> items;
